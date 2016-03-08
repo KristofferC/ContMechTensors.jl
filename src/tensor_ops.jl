@@ -11,6 +11,47 @@ end
     Tensor{4, dim}(Am_mul_Bm(S1.data, S2.data))
 end
 
+
+@generated function dcontract{dim, T1, T2}(S1::Tensor{2, dim, T1}, S2::Tensor{4, dim, T2})
+    idx4(i,j,k,l) = compute_index(Tensor{4, dim}, i, j, k, l)
+    idx2(k,l) = compute_index(Tensor{2, dim}, k, l)
+    exps = Expr(:tuple)
+    for i in 1:dim, j in 1:dim
+        exps_ele = Expr(:call)
+        push!(exps_ele.args, :+)
+        for k in 1:dim, l in 1:dim
+            push!(exps_ele.args, :(data4[$(idx4(k,l,i,j))] * data2[$(idx2(k,l))]))
+        end
+        push!(exps.args, exps_ele)
+    end
+    quote
+         data2 = S1.data
+         data4 = S2.data
+         @inbounds r = $exps
+         SymmetricTensor{2, dim}(r)
+    end
+end
+
+@generated function dcontract{dim, T1, T2}(S1::Tensor{4, dim, T1}, S2::Tensor{2, dim, T2})
+    idx4(i,j,k,l) = compute_index(Tensor{4, dim}, i, j, k, l)
+    idx2(k,l) = compute_index(Tensor{2, dim}, k, l)
+    exps = Expr(:tuple)
+    for i in 1:dim, j in 1:dim
+        exps_ele = Expr(:call)
+        push!(exps_ele.args, :+)
+        for k in 1:dim, l in 1:dim
+            push!(exps_ele.args, :(data4[$(idx4(i,j,k,l))] * data2[$(idx2(k,l))]))
+        end
+        push!(exps.args, exps_ele)
+    end
+    quote
+         data2 = S2.data
+         data4 = S1.data
+         @inbounds r = $exps
+         SymmetricTensor{2, dim}(r)
+    end
+end
+
 @inline function dcontract{dim}(S1::Tensor{4, dim}, S2::Tensor{2, dim})
     Tensor{2, dim}(Am_mul_Bv(S1.data, S2.data))
 end
