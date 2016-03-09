@@ -73,7 +73,6 @@ end
 
 @generated function dcontract{dim, T1, T2}(S1::SymmetricTensor{4, dim, T1}, S2::SymmetricTensor{4, dim, T2})
     idx4(i,j,k,l) = compute_index(SymmetricTensor{4, dim}, i, j, k, l)
-    idx2(k,l) = compute_index(SymmetricTensor{2, dim}, k, l)
     exps = Expr(:tuple)
     for k in 1:dim, l in k:dim, i in 1:dim, j in i:dim
         exps_ele = Expr(:call)
