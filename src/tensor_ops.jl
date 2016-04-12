@@ -1,3 +1,8 @@
+# Deprecate `*` for single/double contraction
+function Base.(:*)(S1::AbstractTensor, S2::AbstractTensor)
+    error("Don't use `*` for multiplication between tensors. Use `⋅` (`\\cdot`) for single contraction and `⊡` (`\\boxdot`) for double contraction.")
+end
+
 ######################
 # Double contraction #
 ######################
@@ -20,11 +25,6 @@ end
     Tv = typeof(zero(T1)*zero(T2))
     Tensor{2, dim, Tv, M}(Amt_mul_Bv(S2.data, S1.data))
 end
-
-@inline Base.(:*){dim}(S1::Tensor{4, dim}, S2::Tensor{2, dim}) = dcontract(S1, S2)
-@inline Base.(:*){dim}(S1::Tensor{2, dim}, S2::Tensor{4, dim}) = dcontract(S1, S2)
-@inline Base.(:*){dim}(S1::SymmetricTensor{4, dim}, S2::SymmetricTensor{2, dim}) = dcontract(S1, S2)
-@inline Base.(:*){dim}(S1::SymmetricTensor{2, dim}, S2::SymmetricTensor{4, dim}) = dcontract(S1, S2)
 
 const ⊡ = dcontract
 
@@ -101,9 +101,6 @@ end
     return Vec{dim, Tv}(Amt_mul_Bv(S2.data, v1.data))
 end
 
-@inline Base.(:*){dim}(S1::Tensor{1, dim}, S2::Tensor{2, dim}) = dot(S1, S2)
-@inline Base.(:*){dim}(S1::Tensor{2, dim}, S2::Tensor{1, dim}) = dot(S1, S2)
-
 
 @inline function Base.dot{dim, T1, T2, M}(S1::Tensor{2, dim, T1, M}, S2::Tensor{2, dim, T2, M})
     Tv = typeof(zero(T1) * zero(T2))
@@ -123,9 +120,6 @@ end
     S2_t = convert(Tensor{2, dim}, S2)
     return Tensor{2, dim}(Am_mul_Bm(S1_t.data, S2_t.data))
 end
-
-@inline Base.(:*){dim}(S1::Tensor{2, dim}, S2::Tensor{2, dim}) = dot(S1, S2)
-@inline Base.(:*){dim}(S1::SymmetricTensor{2, dim}, S2::SymmetricTensor{2, dim}) = dot(S1, S2)
 
 @inline function tdot{dim}(S1::Tensor{2, dim})
     return SymmetricTensor{2, dim}(transpdot(S1.data))
