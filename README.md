@@ -104,24 +104,6 @@ julia> setindex(a, 1.337, 2)
 
 ## Operations
 
-### Scaling
-The symbol `*` can be used for multiplication between a number and a tensor, i.e. scaling of the tensor `A` with scalar `a`.
-
-```jl
-julia> a = 2.0;
-
-julia> A = rand(SymmetricTensor{2,2})
-2x2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:
- 0.151352    0.00806314
- 0.00806314  0.287282
-
-julia> a*A
-2x2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:
- 0.302704   0.0161263
- 0.0161263  0.574564
-```
-
-
 ### Single contraction (dot product)
 
 Single contractions or scalar products of a tensor with order `n` and a tensor with order `m` gives a tensor with order `m + n - 2`. The symbol `⋅`, written `\cdot`, is overloaded for single contraction.
