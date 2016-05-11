@@ -142,6 +142,24 @@ for dim in (1,2,3)
     @test det(A) ≈ det(reshape(vec(A), (dim,dim)))
     @test det(A_sym) ≈ det(reshape(vec(A_sym), (dim,dim)))
 
+    ############################
+    # Symmetric/Skew-symmetric #
+    ############################
+    @test symmetric(A) ≈ 0.5(A + A.')
+    @test symmetric(A_sym) ≈ A_sym
+    @test typeof(symmetric(A)) <: SymmetricTensor{2,dim}
+
+    @test skew(A) ≈ 0.5(A - A.')
+    @test skew(A_sym) ≈ zero(A_sym)
+    @test typeof(skew(A_sym)) <: Tensor{2,dim}
+
+    # Identities
+    @test A ≈ symmetric(A) + skew(A)
+    @test skew(A) ≈ -skew(A).'
+    @test trace(skew(A)) ≈ 0.0
+    @test trace(symmetric(A)) ≈ trace(A)
+
+
     ##########################
     # Creating with function #
     ##########################

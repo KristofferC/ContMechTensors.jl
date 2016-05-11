@@ -256,6 +256,23 @@ end
 Base.ctranspose(S::AllTensors) = transpose(S)
 
 
+############################
+# Symmetric/Skew-symmetric #
+############################
+
+"""
+Computes the symmetric part of a second order tensor, returns a `SymmetricTensor`
+"""
+@inline symmetric{dim,T}(S1::Tensor{2,dim,T}) = convert(SymmetricTensor{2,dim,T},S1)
+@inline symmetric(S1::SymmetricTensor{2}) = S1
+
+"""
+Computes the skew-symmetric (anti-symmetric) part of a second order tensor, returns a `Tensor`
+"""
+@inline skew(S1::Tensor{2}) = 0.5*(S1 - S1.')
+@inline skew{dim,T}(S1::SymmetricTensor{2,dim,T}) = zero(Tensor{2,dim,T})
+
+
 #######
 # Eig #
 #######
