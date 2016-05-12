@@ -145,9 +145,26 @@ for dim in (1,2,3)
     ############################
     # Symmetric/Skew-symmetric #
     ############################
+    if dim != 1
+        @test !issymmetric(A)
+        @test !issymmetric(AA)
+        @test !ismajorsymmetric(AA)
+        @test !isminorsymmetric(AA)
+        @test_throws InexactError convert(typeof(A_sym),A)
+        @test_throws InexactError convert(typeof(AA_sym),AA)
+    end
+    @test issymmetric(A_sym)
+    @test issymmetric(AA_sym)
+    @test isminorsymmetric(AA_sym)
+    @test issymmetric(symmetric(A))
+    @test issymmetric(A + A.')
+
     @test symmetric(A) ≈ 0.5(A + A.')
     @test symmetric(A_sym) ≈ A_sym
     @test typeof(symmetric(A)) <: SymmetricTensor{2,dim}
+    @test symmetric(AA_sym) ≈ AA_sym
+    @test typeof(symmetric(AA)) <: SymmetricTensor{4,dim}
+    @test convert(typeof(AA_sym),convert(Tensor,symmetric(AA))) ≈ symmetric(AA)
 
     @test skew(A) ≈ 0.5(A - A.')
     @test skew(A_sym) ≈ zero(A_sym)
