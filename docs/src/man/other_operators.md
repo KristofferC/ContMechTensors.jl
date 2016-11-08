@@ -36,11 +36,9 @@ norm
 
 ## Trace
 
-The trace for a second or fourth order tensor is defined as
+The trace for a second order tensor is defined as the sum of the diagonal elements. This can be written as
 
 $\text{tr}(\mathbf{A}) = \mathbf{I} : \mathbf{A} \Leftrightarrow \text{tr}(A_{ij}) = A_{ii}$
-
-$\text{tr}(\mathsf{A}) = \mathsf{I} :: \mathsf{A} \Leftrightarrow \text{tr}(A_{ijkl}) = A_{iiii}$
 
 ```@docs
 trace

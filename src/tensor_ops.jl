@@ -284,12 +284,11 @@ end
 
 
 """
-Computes the trace of a second or fourth order tensor.
-For second order tensors, the synonym `vol` can be used.
+Computes the trace of a second order tensor.
+The synonym `vol` can also be used.
 
 ```julia
 trace(::SecondOrderTensor)
-trace(::FourthOrderTensor)
 ```
 
 **Example:**
@@ -305,17 +304,14 @@ julia> trace(A)
 1.9050765715072775
 ```
 """
-@gen_code function Base.trace{dim, T}(S::Union{SecondOrderTensor{dim, T}, FourthOrderTensor{dim, T}})
-    @code :($(Expr(:meta, :inline)))
-    @code :(s = zero(T))
-    for i = 1:dim
-        if S <: SecondOrderTensor
-            @code :(@inbounds s += S[$i,$i])
-        elseif S <: FourthOrderTensor
-            @code :(@inbounds s += S[$i,$i,$i,$i])
-        end
+@generated function Base.trace{dim, T}(S::SecondOrderTensor{dim, T})
+    idx(i,j) = compute_index(get_lower_order_tensor(S), i, j)
+    exp = Expr(:call)
+    push!(exp.args, :+)
+    for i in 1:dim
+        push!(exp.args, :(S.data[$(idx(i,i))]))
     end
-    @code :(return s)
+    return exp
 end
 vol(S::SecondOrderTensor) = trace(S)
 
