@@ -1,17 +1,9 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Constructing tensors · ContMechTensors.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.5.0/styles/default.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Ubuntu+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script></head><body><nav class="toc"><h1>ContMechTensors.jl</h1><form class="search" action="../search.html"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../index.html">Home</a></li><li><span class="toctext">Manual</span><ul><li class="current"><a class="toctext" href="constructing_tensors.html">Constructing tensors</a><ul class="internal"><li><a class="toctext" href="#Converting-to-tensors-1">Converting to tensors</a></li></ul></li><li><a class="toctext" href="indexing.html">Indexing</a></li><li><a class="toctext" href="binary_operators.html">Binary Operations</a></li><li><a class="toctext" href="other_operators.html">Other operators</a></li><li><a class="toctext" href="storing_tensors.html">Storing tensors</a></li></ul></li><li><a class="toctext" href="../demos.html">Demos</a></li></ul></nav><article id="docs"><header><nav><ul><li>Manual</li><li><a href="constructing_tensors.html">Constructing tensors</a></li></ul><a class="edit-page" href="https://github.com/KristofferC/ContMechTensors.jl/tree/a51fa600e7d90890ec3315abca68659e83b88632/docs/src/man/constructing_tensors.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/></header><h1><a class="nav-anchor" id="Constructing-tensors-1" href="#Constructing-tensors-1">Constructing tensors</a></h1><p>Tensors can be created in multiple ways but they usually include <code>Tensor{order, dim}</code> or <code>SymmetricTensor{order, dim}</code></p><pre><code class="language-jlcon">julia&gt; zero(Tensor{1, 2})
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Constructing tensors · ContMechTensors.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.5.0/styles/default.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Ubuntu+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script></head><body><nav class="toc"><h1>ContMechTensors.jl</h1><form class="search" action="../search.html"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../index.html">Home</a></li><li><span class="toctext">Manual</span><ul><li class="current"><a class="toctext" href="constructing_tensors.html">Constructing tensors</a><ul class="internal"><li><a class="toctext" href="#Zero-tensors-1">Zero tensors</a></li><li><a class="toctext" href="#Random-tensors-1">Random tensors</a></li><li><a class="toctext" href="#Identity-tensors-1">Identity tensors</a></li><li><a class="toctext" href="#From-arrays-/-tuples-1">From arrays / tuples</a></li><li><a class="toctext" href="#From-a-function-1">From a function</a></li><li><a class="toctext" href="#Diagonal-tensors-1">Diagonal tensors</a></li><li><a class="toctext" href="#Converting-to-tensors-1">Converting to tensors</a></li></ul></li><li><a class="toctext" href="indexing.html">Indexing</a></li><li><a class="toctext" href="binary_operators.html">Binary Operations</a></li><li><a class="toctext" href="other_operators.html">Other operators</a></li><li><a class="toctext" href="storing_tensors.html">Storing tensors</a></li></ul></li><li><a class="toctext" href="../demos.html">Demos</a></li></ul></nav><article id="docs"><header><nav><ul><li>Manual</li><li><a href="constructing_tensors.html">Constructing tensors</a></li></ul><a class="edit-page" href="https://github.com/KristofferC/ContMechTensors.jl/tree/05c55141ab2f9e37ed92e8ff5ff0fe91fc3c7aaa/docs/src/man/constructing_tensors.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/></header><h1><a class="nav-anchor" id="Constructing-tensors-1" href="#Constructing-tensors-1">Constructing tensors</a></h1><p>Tensors can be created in multiple ways but they usually include running a function on tensor types of which there are two kinds, <code>Tensor{order, dim, T}</code> for non-symmetric tensors and <code>SymmetricTensor{order, dim, T}</code> for symmetric tensors. The parameter <code>order</code> is an integer of value 1, 2 or 4, excluding 1 for symmetric tensors. The second parameter <code>dim</code> is an integer which corresponds to the dimension of the tensor and can be 1, 2 or 3. The last parameter <code>T</code> is the number type that the tensors contain, i.e. <code>Float64</code> or <code>Float32</code>.</p><h2><a class="nav-anchor" id="Zero-tensors-1" href="#Zero-tensors-1">Zero tensors</a></h2><p>A tensor with only zeros is created using the function <code>zero</code>, applied to the type of tensor that should be created:</p><pre><code class="language-jlcon">julia&gt; zero(Tensor{1, 2})
 2-element ContMechTensors.Tensor{1,2,Float64,2}:
  0.0
- 0.0
-
-julia&gt; rand(Tensor{2, 3})
-3×3 ContMechTensors.Tensor{2,3,Float64,9}:
- 0.590845  0.460085  0.200586
- 0.766797  0.794026  0.298614
- 0.566237  0.854147  0.246837
-
-julia&gt; zero(SymmetricTensor{4, 2})
-2×2×2×2 ContMechTensors.SymmetricTensor{4,2,Float64,9}:
+ 0.0</code></pre><p>By default, a tensor of <code>Float64s</code> is created but by explicitly giving the <code>T</code> parameter, this can be changed:</p><pre><code class="language-jlcon">julia&gt; zero(SymmetricTensor{4, 2, Float32})
+2×2×2×2 ContMechTensors.SymmetricTensor{4,2,Float32,9}:
 [:, :, 1, 1] =
  0.0  0.0
  0.0  0.0
@@ -26,23 +18,23 @@ julia&gt; zero(SymmetricTensor{4, 2})
 
 [:, :, 2, 2] =
  0.0  0.0
- 0.0  0.0
-
-julia&gt; one(SymmetricTensor{2, 2})
+ 0.0  0.0</code></pre><h2><a class="nav-anchor" id="Random-tensors-1" href="#Random-tensors-1">Random tensors</a></h2><p>A tensor with random numbers is created using the function <code>rand</code>, applied to the type of tensor that should be created:</p><pre><code class="language-jlcon">julia&gt; rand(Tensor{2, 3})
+3×3 ContMechTensors.Tensor{2,3,Float64,9}:
+ 0.590845  0.460085  0.200586
+ 0.766797  0.794026  0.298614
+ 0.566237  0.854147  0.246837</code></pre><h2><a class="nav-anchor" id="Identity-tensors-1" href="#Identity-tensors-1">Identity tensors</a></h2><p>An identity tensor is created using the function <code>one</code>, applied to the type of tensor that should be created:</p><pre><code class="language-jlcon">julia&gt; one(SymmetricTensor{2, 2})
 2×2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:
  1.0  0.0
- 0.0  1.0</code></pre><p>Tensors can also be created by giving a tuple or an array with the same number of elements as the number of independent indices in the tensor:</p><pre><code class="language-jlcon">julia&gt; Tensor{1,2}([1.0,2.0])
+ 0.0  1.0</code></pre><h2><a class="nav-anchor" id="From-arrays-/-tuples-1" href="#From-arrays-/-tuples-1">From arrays / tuples</a></h2><p>Tensors can also be created from a tuple or an array with the same number of elements as the number of independent indices in the tensor. For example, a first order tensor (vector) in two dimensions is here created from a vector of length two:</p><pre><code class="language-jlcon">julia&gt; Tensor{1,2}([1.0,2.0])
 2-element ContMechTensors.Tensor{1,2,Float64,2}:
  1.0
- 2.0
-
-julia&gt; SymmetricTensor{2,2}((1.0,2.0,3.0))
+ 2.0</code></pre><p>Below, a second order symmetric tensor in two dimensions is created from a tuple. Since the number of independent indices in this tensor is three, the length of the tuple is also three. For symmetric tensors, the order of the numbers in the input tuple is column by column, starting at the diagonal.</p><pre><code class="language-jlcon">julia&gt; SymmetricTensor{2,2}((1.0,2.0,3.0))
 2×2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:
  1.0  2.0
- 2.0  3.0</code></pre><p>It is also possible to create a tensor by giving a function <code>f(index...) -&gt; v</code>:</p><pre><code class="language-jlcon">julia&gt; SymmetricTensor{2,2}((i,j) -&gt; i + j)
+ 2.0  3.0</code></pre><h2><a class="nav-anchor" id="From-a-function-1" href="#From-a-function-1">From a function</a></h2><p>A tensor can be created from a function <code>f(indices...) -&gt; v</code> which maps a set of indices to a value. The number of arguments of the function should be equal to the order of the tensor.</p><pre><code class="language-jlcon">julia&gt; SymmetricTensor{2,2}((i,j) -&gt; i + j)
 2×2 ContMechTensors.SymmetricTensor{2,2,Int64,3}:
  2  3
- 3  4</code></pre><p>A diagonal tensor can be created by either giving a number of a vector on the diagonal:</p><pre><code class="language-jlcon">julia&gt; diagm(Tensor{2,2}, 2.0)
+ 3  4</code></pre><h2><a class="nav-anchor" id="Diagonal-tensors-1" href="#Diagonal-tensors-1">Diagonal tensors</a></h2><p>A diagonal tensor can be created by either giving a number or a vector that should appear on the diagonal:</p><pre><code class="language-jlcon">julia&gt; diagm(Tensor{2,2}, 2.0)
 2×2 ContMechTensors.Tensor{2,2,Float64,4}:
  2.0  0.0
  0.0  2.0
@@ -51,7 +43,7 @@ julia&gt; diagm(SymmetricTensor{2,3}, [1.0, 2.0, 3.0])
 3×3 ContMechTensors.SymmetricTensor{2,3,Float64,6}:
  1.0  0.0  0.0
  0.0  2.0  0.0
- 0.0  0.0  3.0</code></pre><h2><a class="nav-anchor" id="Converting-to-tensors-1" href="#Converting-to-tensors-1">Converting to tensors</a></h2><p>Sometimes it is necessary to convert between standard Julia <code>Array</code>&#39;s and <code>Tensor</code>&#39;s. This can be done with <code>reinterpret</code>. For example, a <code>2×5</code> Julia <code>Array</code> can be translated to a vector of <code>Vec{2}</code> with the following code (and then translated back again)</p><pre><code class="language-jlcon">julia&gt; data = rand(2, 5)
+ 0.0  0.0  3.0</code></pre><h2><a class="nav-anchor" id="Converting-to-tensors-1" href="#Converting-to-tensors-1">Converting to tensors</a></h2><p>Sometimes it is necessary to convert between standard Julia <code>Array</code>&#39;s and <code>Tensor</code>&#39;s. When the number type is a bits type (like for floats or integers) this is conveniently done by the <code>reinterpret</code> function. For example, a <code>2×5</code> Julia <code>Array</code> can be translated to a vector of <code>Vec{2}</code> with the following code</p><pre><code class="language-jlcon">julia&gt; data = rand(2, 5)
 2×5 Array{Float64,2}:
  0.590845  0.566237  0.794026  0.200586  0.246837
  0.766797  0.460085  0.854147  0.298614  0.579672
@@ -62,9 +54,7 @@ julia&gt; tensor_data = reinterpret(Vec{2, Float64}, data, (5,))
  [0.566237,0.460085]
  [0.794026,0.854147]
  [0.200586,0.298614]
- [0.246837,0.579672]
-
-julia&gt; data = reinterpret(Float64, tensor_data, (2,5))
+ [0.246837,0.579672]</code></pre><p>The data can also be reinterpreted back to a Julia <code>Array</code></p><pre><code class="language-jlcon">julia&gt; data = reinterpret(Float64, tensor_data, (2,5))
 2×5 Array{Float64,2}:
  0.590845  0.566237  0.794026  0.200586  0.246837
  0.766797  0.460085  0.854147  0.298614  0.579672</code></pre><footer><hr/><a class="previous" href="../index.html"><span class="direction">Previous</span><span class="title">Home</span></a><a class="next" href="indexing.html"><span class="direction">Next</span><span class="title">Indexing</span></a></footer></article></body></html>

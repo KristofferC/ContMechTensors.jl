@@ -61,7 +61,55 @@ var documenterSearchIndex = {"docs": [
     "page": "Constructing tensors",
     "title": "Constructing tensors",
     "category": "section",
-    "text": "Tensors can be created in multiple ways but they usually include Tensor{order, dim} or SymmetricTensor{order, dim}julia> zero(Tensor{1, 2})\n2-element ContMechTensors.Tensor{1,2,Float64,2}:\n 0.0\n 0.0\n\njulia> rand(Tensor{2, 3})\n3×3 ContMechTensors.Tensor{2,3,Float64,9}:\n 0.590845  0.460085  0.200586\n 0.766797  0.794026  0.298614\n 0.566237  0.854147  0.246837\n\njulia> zero(SymmetricTensor{4, 2})\n2×2×2×2 ContMechTensors.SymmetricTensor{4,2,Float64,9}:\n[:, :, 1, 1] =\n 0.0  0.0\n 0.0  0.0\n\n[:, :, 2, 1] =\n 0.0  0.0\n 0.0  0.0\n\n[:, :, 1, 2] =\n 0.0  0.0\n 0.0  0.0\n\n[:, :, 2, 2] =\n 0.0  0.0\n 0.0  0.0\n\njulia> one(SymmetricTensor{2, 2})\n2×2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:\n 1.0  0.0\n 0.0  1.0Tensors can also be created by giving a tuple or an array with the same number of elements as the number of independent indices in the tensor:julia> Tensor{1,2}([1.0,2.0])\n2-element ContMechTensors.Tensor{1,2,Float64,2}:\n 1.0\n 2.0\n\njulia> SymmetricTensor{2,2}((1.0,2.0,3.0))\n2×2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:\n 1.0  2.0\n 2.0  3.0It is also possible to create a tensor by giving a function f(index...) -> v:julia> SymmetricTensor{2,2}((i,j) -> i + j)\n2×2 ContMechTensors.SymmetricTensor{2,2,Int64,3}:\n 2  3\n 3  4A diagonal tensor can be created by either giving a number of a vector on the diagonal:julia> diagm(Tensor{2,2}, 2.0)\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 2.0  0.0\n 0.0  2.0\n\njulia> diagm(SymmetricTensor{2,3}, [1.0, 2.0, 3.0])\n3×3 ContMechTensors.SymmetricTensor{2,3,Float64,6}:\n 1.0  0.0  0.0\n 0.0  2.0  0.0\n 0.0  0.0  3.0"
+    "text": "Tensors can be created in multiple ways but they usually include running a function on tensor types of which there are two kinds, Tensor{order, dim, T} for non-symmetric tensors and SymmetricTensor{order, dim, T} for symmetric tensors. The parameter order is an integer of value 1, 2 or 4, excluding 1 for symmetric tensors. The second parameter dim is an integer which corresponds to the dimension of the tensor and can be 1, 2 or 3. The last parameter T is the number type that the tensors contain, i.e. Float64 or Float32."
+},
+
+{
+    "location": "man/constructing_tensors.html#Zero-tensors-1",
+    "page": "Constructing tensors",
+    "title": "Zero tensors",
+    "category": "section",
+    "text": "A tensor with only zeros is created using the function zero, applied to the type of tensor that should be created:julia> zero(Tensor{1, 2})\n2-element ContMechTensors.Tensor{1,2,Float64,2}:\n 0.0\n 0.0By default, a tensor of Float64s is created but by explicitly giving the T parameter, this can be changed:julia> zero(SymmetricTensor{4, 2, Float32})\n2×2×2×2 ContMechTensors.SymmetricTensor{4,2,Float32,9}:\n[:, :, 1, 1] =\n 0.0  0.0\n 0.0  0.0\n\n[:, :, 2, 1] =\n 0.0  0.0\n 0.0  0.0\n\n[:, :, 1, 2] =\n 0.0  0.0\n 0.0  0.0\n\n[:, :, 2, 2] =\n 0.0  0.0\n 0.0  0.0"
+},
+
+{
+    "location": "man/constructing_tensors.html#Random-tensors-1",
+    "page": "Constructing tensors",
+    "title": "Random tensors",
+    "category": "section",
+    "text": "A tensor with random numbers is created using the function rand, applied to the type of tensor that should be created:julia> rand(Tensor{2, 3})\n3×3 ContMechTensors.Tensor{2,3,Float64,9}:\n 0.590845  0.460085  0.200586\n 0.766797  0.794026  0.298614\n 0.566237  0.854147  0.246837"
+},
+
+{
+    "location": "man/constructing_tensors.html#Identity-tensors-1",
+    "page": "Constructing tensors",
+    "title": "Identity tensors",
+    "category": "section",
+    "text": "An identity tensor is created using the function one, applied to the type of tensor that should be created:julia> one(SymmetricTensor{2, 2})\n2×2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:\n 1.0  0.0\n 0.0  1.0"
+},
+
+{
+    "location": "man/constructing_tensors.html#From-arrays-/-tuples-1",
+    "page": "Constructing tensors",
+    "title": "From arrays / tuples",
+    "category": "section",
+    "text": "Tensors can also be created from a tuple or an array with the same number of elements as the number of independent indices in the tensor. For example, a first order tensor (vector) in two dimensions is here created from a vector of length two:julia> Tensor{1,2}([1.0,2.0])\n2-element ContMechTensors.Tensor{1,2,Float64,2}:\n 1.0\n 2.0Below, a second order symmetric tensor in two dimensions is created from a tuple. Since the number of independent indices in this tensor is three, the length of the tuple is also three. For symmetric tensors, the order of the numbers in the input tuple is column by column, starting at the diagonal.julia> SymmetricTensor{2,2}((1.0,2.0,3.0))\n2×2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:\n 1.0  2.0\n 2.0  3.0"
+},
+
+{
+    "location": "man/constructing_tensors.html#From-a-function-1",
+    "page": "Constructing tensors",
+    "title": "From a function",
+    "category": "section",
+    "text": "A tensor can be created from a function f(indices...) -> v which maps a set of indices to a value. The number of arguments of the function should be equal to the order of the tensor.julia> SymmetricTensor{2,2}((i,j) -> i + j)\n2×2 ContMechTensors.SymmetricTensor{2,2,Int64,3}:\n 2  3\n 3  4"
+},
+
+{
+    "location": "man/constructing_tensors.html#Diagonal-tensors-1",
+    "page": "Constructing tensors",
+    "title": "Diagonal tensors",
+    "category": "section",
+    "text": "A diagonal tensor can be created by either giving a number or a vector that should appear on the diagonal:julia> diagm(Tensor{2,2}, 2.0)\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 2.0  0.0\n 0.0  2.0\n\njulia> diagm(SymmetricTensor{2,3}, [1.0, 2.0, 3.0])\n3×3 ContMechTensors.SymmetricTensor{2,3,Float64,6}:\n 1.0  0.0  0.0\n 0.0  2.0  0.0\n 0.0  0.0  3.0"
 },
 
 {
@@ -69,7 +117,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Constructing tensors",
     "title": "Converting to tensors",
     "category": "section",
-    "text": "Sometimes it is necessary to convert between standard Julia Array's and Tensor's. This can be done with reinterpret. For example, a 2×5 Julia Array can be translated to a vector of Vec{2} with the following code (and then translated back again)julia> data = rand(2, 5)\n2×5 Array{Float64,2}:\n 0.590845  0.566237  0.794026  0.200586  0.246837\n 0.766797  0.460085  0.854147  0.298614  0.579672\n\njulia> tensor_data = reinterpret(Vec{2, Float64}, data, (5,))\n5-element Array{ContMechTensors.Tensor{1,2,Float64,2},1}:\n [0.590845,0.766797]\n [0.566237,0.460085]\n [0.794026,0.854147]\n [0.200586,0.298614]\n [0.246837,0.579672]\n\njulia> data = reinterpret(Float64, tensor_data, (2,5))\n2×5 Array{Float64,2}:\n 0.590845  0.566237  0.794026  0.200586  0.246837\n 0.766797  0.460085  0.854147  0.298614  0.579672"
+    "text": "Sometimes it is necessary to convert between standard Julia Array's and Tensor's. When the number type is a bits type (like for floats or integers) this is conveniently done by the reinterpret function. For example, a 2×5 Julia Array can be translated to a vector of Vec{2} with the following codejulia> data = rand(2, 5)\n2×5 Array{Float64,2}:\n 0.590845  0.566237  0.794026  0.200586  0.246837\n 0.766797  0.460085  0.854147  0.298614  0.579672\n\njulia> tensor_data = reinterpret(Vec{2, Float64}, data, (5,))\n5-element Array{ContMechTensors.Tensor{1,2,Float64,2},1}:\n [0.590845,0.766797]\n [0.566237,0.460085]\n [0.794026,0.854147]\n [0.200586,0.298614]\n [0.246837,0.579672]The data can also be reinterpreted back to a Julia Arrayjulia> data = reinterpret(Float64, tensor_data, (2,5))\n2×5 Array{Float64,2}:\n 0.590845  0.566237  0.794026  0.200586  0.246837\n 0.766797  0.460085  0.854147  0.298614  0.579672"
 },
 
 {
@@ -117,7 +165,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Binary Operations",
     "title": "Dot product (single contraction)",
     "category": "section",
-    "text": "Dot product or single contraction of a tensor of order n and a tensor of order m gives a tensor of order m + n - 2. For example, single contraction between two vectors mathbfb and mathbfc can be written as:a = mathbfb cdot mathbfc Leftrightarrow a = b_i c_iand single contraction between a second order tensor mathbfB and a vector mathbfc:mathbfa = mathbfB cdot mathbfc Leftrightarrow a_i = B_ij c_jdot"
+    "text": "The dot product (or single contraction) between a tensor of order n and a tensor of order m is a tensor of order m + n - 2. For example, single contraction between two vectors mathbfb and mathbfc can be written as:a = mathbfb cdot mathbfc Leftrightarrow a = b_i c_iand single contraction between a second order tensor mathbfB and a vector mathbfc:mathbfa = mathbfB cdot mathbfc Leftrightarrow a_i = B_ij c_jdot"
 },
 
 {
@@ -133,7 +181,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Binary Operations",
     "title": "Double contraction",
     "category": "section",
-    "text": "Double contractions contracts the two most inner \"legs\" of the tensors. The result of a double contraction between a tensor of order n and a tensor of order m gives a tensor of order m + n - 4. For example, double contraction between two second order tensors mathbfB and mathbfC can be written as:a = mathbfB  mathbfC Leftrightarrow a = B_ij C_ijand double contraction between a fourth order tensor mathsfB and a second order tensor mathbfC:mathbfA = mathsfB  mathbfC Leftrightarrow A_ij = B_ijkl C_kldcontract"
+    "text": "A double contraction between two tensors contracts the two most inner indices. The result of a double contraction between a tensor of order n and a tensor of order m is a tensor of order m + n - 4. For example, double contraction between two second order tensors mathbfB and mathbfC can be written as:a = mathbfB  mathbfC Leftrightarrow a = B_ij C_ijand double contraction between a fourth order tensor mathsfB and a second order tensor mathbfC:mathbfA = mathsfB  mathbfC Leftrightarrow A_ij = B_ijkl C_kldcontract"
 },
 
 {
@@ -149,7 +197,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Binary Operations",
     "title": "Tensor product (open product)",
     "category": "section",
-    "text": "Tensor products or open product of a tensor of order n and a tensor of order m gives a tensor of order m + n.  For example, open product between two vectors mathbfb and mathbfc can be written as:mathbfA = mathbfb otimes mathbfc Leftrightarrow A_ij = b_i c_jand open product between two second order tensors mathbfB and mathbfC:mathsfA = mathbfB otimes mathbfC Leftrightarrow A_ijkl = B_ij C_klotimes"
+    "text": "The tensor product (or open product) between a tensor of order n and a tensor of order m is a tensor of order m + n.  For example, open product between two vectors mathbfb and mathbfc can be written as:mathbfA = mathbfb otimes mathbfc Leftrightarrow A_ij = b_i c_jand open product between two second order tensors mathbfB and mathbfC:mathsfA = mathbfB otimes mathbfC Leftrightarrow A_ijkl = B_ij C_klotimes"
 },
 
 {
@@ -389,7 +437,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Storing tensors",
     "title": "Storing tensors",
     "category": "section",
-    "text": "Even though a user mostly deals with the Tensor{order, dim, T} parameters, the full parameter list for a tensor is actually Tensor{order, dim, T, N} where N is the number of independent elements in the tensor. The reason for this is that the internal storage is a NTuple{N, T}. In order to get good performance when storing tensors in other types it is importatant that the container type is also parametrized on N. For example, when storing one symmetric second order tensor and one unsymmetric tensor, this is the preferred way:immutable Container{dim, T, N, M}\n    sym_tens::SymmetricTensor{2, dim, T, N}\n    tens::Tensor{2, dim, T, M}\nendLeaving out the M and N would lead to bad performance.tip: Tip\nThe number of independent elements N are already included in the typealias Vec so they can be stored with e.g.immutable VecContainer{dim, T}\n    vec::Vec{dim, T}\nendwithout giving bad performance."
+    "text": "Even though a user mostly deals with the Tensor{order, dim, T} parameters, the full parameter list for a tensor is actually Tensor{order, dim, T, N} where N is the number of independent elements in the tensor. The reason for this is that the internal storage for tensors is a NTuple{N, T}. In order to get good performance when storing tensors in other types it is important that the container type is also parametrized on N. For example, when storing one symmetric second order tensor and one unsymmetric tensor, this is the preferred way:immutable Container{dim, T, N, M}\n    sym_tens::SymmetricTensor{2, dim, T, N}\n    tens::Tensor{2, dim, T, M}\nendLeaving out the M and N would lead to bad performance.tip: Tip\nThe number of independent elements N are already included in the typealias Vec so they can be stored with e.g.immutable VecContainer{dim, T}\n    vec::Vec{dim, T}\nendwithout causing bad performance."
 },
 
 {
