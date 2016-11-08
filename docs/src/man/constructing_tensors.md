@@ -46,7 +46,7 @@ julia> zero(SymmetricTensor{4, 2, Float32})
 
 ## Random tensors
 
-A tensor with random zeros is created using the function `rand`, applied to the type of tensor that should be created:
+A tensor with random numbers is created using the function `rand`, applied to the type of tensor that should be created:
 
 ```jldoctest
 julia> rand(Tensor{2, 3})
