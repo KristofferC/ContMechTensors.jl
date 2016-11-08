@@ -576,6 +576,7 @@ Computes the minor symmetric part of a fourth order tensor, returns a `Symmetric
 
 ```julia
 minorsymmetric(::FourthOrderTensor)
+```
 """
 @generated function minorsymmetric{dim, T}(t::Tensor{4, dim, T})
     N = n_components(Tensor{4, dim})
