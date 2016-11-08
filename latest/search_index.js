@@ -13,7 +13,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Home",
     "title": "ContMechTensors",
     "category": "section",
-    "text": "Efficient computations with symmetric and unsymmetric tensors in Julia."
+    "text": "Efficient computations with symmetric and non-symmetric tensors in Julia."
 },
 
 {
@@ -21,7 +21,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Home",
     "title": "Introduction",
     "category": "section",
-    "text": "This Julia package provides fast operations with symmetric/unsymmetric tensors of order 1, 2 and 4. The tensors are stack allocated which means that there is no need to preallocate results of operations and nice infix notation can be used without a performance penalty. For the symmetric tensors, when possible, the symmetry is exploited for better performance."
+    "text": "This Julia package provides fast operations with symmetric and non-symmetric tensors of order 1, 2 and 4. The Tensors are allocated on the stack which means that there is no need to preallocate output results for performance.  Unicode infix operators are provided such that the tensor expression in the source code is similar to the one written with mathematical notation. When possible, symmetry of tensors is exploited for better performance."
 },
 
 {
@@ -65,6 +65,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "man/constructing_tensors.html#Converting-to-tensors-1",
+    "page": "Constructing tensors",
+    "title": "Converting to tensors",
+    "category": "section",
+    "text": "Sometimes it is necessary to convert between standard Julia Array's and Tensor's. This can be done with reinterpret. For example, a 2×5 Julia Array can be translated to a vector of Vec{2} with the following code (and then translated back again)julia> data = rand(2, 5)\n2×5 Array{Float64,2}:\n 0.590845  0.566237  0.794026  0.200586  0.246837\n 0.766797  0.460085  0.854147  0.298614  0.579672\n\njulia> tensor_data = reinterpret(Vec{2, Float64}, data, (5,))\n5-element Array{ContMechTensors.Tensor{1,2,Float64,2},1}:\n [0.590845,0.766797]\n [0.566237,0.460085]\n [0.794026,0.854147]\n [0.200586,0.298614]\n [0.246837,0.579672]\n\njulia> data = reinterpret(Float64, tensor_data, (2,5))\n2×5 Array{Float64,2}:\n 0.590845  0.566237  0.794026  0.200586  0.246837\n 0.766797  0.460085  0.854147  0.298614  0.579672"
+},
+
+{
     "location": "man/indexing.html#",
     "page": "Indexing",
     "title": "Indexing",
@@ -93,15 +101,31 @@ var documenterSearchIndex = {"docs": [
     "page": "Binary Operations",
     "title": "Binary Operations",
     "category": "section",
-    "text": ""
+    "text": "Pages = [\"binary_operators.md\"]"
 },
 
 {
-    "location": "man/binary_operators.html#Single-contraction-(dot-product)-1",
+    "location": "man/binary_operators.html#Base.LinAlg.dot",
     "page": "Binary Operations",
-    "title": "Single contraction (dot product)",
+    "title": "Base.LinAlg.dot",
+    "category": "Function",
+    "text": "Computes the dot product (single contraction) between two tensors. The symbol ⋅, written \\cdot, is overloaded for single contraction.\n\ndot(::Vec, ::Vec)\ndot(::Vec, ::SecondOrderTensor)\ndot(::SecondOrderTensor, ::Vec)\ndot(::SecondOrderTensor, ::SecondOrderTensor)\n\nExample:\n\njulia> A = rand(Tensor{2, 2})\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 0.590845  0.566237\n 0.766797  0.460085\n\njulia> B = rand(Tensor{1, 2})\n2-element ContMechTensors.Tensor{1,2,Float64,2}:\n 0.794026\n 0.854147\n\njulia> dot(A, B)\n2-element ContMechTensors.Tensor{1,2,Float64,2}:\n 0.952796\n 1.00184\n\njulia> A ⋅ B\n2-element ContMechTensors.Tensor{1,2,Float64,2}:\n 0.952796\n 1.00184\n\n\n\n"
+},
+
+{
+    "location": "man/binary_operators.html#Dot-product-(single-contraction)-1",
+    "page": "Binary Operations",
+    "title": "Dot product (single contraction)",
     "category": "section",
-    "text": "Single contractions or scalar products of a tensor with order n and a tensor with order m gives a tensor with order m + n - 2. The symbol ⋅, written \\cdot, is overloaded for single contraction.julia> A = rand(Tensor{2, 2})\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 0.590845  0.566237\n 0.766797  0.460085\n\njulia> B = rand(Tensor{1, 2})\n2-element ContMechTensors.Tensor{1,2,Float64,2}:\n 0.794026\n 0.854147\n\njulia> dot(A, B)\n2-element ContMechTensors.Tensor{1,2,Float64,2}:\n 0.952796\n 1.00184\n\njulia> A ⋅ B\n2-element ContMechTensors.Tensor{1,2,Float64,2}:\n 0.952796\n 1.00184"
+    "text": "Dot product or single contraction of a tensor of order n and a tensor of order m gives a tensor of order m + n - 2. For example, single contraction between two vectors mathbfb and mathbfc can be written as:a = mathbfb cdot mathbfc Leftrightarrow a = b_i c_iand single contraction between a second order tensor mathbfB and a vector mathbfc:mathbfa = mathbfB cdot mathbfc Leftrightarrow a_i = B_ij c_jdot"
+},
+
+{
+    "location": "man/binary_operators.html#ContMechTensors.dcontract",
+    "page": "Binary Operations",
+    "title": "ContMechTensors.dcontract",
+    "category": "Function",
+    "text": "Computes the double contraction between two tensors. The symbol ⊡, written \\boxdot, is overloaded for double contraction. The reason : is not used is because it does not have the same precedence as multiplication.\n\ndcontract(::SecondOrderTensor, ::SecondOrderTensor)\ndcontract(::SecondOrderTensor, ::FourthOrderTensor)\ndcontract(::FourthOrderTensor, ::SecondOrderTensor)\ndcontract(::FourthOrderTensor, ::FourthOrderTensor)\n\nExample:\n\njulia> A = rand(SymmetricTensor{2, 2});\n\njulia> B = rand(SymmetricTensor{2, 2});\n\njulia> dcontract(A,B)\n1.9732018397544984\n\njulia> A ⊡ B\n1.9732018397544984\n\n\n\n"
 },
 
 {
@@ -109,7 +133,15 @@ var documenterSearchIndex = {"docs": [
     "page": "Binary Operations",
     "title": "Double contraction",
     "category": "section",
-    "text": "Double contractions contracts the two most inner \"legs\" of the tensors. The result of a double contraction between a tensor of order n and a tensor with order m gives a tensor with order m + n - 4. The symbol ⊡, written \\boxdot, is overloaded for double contraction. The reason : is not used is because it does not have the same precedence as multiplication.julia> A = rand(SymmetricTensor{2, 2});\n\njulia> B = rand(SymmetricTensor{2, 2});\n\njulia> dcontract(A,B)\n1.9732018397544984\n\njulia> A ⊡ B\n1.9732018397544984"
+    "text": "Double contractions contracts the two most inner \"legs\" of the tensors. The result of a double contraction between a tensor of order n and a tensor of order m gives a tensor of order m + n - 4. For example, double contraction between two second order tensors mathbfB and mathbfC can be written as:a = mathbfB  mathbfC Leftrightarrow a = B_ij C_ijand double contraction between a fourth order tensor mathsfB and a second order tensor mathbfC:mathbfA = mathsfB  mathbfC Leftrightarrow A_ij = B_ijkl C_kldcontract"
+},
+
+{
+    "location": "man/binary_operators.html#ContMechTensors.otimes",
+    "page": "Binary Operations",
+    "title": "ContMechTensors.otimes",
+    "category": "Function",
+    "text": "Computes the open product between two tensors. The symbol ⊗, written \\otimes, is overloaded for tensor products.\n\notimes(::Vec, ::Vec)\notimes(::SecondOrderTensor, ::SecondOrderTensor)\n\nExample:\n\njulia> A = rand(SymmetricTensor{2, 2});\n\njulia> B = rand(SymmetricTensor{2, 2});\n\njulia> A ⊗ B\n2×2×2×2 ContMechTensors.SymmetricTensor{4,2,Float64,9}:\n[:, :, 1, 1] =\n 0.271839  0.352792\n 0.352792  0.260518\n\n[:, :, 2, 1] =\n 0.469146  0.608857\n 0.608857  0.449607\n\n[:, :, 1, 2] =\n 0.469146  0.608857\n 0.608857  0.449607\n\n[:, :, 2, 2] =\n 0.504668  0.654957\n 0.654957  0.48365\n\n\n\n"
 },
 
 {
@@ -117,7 +149,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Binary Operations",
     "title": "Tensor product (open product)",
     "category": "section",
-    "text": "Tensor products or open product of a tensor with order n and a tensor with order m gives a tensor with order m + n. The symbol ⊗, written \\otimes, is overloaded for tensor products.julia> A = rand(SymmetricTensor{2, 2});\n\njulia> B = rand(SymmetricTensor{2, 2});\n\njulia> A ⊗ B\n2×2×2×2 ContMechTensors.SymmetricTensor{4,2,Float64,9}:\n[:, :, 1, 1] =\n 0.271839  0.352792\n 0.352792  0.260518\n\n[:, :, 2, 1] =\n 0.469146  0.608857\n 0.608857  0.449607\n\n[:, :, 1, 2] =\n 0.469146  0.608857\n 0.608857  0.449607\n\n[:, :, 2, 2] =\n 0.504668  0.654957\n 0.654957  0.48365"
+    "text": "Tensor products or open product of a tensor of order n and a tensor of order m gives a tensor of order m + n.  For example, open product between two vectors mathbfb and mathbfc can be written as:mathbfA = mathbfb otimes mathbfc Leftrightarrow A_ij = b_i c_jand open product between two second order tensors mathbfB and mathbfC:mathsfA = mathbfB otimes mathbfC Leftrightarrow A_ijkl = B_ij C_klotimes"
 },
 
 {
@@ -125,7 +157,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Other operators",
     "title": "Other operators",
     "category": "page",
-    "text": ""
+    "text": "DocTestSetup = quote\n    srand(1234)\n    using ContMechTensors\nend"
 },
 
 {
@@ -133,7 +165,215 @@ var documenterSearchIndex = {"docs": [
     "page": "Other operators",
     "title": "Other operators",
     "category": "section",
-    "text": "For vectors (first order tensors): normFor second order tensors: norm, trace (vol), det, inv, transpose, symmetric, skew, eig, mean defined as trace(s) / 3, and dev defined as s - mean(s) * I.For fourth order tensors: norm, trace, symmetric (same as minorsymmetric), majorsymmetric, transpose (same as minortranspose), majortranspose, permute_indexThere is also a few special functions that can be convenient:For computing F' ⋅ F between two general second order tensors there is tdot(F) which returns a SymmetricTensor.\nFor computing a_k cdot mathbfC_ikjl cdot b_l for two vectors a and b and a fourth order symmetric tensor mathbfC there is dotdot(a, C, b). This function is useful because it is the expression for the tangent matrix in continuum mechanics when the displacements are approximated by scalar base functions."
+    "text": "Pages = [\"other_operators.md\"]"
+},
+
+{
+    "location": "man/other_operators.html#ContMechTensors.tdot",
+    "page": "Other operators",
+    "title": "ContMechTensors.tdot",
+    "category": "Function",
+    "text": "Computes the transpose-dot product (single contraction) between two tensors.\n\ntdot(::Vec, ::Vec)\ntdot(::Vec, ::SecondOrderTensor)\ntdot(::SecondOrderTensor, ::Vec)\ntdot(::SecondOrderTensor, ::SecondOrderTensor)\n\nExample:\n\njulia> A = rand(Tensor{2,2})\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 0.590845  0.566237\n 0.766797  0.460085\n\njulia> B = rand(Tensor{2,2})\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 0.794026  0.200586\n 0.854147  0.298614\n\njulia> tdot(A,B)\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 1.1241    0.347492\n 0.842587  0.250967\n\njulia> A'⋅B\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 1.1241    0.347492\n 0.842587  0.250967\n\n\n\nComputes the transpose-dot of a second order tensor with itself. Returns a SymmetricTensor\n\ntdot(::SecondOrderTensor)\n\nExample:\n\njulia> A = rand(Tensor{2,3})\n3×3 ContMechTensors.Tensor{2,3,Float64,9}:\n 0.590845  0.460085  0.200586\n 0.766797  0.794026  0.298614\n 0.566237  0.854147  0.246837\n\njulia> tdot(A)\n3×3 ContMechTensors.SymmetricTensor{2,3,Float64,6}:\n 1.2577   1.36435   0.48726 \n 1.36435  1.57172   0.540229\n 0.48726  0.540229  0.190334\n\n\n\n"
+},
+
+{
+    "location": "man/other_operators.html#Transpose-dot-1",
+    "page": "Other operators",
+    "title": "Transpose-dot",
+    "category": "section",
+    "text": "The product between the transpose of a tensor with a second tensor.mathbfA = mathbfB^textT cdot mathbfC Leftrightarrow A_ij = B_ki^textT C_kj = B_ik C_kjtdot"
+},
+
+{
+    "location": "man/other_operators.html#Base.LinAlg.norm",
+    "page": "Other operators",
+    "title": "Base.LinAlg.norm",
+    "category": "Function",
+    "text": "Computes the norm of a tensor\n\nnorm(::Vec)\nnorm(::SecondOrderTensor)\nnorm(::FourthOrderTensor)\n\nExample:\n\njulia> A = rand(Tensor{2,3})\n3×3 ContMechTensors.Tensor{2,3,Float64,9}:\n 0.590845  0.460085  0.200586\n 0.766797  0.794026  0.298614\n 0.566237  0.854147  0.246837\n\njulia> norm(A)\n1.7377443667834922\n\n\n\n"
+},
+
+{
+    "location": "man/other_operators.html#Norm-1",
+    "page": "Other operators",
+    "title": "Norm",
+    "category": "section",
+    "text": "The (2)-norm of a tensor is defined for a vector, second order tensor and fourth order tensor asmathbfa = sqrtmathbfa cdot mathbfa Leftrightarrow a_i = sqrta_i a_imathbfA = sqrtmathbfA  mathbfA Leftrightarrow A_ij = sqrtA_ij A_ijmathsfA = sqrtmathsfA  mathsfA Leftrightarrow A_ijkl = sqrtA_ijkl A_ijklnorm"
+},
+
+{
+    "location": "man/other_operators.html#Base.LinAlg.trace",
+    "page": "Other operators",
+    "title": "Base.LinAlg.trace",
+    "category": "Function",
+    "text": "Computes the trace of a second order tensor. The synonym vol can also be used.\n\ntrace(::SecondOrderTensor)\n\nExample:\n\njulia> A = rand(SymmetricTensor{2,3})\n3×3 ContMechTensors.SymmetricTensor{2,3,Float64,6}:\n 0.590845  0.766797  0.566237\n 0.766797  0.460085  0.794026\n 0.566237  0.794026  0.854147\n\njulia> trace(A)\n1.9050765715072775\n\n\n\n"
+},
+
+{
+    "location": "man/other_operators.html#Trace-1",
+    "page": "Other operators",
+    "title": "Trace",
+    "category": "section",
+    "text": "The trace for a second order tensor is defined as the sum of the diagonal elements. This can be written astexttr(mathbfA) = mathbfI  mathbfA Leftrightarrow texttr(A_ij) = A_iitrace"
+},
+
+{
+    "location": "man/other_operators.html#Base.LinAlg.det",
+    "page": "Other operators",
+    "title": "Base.LinAlg.det",
+    "category": "Function",
+    "text": "Computes the determinant of a second order tensor.\n\ndet(::SecondOrderTensor)\n\nExample:\n\njulia> A = rand(SymmetricTensor{2,3})\n3×3 ContMechTensors.SymmetricTensor{2,3,Float64,6}:\n 0.590845  0.766797  0.566237\n 0.766797  0.460085  0.794026\n 0.566237  0.794026  0.854147\n\njulia> det(A)\n-0.1005427219925894\n\n\n\n"
+},
+
+{
+    "location": "man/other_operators.html#Determinant-1",
+    "page": "Other operators",
+    "title": "Determinant",
+    "category": "section",
+    "text": "Determinant for a second order tensor.det"
+},
+
+{
+    "location": "man/other_operators.html#Base.inv",
+    "page": "Other operators",
+    "title": "Base.inv",
+    "category": "Function",
+    "text": "Computes the inverse of a second order tensor.\n\ninv(::SecondOrderTensor)\n\nExample:\n\njulia> A = rand(Tensor{2,3})\n3×3 ContMechTensors.Tensor{2,3,Float64,9}:\n 0.590845  0.460085  0.200586\n 0.766797  0.794026  0.298614\n 0.566237  0.854147  0.246837\n\njulia> inv(A)\n3×3 ContMechTensors.Tensor{2,3,Float64,9}:\n  19.7146   -19.2802    7.30384\n   6.73809  -10.7687    7.55198\n -68.541     81.4917  -38.8361\n\n\n\n"
+},
+
+{
+    "location": "man/other_operators.html#Inverse-1",
+    "page": "Other operators",
+    "title": "Inverse",
+    "category": "section",
+    "text": "Inverse of a second order tensor such thatmathbfA^-1 cdot mathbfA = mathbfIwhere mathbfI is the second order identitiy tensor.inv"
+},
+
+{
+    "location": "man/other_operators.html#Base.transpose",
+    "page": "Other operators",
+    "title": "Base.transpose",
+    "category": "Function",
+    "text": "Computes the transpose of a tensor. For a fourth order tensor, the transpose is the minor transpose\n\ntranspose(::Vec)\ntranspose(::SecondOrderTensor)\ntranspose(::FourthOrderTensor)\n\nExample:\n\njulia> A = rand(Tensor{2,2})\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 0.590845  0.566237\n 0.766797  0.460085\n\njulia> A'\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 0.590845  0.766797\n 0.566237  0.460085\n\n\n\n"
+},
+
+{
+    "location": "man/other_operators.html#ContMechTensors.minortranspose",
+    "page": "Other operators",
+    "title": "ContMechTensors.minortranspose",
+    "category": "Function",
+    "text": "Computes the minor transpose of a fourth order tensor.\n\nminortranspose(::FourthOrderTensor)\n\n\n\n"
+},
+
+{
+    "location": "man/other_operators.html#ContMechTensors.majortranspose",
+    "page": "Other operators",
+    "title": "ContMechTensors.majortranspose",
+    "category": "Function",
+    "text": "Computes the major transpose of a fourth order tensor.\n\nmajortranspose(::FourthOrderTensor)\n\n\n\n"
+},
+
+{
+    "location": "man/other_operators.html#Transpose-1",
+    "page": "Other operators",
+    "title": "Transpose",
+    "category": "section",
+    "text": "Transpose of tensors is defined by changing the order of the tensor's \"legs\". The transpose of a vector/symmetric tensor is the vector/tensor itself. The transpose of a second order tensor can be written as:A_ij^textT = A_jiand for a fourth order tensor the minor transpose can be written asA_ijkl^textt = A_jilkand the major transpose asA_ijkl^textT = A_klijtranspose\nminortranspose\nmajortranspose"
+},
+
+{
+    "location": "man/other_operators.html#ContMechTensors.symmetric",
+    "page": "Other operators",
+    "title": "ContMechTensors.symmetric",
+    "category": "Function",
+    "text": "Computes the symmetric part of a second or fourth order tensor. For a fourth order tensor, the symmetric part is the same as the minor symmetric part. Returns a SymmetricTensor.\n\nsymmetric(::SecondOrderTensor)\nsymmetric(::FourthOrderTensor)\n\nExample:\n\njulia> A = rand(Tensor{2,2})\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 0.590845  0.566237\n 0.766797  0.460085\n\njulia> symmetric(A)\n2×2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:\n 0.590845  0.666517\n 0.666517  0.460085\n\n\n\n"
+},
+
+{
+    "location": "man/other_operators.html#ContMechTensors.minorsymmetric",
+    "page": "Other operators",
+    "title": "ContMechTensors.minorsymmetric",
+    "category": "Function",
+    "text": "Computes the minor symmetric part of a fourth order tensor, returns a SymmetricTensor{4}\n\nminorsymmetric(::FourthOrderTensor)\n\n\n\n"
+},
+
+{
+    "location": "man/other_operators.html#ContMechTensors.majorsymmetric",
+    "page": "Other operators",
+    "title": "ContMechTensors.majorsymmetric",
+    "category": "Function",
+    "text": "Computes the major symmetric part of a fourth order tensor, returns a Tensor{4}\n\nmajorsymmetric(::FourthOrderTensor)\n\n\n\n"
+},
+
+{
+    "location": "man/other_operators.html#Symmetric-1",
+    "page": "Other operators",
+    "title": "Symmetric",
+    "category": "section",
+    "text": "The symmetric part of a second and fourth order tensor is defined by:mathbfA^textsym = frac12(mathbfA + mathbfA^textT) Leftrightarrow A_ij^textsym = frac12(A_ij + A_ji)mathsfA^textsym = frac12(mathsfA + mathsfA^textt) Leftrightarrow A_ijkl^textsym = frac12(A_ijkl + A_jilk)symmetric\nminorsymmetric\nmajorsymmetric"
+},
+
+{
+    "location": "man/other_operators.html#ContMechTensors.skew",
+    "page": "Other operators",
+    "title": "ContMechTensors.skew",
+    "category": "Function",
+    "text": "Computes the skew-symmetric (anti-symmetric) part of a second order tensor, returns a Tensor{2}\n\nskew(::SecondOrderTensor)\n\n\n\n"
+},
+
+{
+    "location": "man/other_operators.html#Skew-symmetric-1",
+    "page": "Other operators",
+    "title": "Skew symmetric",
+    "category": "section",
+    "text": "The skew symmetric part of a second order tensor is defined bymathbfA^skw = frac12(mathbfA - mathbfA^textT) Leftrightarrow A^textskw_ij = frac12(A_ij - A_ji)The skew symmetric part of a symmetric tensor is zero.skew"
+},
+
+{
+    "location": "man/other_operators.html#Base.LinAlg.cross",
+    "page": "Other operators",
+    "title": "Base.LinAlg.cross",
+    "category": "Function",
+    "text": "Computes the cross product between two Vec vectors, returns a Vec{3}. For dimensions 1 and 2 the Vec's are expanded to 3D first. The infix operator × (written \\times) can also be used\n\ncross(::Vec, ::Vec)\n\nExample:\n\njulia> a = rand(Vec{3})\n3-element ContMechTensors.Tensor{1,3,Float64,3}:\n 0.590845\n 0.766797\n 0.566237\n\njulia> b = rand(Vec{3})\n3-element ContMechTensors.Tensor{1,3,Float64,3}:\n 0.460085\n 0.794026\n 0.854147\n\njulia> a × b\n3-element ContMechTensors.Tensor{1,3,Float64,3}:\n  0.20535 \n -0.24415 \n  0.116354\n\n\n\n"
+},
+
+{
+    "location": "man/other_operators.html#Cross-product-1",
+    "page": "Other operators",
+    "title": "Cross product",
+    "category": "section",
+    "text": "The cross product between two vectors is defined asmathbfa = mathbfb times mathbfc Leftrightarrow a_i = epsilon_ijk b_j c_kcross"
+},
+
+{
+    "location": "man/other_operators.html#Base.LinAlg.eig",
+    "page": "Other operators",
+    "title": "Base.LinAlg.eig",
+    "category": "Function",
+    "text": "Computes the eigenvalues and eigenvectors of a symmetric second order tensor.\n\neig(::SymmetricSecondOrderTensor)\n\nExample:\n\njulia> A = rand(SymmetricTensor{2,3})\n3×3 ContMechTensors.SymmetricTensor{2,3,Float64,6}:\n 0.590845  0.766797  0.566237\n 0.766797  0.460085  0.794026\n 0.566237  0.794026  0.854147\n\njulia> eig(A)\n([-0.312033,0.15636,2.06075],\n[0.492843 -0.684993 -0.536554; -0.811724 -0.139855 -0.567049; 0.313385 0.715 -0.624952])\n\n\n\n"
+},
+
+{
+    "location": "man/other_operators.html#Eigenvalues-and-eigenvectors-1",
+    "page": "Other operators",
+    "title": "Eigenvalues and eigenvectors",
+    "category": "section",
+    "text": "The eigenvalues and eigenvectors of a (symmetric) second order tensor, mathbfA can be solved from the eigenvalue problemmathbfA cdot mathbfv_i = lambda_i mathbfv_i qquad i = 1 dots textdimwhere lambda_i are the eigenvalues and mathbfv_i are the corresponding eigenvectors.eig"
+},
+
+{
+    "location": "man/other_operators.html#ContMechTensors.dotdot",
+    "page": "Other operators",
+    "title": "ContMechTensors.dotdot",
+    "category": "Function",
+    "text": "Computes a special dot product between two vectors and a symmetric fourth order tensor such that a_k C_ikjl b_l.\n\ndotdot(::Vec, ::SymmetricFourthOrderTensor, ::Vec)\n\n\n\n"
+},
+
+{
+    "location": "man/other_operators.html#Special-operations-1",
+    "page": "Other operators",
+    "title": "Special operations",
+    "category": "section",
+    "text": "For computing a special dot product between two vectors mathbfa and mathbfb with a fourth order symmetric tensor mathbfC such that a_k C_ikjl b_l there is dotdot(a, C, b). This function is useful because it is the expression for the tangent matrix in continuum mechanics when the displacements are approximated by scalar shape functions.dotdot"
 },
 
 {
@@ -149,7 +389,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Storing tensors",
     "title": "Storing tensors",
     "category": "section",
-    "text": "Even though a user mostly deals with the Tensor{order, dim, T} parameters, the full parameter list for a tensor is actually Tensor{order, dim, T, N} where N is the number of independent elements in the tensor. The reason for this is that the internal storage is a NTuple{N, T}. In order to get good performance when storing tensors in other types it is importatant that the container type is also parametrized on N. For example, when storing one symmetric second order tensor and one unsymmetric tensor, this is the preferred way:immutable Container{dim, T, N, M}\n    sym_tens::SymmetricTensor{2, dim, T, N}\n    tens::Tensor{2, dim, T, M}\nendLeaving out the M and N would lead to bad performance."
+    "text": "Even though a user mostly deals with the Tensor{order, dim, T} parameters, the full parameter list for a tensor is actually Tensor{order, dim, T, N} where N is the number of independent elements in the tensor. The reason for this is that the internal storage is a NTuple{N, T}. In order to get good performance when storing tensors in other types it is importatant that the container type is also parametrized on N. For example, when storing one symmetric second order tensor and one unsymmetric tensor, this is the preferred way:immutable Container{dim, T, N, M}\n    sym_tens::SymmetricTensor{2, dim, T, N}\n    tens::Tensor{2, dim, T, M}\nendLeaving out the M and N would lead to bad performance.tip: Tip\nThe number of independent elements N are already included in the typealias Vec so they can be stored with e.g.immutable VecContainer{dim, T}\n    vec::Vec{dim, T}\nendwithout giving bad performance."
 },
 
 {
