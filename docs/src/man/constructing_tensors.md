@@ -135,9 +135,9 @@ julia> tensor_data = reinterpret(Vec{2, Float64}, data, (5,))
  [0.246837,0.579672]
 ```
 
-The data can also be reinterpreted back to a Julia `array`
+The data can also be reinterpreted back to a Julia `Array`
 
-```
+```jlcon
 julia> data = reinterpret(Float64, tensor_data, (2,5))
 2×5 Array{Float64,2}:
  0.590845  0.566237  0.794026  0.200586  0.246837
