@@ -558,13 +558,14 @@ julia> symmetric(A)
     N = n_components(SymmetricTensor{2, dim})
     rows = Int(div(sqrt(1 + 8*N), 2))
     exps = Expr[]
+    weight = T(1/2)
     for row in 1:rows, col in row:rows
         if row == col
             push!(exps, :(t.data[$(compute_index(Tensor{2, dim}, row, col))]))
         else
             I = compute_index(Tensor{2, dim}, row, col)
             J = compute_index(Tensor{2, dim}, col, row)
-            push!(exps, :(0.5 * (t.data[$I] + t.data[$J])))
+            push!(exps, :($weight * (t.data[$I] + t.data[$J])))
         end
     end
     exp = Expr(:tuple, exps...)
@@ -586,6 +587,7 @@ minorsymmetric(::FourthOrderTensor)
     M = n_components(SymmetricTensor{4,dim})
     rows = Int(N^(1/4))
     exps = Expr[]
+    weight = T(1/4)
     for k in 1:rows, l in k:rows, i in 1:rows, j in i:rows
         if i == j && k == l
             push!(exps, :(t.data[$(compute_index(Tensor{4, dim}, i, j, k, l))]))
@@ -594,7 +596,7 @@ minorsymmetric(::FourthOrderTensor)
             J = compute_index(Tensor{4, dim}, j, i, k, l)
             K = compute_index(Tensor{4, dim}, i, j, k, l)
             L = compute_index(Tensor{4, dim}, i, j, l, k)
-            push!(exps, :(0.25 * (t.data[$I] + t.data[$J] + t.data[$K] + t.data[$L])))
+            push!(exps, :($weight * (t.data[$I] + t.data[$J] + t.data[$K] + t.data[$L])))
         end
     end
     exp = Expr(:tuple, exps...)
@@ -619,13 +621,14 @@ majorsymmetric(::FourthOrderTensor)
     N = n_components(Tensor{4, dim})
     rows = Int(N^(1/4))
     exps = Expr[]
+    weight = T(1/2)
     for l in 1:rows, k in 1:rows, j in 1:rows, i in 1:rows
         if i == j == k == l || i == k && j == l
             push!(exps, :(t.data[$(compute_index(get_base(t), i, j, k, l))]))
         else
             I = compute_index(get_base(t), i, j, k, l)
             J = compute_index(get_base(t), k, l, i, j)
-            push!(exps, :(0.5 * (t.data[$I] + t.data[$J])))
+            push!(exps, :($weight * (t.data[$I] + t.data[$J])))
         end
     end
     exp = Expr(:tuple, exps...)
@@ -643,8 +646,8 @@ Computes the skew-symmetric (anti-symmetric) part of a second order tensor, retu
 skew(::SecondOrderTensor)
 ```
 """
-@inline skew(S1::Tensor{2}) = 0.5*(S1 - S1.')
-@inline skew{dim,T}(S1::SymmetricTensor{2,dim,T}) = zero(Tensor{2,dim,T})
+@inline skew{dim,T}(S1::Tensor{2, dim, T}) = T(1/2) * (S1 - S1.')
+@inline skew{dim,T}(S1::SymmetricTensor{2, dim, T}) = zero(Tensor{2, dim, T})
 
 
 """
