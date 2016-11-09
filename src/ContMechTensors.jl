@@ -7,8 +7,6 @@ import Base.@pure
 using StaticArrays
 import StaticArrays.setindex
 
-immutable InternalError <: Exception end
-
 export AbstractTensor, SymmetricTensor, Tensor, Vec, FourthOrderTensor, SecondOrderTensor
 
 export otimes, ⊗, ⊡, dcontract, dev, vol, symmetric, skew, minorsymmetric, majorsymmetric
@@ -16,6 +14,10 @@ export minortranspose, majortranspose, isminorsymmetric, ismajorsymmetric
 export setindex, tdot, dotdot
 
 @deprecate extract_components(tensor) Array(tensor)
+
+const SYMMETRIC_ORDER_ERROR_STRING = "only tensors of order 2, 4 supported for symmetric tensors"
+const ORDER_ERROR_STRING = "only tensors of order 1, 2, 4 supported"
+const DIMENSION_ERROR_STRING = "only tensors of dimension 1, 2, 3 supported"
 
 #########
 # Types #
@@ -25,11 +27,21 @@ abstract AbstractTensor{order, dim, T <: Real} <: AbstractArray{T, order}
 
 immutable SymmetricTensor{order, dim, T <: Real, M} <: AbstractTensor{order, dim, T}
    data::SVector{M, T}
+   function SymmetricTensor(data::SVector{M, T})
+        (order == 2 || order == 4) || throw(ArgumentError(SYMMETRIC_ORDER_ERROR_STRING))
+        (dim == 1 || dim == 2 || dim == 3) || throw(ArgumentError(DIMENSION_ERROR_STRING))
+        new(data)
+    end
 end
 (::Type{SymmetricTensor{order, dim, T, M}}){order, dim, T <: Real, T2, M}(t::NTuple{M, T2}) = SymmetricTensor{order, dim, T, M}(SVector{M,T}(t))
 
 immutable Tensor{order, dim, T <: Real, M} <: AbstractTensor{order, dim, T}
    data::SVector{M, T}
+   function Tensor(data::SVector{M, T})
+        (order == 1 || order == 2 || order == 4) || throw(ArgumentError(ORDER_ERROR_STRING))
+        (dim == 1 || dim == 2 || dim == 3) || throw(ArgumentError(DIMENSION_ERROR_STRING))
+        new(data)
+    end
 end
 (::Type{Tensor{order, dim, T, M}}){order, dim, T <: Real, T2, M}(t::NTuple{M, T2}) = Tensor{order, dim, T, M}(SVector{M,T}(t))
 ###############
@@ -94,6 +106,11 @@ end
     return n*n
 end
 
+# Fallback
+@pure function n_components{order, dim}(::Type{SymmetricTensor{order, dim}})
+     throw(ArgumentError(SYMMETRIC_ORDER_ERROR_STRING))
+end
+
 @pure n_components{order, dim}(::Type{Tensor{order, dim}}) = dim^order
 
 @pure get_main_type{order, dim, T, M}(::Type{SymmetricTensor{order, dim, T, M}}) = SymmetricTensor
@@ -154,11 +171,11 @@ end
     # Check for valid orders
     n = n_components(Tensor{order,dim})
     if !(order in (1,2,4))
-        throw(ArgumentError("Tensor only supported for order 1, 2, 4"))
+        throw(ArgumentError(ORDER_ERROR_STRING))
     end
     return quote
         if length(data) != $n
-            throw(ArgumentError("Wrong number of tuple elements, expected $($n), got $(length(data))"))
+            throw(ArgumentError("wrong number of tuple elements, expected $($n), got $(length(data))"))
         end
         Tensor{order, dim, eltype(data), $n}(to_tuple(NTuple{$n}, data))
     end
@@ -169,11 +186,11 @@ end
     n = n_components(Tensor{order,dim})
     m = n_components(SymmetricTensor{order,dim})
     if !(order in (2,4))
-        throw(ArgumentError("SymmetricTensor only supported for order 2, 4"))
+        throw(ArgumentError(SYMMETRIC_ORDER_ERROR_STRING))
     end
     return quote
         if length(data) != $n && length(data) != $m
-            throw(ArgumentError("Wrong number of tuple elements, expected $($n) or $($m), got $(length(data))"))
+            throw(ArgumentError("wrong number of tuple elements, expected $($n) or $($m), got $(length(data))"))
         end
         if length(data) == $m
             return SymmetricTensor{order, dim, eltype(data), $m}(to_tuple(NTuple{$m}, data))
@@ -186,12 +203,12 @@ end
 @generated function (Tt::Union{Type{Tensor{order, dim}}, Type{SymmetricTensor{order, dim}}}){order, dim}(f::Function)
     # Check for valid orders
     if !(order in (1,2,4))
-        throw(ArgumentError("Only tensors of order 1, 2, 4 supported"))
+        throw(ArgumentError(ORDER_ERROR_STRING))
     end
 
     # Storage format is of rank 1 for vectors and order / 2 for other tensors
     if order == 1 && Tt <: SymmetricTensor
-        throw(ArgumentError("SymmetricTensor only supported for order 2, 4"))
+        throw(ArgumentError(SYMMETRIC_ORDER_ERROR_STRING))
     end
 
     n = n_components(get_type(Tt))
