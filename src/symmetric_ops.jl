@@ -193,7 +193,7 @@ end
 # Open product #
 ################
 
-function otimes{dim, T1, T2, M}(S1::SymmetricTensor{2, dim, T1, M}, S2::SymmetricTensor{2, dim, T2, M})
+@inline function otimes{dim, T1, T2, M}(S1::SymmetricTensor{2, dim, T1, M}, S2::SymmetricTensor{2, dim, T2, M})
     N = n_components(SymmetricTensor{4, dim})
     Tv = typeof(zero(T1) * zero(T2))
     SymmetricTensor{4, dim, Tv, N}(tovector(S1) * tovector(S2)')
