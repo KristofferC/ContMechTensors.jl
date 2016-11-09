@@ -7,6 +7,30 @@ function inline_body(T)
     end
 end
 
+@generated function mat_get_index{N}(t::NTuple{N}, i::Int, j::Int)
+    rows = Int(sqrt(N))
+    return quote
+        $(Expr(:meta, :inline))
+        @inbounds v = t[(j-1) * $rows + i]
+        return v
+    end
+end
+
+function tupexpr_mat(f,N)
+    ex = Expr(:tuple, [f(i,j) for i=1:Int(sqrt(N)), j = 1:Int(sqrt(N))]...)
+    return quote
+        @inbounds return $ex
+    end
+end
+
+function tupexpr(f,N)
+    ex = Expr(:tuple, [f(i) for i=1:Int(N)]...)
+    return quote
+        @inbounds return $ex
+    end
+end
+
+
 tensor_create{order, dim}(::Type{Tensor{order, dim}}, f) = tensor_create(Tensor{order, dim, Float64}, f)
 function tensor_create{order, dim, T}(::Type{Tensor{order, dim, T}}, f)
     if order == 1
