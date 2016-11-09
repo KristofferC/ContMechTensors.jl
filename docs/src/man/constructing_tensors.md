@@ -87,7 +87,7 @@ julia> SymmetricTensor{2,2}((1.0,2.0,3.0))
  2.0  3.0
 ```
 
-## From a function
+## [From a function](@id function_index)
 
 A tensor can be created from a function `f(indices...) -> v` which maps a set of indices to a value. The number of arguments of the function should be equal to the order of the tensor.
 
@@ -97,6 +97,8 @@ julia> SymmetricTensor{2,2}((i,j) -> i + j)
  2  3
  3  4
 ```
+
+For symmetric tensors, the function is only called for the lower triangular part.
 
 ## Diagonal tensors
 

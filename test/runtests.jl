@@ -94,6 +94,8 @@ for T in (Float32, Float64)
                         @test vec[i] ≈ data[i]
                     end
                 end
+                @test vec[:] == vec
+                @test typeof(vec[:]) <: Vec{dim, T}
             elseif order == 2
                 data = rand(T, dim, dim)
                 symdata = data + data'
