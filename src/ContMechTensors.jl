@@ -96,9 +96,6 @@ end
 
 @pure n_components{order, dim}(::Type{Tensor{order, dim}}) = dim^order
 
-@pure is_always_sym{dim, T}(::Type{Tensor{dim, T}}) = false
-@pure is_always_sym{dim, T}(::Type{SymmetricTensor{dim, T}}) = true
-
 @pure get_main_type{order, dim, T, M}(::Type{SymmetricTensor{order, dim, T, M}}) = SymmetricTensor
 @pure get_main_type{order, dim, T, M}(::Type{Tensor{order, dim, T, M}}) = Tensor
 @pure get_main_type{order, dim, T}(::Type{SymmetricTensor{order, dim, T}}) = SymmetricTensor
@@ -224,13 +221,13 @@ end
 # Num, tensor. *, /
 for TensorType in (SymmetricTensor, Tensor)
     @eval begin
-        Base.:*{order, dim, T, N}(n::Number, t::$TensorType{order, dim, T, N}) = $TensorType{order, dim, T, N}(n * tovector(t))
-        Base.:*{order, dim, T, N}(t::$TensorType{order, dim, T, N}, n::Number) = $TensorType{order, dim, T, N}(tovector(t) * n)
-        Base.:/{order, dim, T, N}(t::$TensorType{order, dim, T, N}, n::Number) = $TensorType{order, dim, T, N}(tovector(t) / n)
+        @inline Base.:*{order, dim, T, N}(n::Number, t::$TensorType{order, dim, T, N}) = $TensorType{order, dim, T, N}(n * tovector(t))
+        @inline Base.:*{order, dim, T, N}(t::$TensorType{order, dim, T, N}, n::Number) = $TensorType{order, dim, T, N}(tovector(t) * n)
+        @inline Base.:/{order, dim, T, N}(t::$TensorType{order, dim, T, N}, n::Number) = $TensorType{order, dim, T, N}(tovector(t) / n)
 
         # Unary -, +
-        Base.:-{order, dim, T, N}(t::$TensorType{order, dim, T, N}) = $TensorType{order, dim, T, N}(-tovector(t))
-        Base.:+{order, dim, T, N}(t::$TensorType{order, dim, T, N}) = $TensorType{order, dim, T, N}(+tovector(t))
+        @inline Base.:-{order, dim, T, N}(t::$TensorType{order, dim, T, N}) = $TensorType{order, dim, T, N}(-tovector(t))
+        @inline Base.:+{order, dim, T, N}(t::$TensorType{order, dim, T, N}) = $TensorType{order, dim, T, N}(+tovector(t))
     end
 end
 
@@ -238,7 +235,7 @@ end
 for (op) in (:-, :+, :.*, :./, :.-, :.+)
     for TensorType in (SymmetricTensor, Tensor)
         @eval begin
-            function Base.$op{order, dim, T1, T2, N}(t1::$TensorType{order, dim, T1, N}, t2::$TensorType{order, dim, T2, N})
+            @inline function Base.$op{order, dim, T1, T2, N}(t1::$TensorType{order, dim, T1, N}, t2::$TensorType{order, dim, T2, N})
                 $TensorType{order, dim, promote_type(T1, T2), N}($op(tovector(t1), tovector(t2)))
             end
         end
@@ -252,7 +249,7 @@ end
 for op in (:zero, :rand)
     for TensorType in (SymmetricTensor, Tensor)
         @eval begin
-            function Base.$op{order, dim, T}(Tt::Type{$TensorType{order, dim, T}})
+            @inline function Base.$op{order, dim, T}(Tt::Type{$TensorType{order, dim, T}})
                 N = n_components($TensorType{order, dim})
                 return $TensorType{order, dim, T, N}($op(SVector{N, T}))
             end
@@ -264,7 +261,7 @@ end
 for op in (:zero, :rand, :one)
     for TensorType in (SymmetricTensor, Tensor)
         @eval begin
-            Base.$op{order, dim}(Tt::Type{$TensorType{order, dim}}) = Base.$op($TensorType{order, dim, Float64})
+            @inline Base.$op{order, dim}(Tt::Type{$TensorType{order, dim}}) = Base.$op($TensorType{order, dim, Float64})
 
             @inline function Base.$op{order, dim, T, M}(Tt::Type{$(TensorType){order, dim, T, M}})
                 $op($(TensorType){order, dim, T})
@@ -278,7 +275,7 @@ for op in (:zero, :rand, :one)
             $op(Vec{dim, Float64})
         end
 
-        function Base.$op(t::AllTensors)
+        @inline function Base.$op(t::AllTensors)
             $op(typeof(t))
         end
     end

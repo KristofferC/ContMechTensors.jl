@@ -44,16 +44,16 @@ end
 const ⊡ = dcontract
 
 # Promotion
-dcontract{dim}(S1::Tensor{2, dim}, S2::SymmetricTensor{2, dim}) = dcontract(promote(S1, S2)...)
-dcontract{dim}(S1::Tensor{4, dim}, S2::SymmetricTensor{2, dim}) = dcontract(S1, convert(Tensor, S2))
-dcontract{dim}(S1::Tensor{2, dim}, S2::SymmetricTensor{4, dim}) = dcontract(S1, convert(Tensor, S2))
+@inline dcontract{dim}(S1::Tensor{2, dim}, S2::SymmetricTensor{2, dim}) = dcontract(promote(S1, S2)...)
+@inline dcontract{dim}(S1::Tensor{4, dim}, S2::SymmetricTensor{2, dim}) = dcontract(S1, convert(Tensor, S2))
+@inline dcontract{dim}(S1::Tensor{2, dim}, S2::SymmetricTensor{4, dim}) = dcontract(S1, convert(Tensor, S2))
 
-dcontract{dim}(S1::SymmetricTensor{2, dim}, S2::Tensor{2, dim}) = dcontract(promote(S1, S2)...)
-dcontract{dim}(S1::SymmetricTensor{4, dim}, S2::Tensor{2, dim}) = dcontract(convert(Tensor, S1), S2)
-dcontract{dim}(S1::SymmetricTensor{2, dim}, S2::Tensor{4, dim}) = dcontract(convert(Tensor, S1), S2)
+@inline dcontract{dim}(S1::SymmetricTensor{2, dim}, S2::Tensor{2, dim}) = dcontract(promote(S1, S2)...)
+@inline dcontract{dim}(S1::SymmetricTensor{4, dim}, S2::Tensor{2, dim}) = dcontract(convert(Tensor, S1), S2)
+@inline dcontract{dim}(S1::SymmetricTensor{2, dim}, S2::Tensor{4, dim}) = dcontract(convert(Tensor, S1), S2)
 
-dcontract{dim}(S1::Tensor{4, dim}, S2::SymmetricTensor{4, dim}) = dcontract(promote(S1, S2)...)
-dcontract{dim}(S1::SymmetricTensor{4, dim}, S2::Tensor{4, dim}) = dcontract(promote(S1, S2)...)
+@inline dcontract{dim}(S1::Tensor{4, dim}, S2::SymmetricTensor{4, dim}) = dcontract(promote(S1, S2)...)
+@inline dcontract{dim}(S1::SymmetricTensor{4, dim}, S2::Tensor{4, dim}) = dcontract(promote(S1, S2)...)
 
 
 """
@@ -117,13 +117,13 @@ julia> A ⊗ B
  0.654957  0.48365
 ```
 """
-function otimes{dim, T1, T2, M}(S1::Tensor{2, dim, T1, M}, S2::Tensor{2, dim, T2, M})
+@inline function otimes{dim, T1, T2, M}(S1::Tensor{2, dim, T1, M}, S2::Tensor{2, dim, T2, M})
     N = n_components(Tensor{4, dim})
     Tv = typeof(zero(T1)*zero(T2))
     Tensor{4, dim, Tv, N}(tovector(S1) * tovector(S2)')
 end
 
-function otimes{dim, T1, T2}(v1::Vec{dim, T1}, v2::Vec{dim, T2})
+@inline function otimes{dim, T1, T2}(v1::Vec{dim, T1}, v2::Vec{dim, T2})
     N = n_components(Tensor{2, dim})
     Tv = typeof(zero(T1)*zero(T2))
     Tensor{2, dim, Tv, N}(tovector(v1) * tovector(v2)')
@@ -132,8 +132,8 @@ end
 const ⊗ = otimes
 
 # Promotion
-otimes{dim}(S1::SymmetricTensor{2, dim}, S2::Tensor{2, dim}) = otimes(promote(S1, S2)...)
-otimes{dim}(S1::Tensor{2, dim}, S2::SymmetricTensor{2, dim}) = otimes(promote(S1, S2)...)
+@inline otimes{dim}(S1::SymmetricTensor{2, dim}, S2::Tensor{2, dim}) = otimes(promote(S1, S2)...)
+@inline otimes{dim}(S1::Tensor{2, dim}, S2::SymmetricTensor{2, dim}) = otimes(promote(S1, S2)...)
 
 """
 Computes the dot product (single contraction) between two tensors.
