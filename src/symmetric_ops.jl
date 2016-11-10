@@ -43,7 +43,7 @@ end
          data2 = get_data(S1)
          data4 = get_data(S2)
          @inbounds r = $exps
-         SymmetricTensor{2, dim, $Tv, M}(r)
+         SymmetricTensor{2, dim}(r)
     end
 end
 
@@ -69,7 +69,7 @@ end
          data2 = get_data(S2)
          data4 = get_data(S1)
          @inbounds r = $exps
-         SymmetricTensor{2, dim, $Tv, M}(r)
+         SymmetricTensor{2, dim}(r)
     end
 end
 
@@ -94,7 +94,7 @@ end
          data2 = get_data(S2)
          data1 = get_data(S1)
          @inbounds r = $exps
-         SymmetricTensor{4, dim, $Tv, M}(r)
+         SymmetricTensor{4, dim}(r)
     end
 end
 
@@ -118,7 +118,7 @@ end
     quote
          $(Expr(:meta, :inline))
          @inbounds r = $exps
-         Vec{dim,$Tv}(r)
+         Vec{dim}(r)
     end
 end
 @inline Base.dot{dim, T}(v2::Vec{dim, T}, S1::SymmetricTensor{2, dim, T}) = dot(S1, v2)
@@ -133,19 +133,19 @@ end
     @code :(dinv = 1 / det(t))
     @code :(v = get_data(t))
     if dim == 1
-        @code :(return  typeof(t)((dinv,)))
+        @code :(return get_base(typeof(t))((dinv,)))
     elseif dim == 2
-        @code :( return typeof(t)((v[$(idx(2,2))] * dinv, -v[$(idx(2,1))] * dinv,
-                                   v[$(idx(1,1))] * dinv)))
+        @code :(return get_base(typeof(t))((v[$(idx(2,2))] * dinv, -v[$(idx(2,1))] * dinv,
+                                            v[$(idx(1,1))] * dinv)))
     else
-        @code :(return typeof(t)((  (v[$(idx(2,2))]*v[$(idx(3,3))] - v[$(idx(2,3))]*v[$(idx(3,2))]) * dinv,
-                                   -(v[$(idx(2,1))]*v[$(idx(3,3))] - v[$(idx(2,3))]*v[$(idx(3,1))]) * dinv,
-                                    (v[$(idx(2,1))]*v[$(idx(3,2))] - v[$(idx(2,2))]*v[$(idx(3,1))]) * dinv,
+        @code :(return get_base(typeof(t))(( (v[$(idx(2,2))]*v[$(idx(3,3))] - v[$(idx(2,3))]*v[$(idx(3,2))]) * dinv,
+                                            -(v[$(idx(2,1))]*v[$(idx(3,3))] - v[$(idx(2,3))]*v[$(idx(3,1))]) * dinv,
+                                             (v[$(idx(2,1))]*v[$(idx(3,2))] - v[$(idx(2,2))]*v[$(idx(3,1))]) * dinv,
 
-                                    (v[$(idx(1,1))]*v[$(idx(3,3))] - v[$(idx(1,3))]*v[$(idx(3,1))]) * dinv,
-                                   -(v[$(idx(1,1))]*v[$(idx(3,2))] - v[$(idx(1,2))]*v[$(idx(3,1))]) * dinv,
+                                             (v[$(idx(1,1))]*v[$(idx(3,3))] - v[$(idx(1,3))]*v[$(idx(3,1))]) * dinv,
+                                            -(v[$(idx(1,1))]*v[$(idx(3,2))] - v[$(idx(1,2))]*v[$(idx(3,1))]) * dinv,
 
-                                    (v[$(idx(1,1))]*v[$(idx(2,2))] - v[$(idx(1,2))]*v[$(idx(2,1))]) * dinv)))
+                                             (v[$(idx(1,1))]*v[$(idx(2,2))] - v[$(idx(1,2))]*v[$(idx(2,1))]) * dinv)))
     end
 end
 
@@ -184,7 +184,7 @@ end
     return quote
         $(Expr(:meta, :inline))
         tr = trace(S)
-        SymmetricTensor{2, dim, $Tv, M}($exp)
+        SymmetricTensor{2, dim}($exp)
     end
 end
 
@@ -196,7 +196,7 @@ end
 @inline function otimes{dim, T1, T2, M}(S1::SymmetricTensor{2, dim, T1, M}, S2::SymmetricTensor{2, dim, T2, M})
     N = n_components(SymmetricTensor{4, dim})
     Tv = typeof(zero(T1) * zero(T2))
-    SymmetricTensor{4, dim, Tv, N}(tovector(S1) * tovector(S2)')
+    SymmetricTensor{4, dim}(tovector(S1) * tovector(S2)')
 end
 
 """
@@ -268,6 +268,6 @@ dotdot(::Vec, ::SymmetricFourthOrderTensor, ::Vec)
     return quote
         $(Expr(:meta, :inline))
         @inbounds r = $exps
-        Tensor{2, dim, $Tv, $N}(r)
+        Tensor{2, dim}(r)
     end
 end

@@ -61,9 +61,9 @@ end
     ex3 = Expr(:tuple, [:(get_data(S)[$(idx2(i,3))]) for i in 1:dim]...)
     return quote
         @boundscheck checkbounds(S,Colon(),j)
-        if     j == 1 return Vec{dim, T}($ex1)
-        elseif j == 2 return Vec{dim, T}($ex2)
-        else          return Vec{dim, T}($ex3)
+        if     j == 1 return Vec{dim}($ex1)
+        elseif j == 2 return Vec{dim}($ex2)
+        else          return Vec{dim}($ex3)
         end
     end
 end
@@ -74,9 +74,9 @@ end
     ex3 = Expr(:tuple, [:(get_data(S)[$(idx2(3,j))]) for j in 1:dim]...)
     return quote
         @boundscheck checkbounds(S,i,Colon())
-        if     i == 1 return Vec{dim, T}($ex1)
-        elseif i == 2 return Vec{dim, T}($ex2)
-        else          return Vec{dim, T}($ex3)
+        if     i == 1 return Vec{dim}($ex1)
+        elseif i == 2 return Vec{dim}($ex2)
+        else          return Vec{dim}($ex3)
         end
     end
 end

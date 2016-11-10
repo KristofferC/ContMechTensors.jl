@@ -80,7 +80,7 @@ end
     return quote
         $(Expr(:meta, :inline))
         v = $exp
-        Tensor{order, dim1, T1, $N}(v)
+        Tensor{order, dim1}(v)
     end
 end
 
@@ -109,7 +109,7 @@ end
     return quote
         $(Expr(:meta, :inline))
         v = $exp
-        SymmetricTensor{order, dim1, T1, $N}(v)
+        SymmetricTensor{order, dim1}(v)
     end
 end
 
@@ -151,7 +151,7 @@ end
     return quote
             $(Expr(:meta, :inline))
             v = $exp
-            Tensor{order, dim, promote_type(T1, T2), M1}(v)
+            Tensor{order, dim}(v)
         end
 end
 
@@ -218,7 +218,7 @@ Base.issymmetric(::SymmetricTensors) = true
     return quote
             $(Expr(:meta, :inline))
             if issymmetric(t)
-                return SymmetricTensor{2, dim, promote_type(T1, T2), M1}($exp)
+                return SymmetricTensor{2, dim}($exp)
             else
                 throw(InexactError())
             end
@@ -236,7 +236,7 @@ end
     return quote
             $(Expr(:meta, :inline))
             if issymmetric(t)
-                return SymmetricTensor{4, dim, promote_type(T1, T2), M1}($exp)
+                return SymmetricTensor{4, dim}($exp)
             else
                 throw(InexactError())
             end

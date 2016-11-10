@@ -25,8 +25,11 @@ abstract AbstractTensor{order, dim, T <: Real} <: AbstractArray{T, order}
 immutable SymmetricTensor{order, dim, T <: Real, M} <: AbstractTensor{order, dim, T}
    data::SVector{M, T}
 end
-# Tuple constructor
+# Tuple constructors
 (::Type{SymmetricTensor{order, dim}}){order, dim, T <: Real, M}(t::NTuple{M, T}) = SymmetricTensor{order, dim}(SVector{M,T}(t))
+(::Type{SymmetricTensor{order, dim, T1}}){order, dim, T1 <: Real, T2 <: Real, M}(t::NTuple{M, T2}) = SymmetricTensor{order, dim}(SVector{M,T1}(t))
+(::Type{SymmetricTensor{order, dim, T1, M}}){order, dim, T1 <: Real, T2 <: Real, M}(t::NTuple{M, T2}) = SymmetricTensor{order, dim}(SVector{M,T1}(t))
+
 
 # SVector constructors
 (::Type{SymmetricTensor{order, dim}}){order, dim, T <: Real, M}(t::SVector{M, T}) = throw(ArgumentError("error")) # Fallback
@@ -43,8 +46,11 @@ immutable Tensor{order, dim, T <: Real, M} <: AbstractTensor{order, dim, T}
    data::SVector{M, T}
 end
 
-# Tuple constructor
+# Tuple constructors
 (::Type{Tensor{order, dim}}){order, dim, T <: Real, M}(t::NTuple{M, T}) = Tensor{order, dim}(SVector{M,T}(t))
+(::Type{Tensor{order, dim, T1}}){order, dim, T1 <: Real, T2 <: Real, M}(t::NTuple{M, T2}) = Tensor{order, dim}(SVector{M,T1}(t))
+(::Type{Tensor{order, dim, T1, M}}){order, dim, T1 <: Real, T2 <: Real, M}(t::NTuple{M, T2}) = Tensor{order, dim}(SVector{M,T1}(t))
+
 
 # SVector constructors
 (::Type{Tensor{order, dim}}){order, dim, T <: Real, M}(t::SVector{M, T}) = throw(ArgumentError("error")) # Fallback
@@ -205,7 +211,7 @@ end
             throw(ArgumentError("Wrong number of tuple elements, expected $($n) or $($m), got $(length(data))"))
         end
         if length(data) == $m
-            return SymmetricTensor{order, dim, eltype(data), $m}(to_tuple(NTuple{$m}, data))
+            return SymmetricTensor{order, dim}(to_tuple(NTuple{$m}, data))
         end
         S = Tensor{order, dim}(to_tuple(NTuple{$n}, data))
         return convert(SymmetricTensor{order, dim}, S)
@@ -239,8 +245,9 @@ end
 
 function (Tt::Union{Type{Tensor{order, dim, T}}, Type{SymmetricTensor{order, dim, T}}}){order, dim, T}(f_or_data)
     t1 = get_main_type(Tt){order, dim}(f_or_data)
-    return convert(get_main_type(Tt){order, dim}, t1)
+    return convert(get_main_type(Tt){order, dim, T}, t1)
 end
+
 
 
 ###############
