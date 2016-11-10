@@ -93,21 +93,18 @@ end
 @pure n_components{order, dim}(::Type{Tensor{order, dim}}) = dim^order
 
 
-@pure get_main_type{order, dim, T, M}(::Type{SymmetricTensor{order, dim, T, M}}) = SymmetricTensor
-@pure get_main_type{order, dim, T, M}(::Type{Tensor{order, dim, T, M}}) = Tensor
-@pure get_main_type{order, dim, T}(::Type{SymmetricTensor{order, dim, T}}) = SymmetricTensor
-@pure get_main_type{order, dim, T}(::Type{Tensor{order, dim, T}}) = Tensor
-@pure get_main_type{order, dim}(::Type{SymmetricTensor{order, dim}}) = SymmetricTensor
-@pure get_main_type{order, dim}(::Type{Tensor{order, dim}}) = Tensor
-
 @pure get_base{order, dim, T, M}(::Type{SymmetricTensor{order, dim, T, M}}) = SymmetricTensor{order, dim}
+@pure get_base{order, dim, T}(::Type{SymmetricTensor{order, dim, T}}) = SymmetricTensor{order, dim}
+@pure get_base{order, dim}(::Type{SymmetricTensor{order, dim}}) = SymmetricTensor{order, dim}
 @pure get_base{order, dim, T, M}(::Type{Tensor{order, dim, T, M}}) = Tensor{order, dim}
+@pure get_base{order, dim, T}(::Type{Tensor{order, dim, T}}) = Tensor{order, dim}
+@pure get_base{order, dim}(::Type{Tensor{order, dim}}) = Tensor{order, dim}
+
 
 
 ############################
 # Abstract Array interface #
 ############################
-
 Base.linearindexing{T <: SymmetricTensor}(::Type{T}) = Base.LinearSlow()
 Base.linearindexing{T <: Tensor}(::Type{T}) = Base.LinearFast()
 
@@ -117,7 +114,6 @@ get_type{X}(::Type{Type{X}}) = X
 ########
 # Size #
 ########
-
 Base.size{dim}(::Vec{dim}) = (dim,)
 Base.size{dim}(::SecondOrderTensor{dim}) = (dim, dim)
 Base.size{dim}(::FourthOrderTensor{dim}) = (dim, dim, dim, dim)
@@ -208,19 +204,19 @@ end
 
     # Validate that the input array has the correct number of elements.
     if order == 1
-        exp = tensor_create(get_main_type(get_type(Tt)){order, dim}, (i) -> :(f($i)))
+        exp = tensor_create(get_base(get_type(Tt)), (i) -> :(f($i)))
     elseif order == 2
-        exp = tensor_create(get_main_type(get_type(Tt)){order, dim}, (i,j) -> :(f($i, $j)))
+        exp = tensor_create(get_base(get_type(Tt)), (i,j) -> :(f($i, $j)))
     elseif order == 4
-        exp = tensor_create(get_main_type(get_type(Tt)){order, dim}, (i,j,k,l) -> :(f($i, $j, $k, $l)))
+        exp = tensor_create(get_base(get_type(Tt)), (i,j,k,l) -> :(f($i, $j, $k, $l)))
     end
 
-    return :(get_main_type(Tt){order, dim}($exp))
+    return :(get_base(Tt)($exp))
 end
 
 function (Tt::Union{Type{Tensor{order, dim, T}}, Type{SymmetricTensor{order, dim, T}}}){order, dim, T}(f_or_data)
-    t1 = get_main_type(Tt){order, dim}(f_or_data)
-    return convert(get_main_type(Tt){order, dim, T}, t1)
+    t1 = get_base(Tt)(f_or_data)
+    return convert(Tt, t1)
 end
 
 ###############
