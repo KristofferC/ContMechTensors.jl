@@ -25,12 +25,42 @@ abstract AbstractTensor{order, dim, T <: Real} <: AbstractArray{T, order}
 immutable SymmetricTensor{order, dim, T <: Real, M} <: AbstractTensor{order, dim, T}
    data::SVector{M, T}
 end
-(::Type{SymmetricTensor{order, dim, T, M}}){order, dim, T <: Real, T2, M}(t::NTuple{M, T2}) = SymmetricTensor{order, dim, T, M}(SVector{M,T}(t))
+# Tuple constructor
+(::Type{SymmetricTensor{order, dim}}){order, dim, T <: Real, M}(t::NTuple{M, T}) = SymmetricTensor{order, dim}(SVector{M,T}(t))
+
+# SVector constructors
+(::Type{SymmetricTensor{order, dim}}){order, dim, T <: Real, M}(t::SVector{M, T}) = throw(ArgumentError("error")) # Fallback
+
+(::Type{SymmetricTensor{2, 1}}){T <: Real}(t::SVector{1, T}) = SymmetricTensor{2, 1, T, 1}(t)
+(::Type{SymmetricTensor{2, 2}}){T <: Real}(t::SVector{3, T}) = SymmetricTensor{2, 2, T, 3}(t)
+(::Type{SymmetricTensor{2, 3}}){T <: Real}(t::SVector{6, T}) = SymmetricTensor{2, 3, T, 6}(t)
+
+(::Type{SymmetricTensor{4, 1}}){T <: Real}(t::SVector{1, T}) = SymmetricTensor{4, 1, T, 1}(t)
+(::Type{SymmetricTensor{4, 2}}){T <: Real}(t::SVector{9, T}) = SymmetricTensor{4, 2, T, 9}(t)
+(::Type{SymmetricTensor{4, 3}}){T <: Real}(t::SVector{36, T}) = SymmetricTensor{4, 3, T, 36}(t)
 
 immutable Tensor{order, dim, T <: Real, M} <: AbstractTensor{order, dim, T}
    data::SVector{M, T}
 end
-(::Type{Tensor{order, dim, T, M}}){order, dim, T <: Real, T2, M}(t::NTuple{M, T2}) = Tensor{order, dim, T, M}(SVector{M,T}(t))
+
+# Tuple constructor
+(::Type{Tensor{order, dim}}){order, dim, T <: Real, M}(t::NTuple{M, T}) = Tensor{order, dim}(SVector{M,T}(t))
+
+# SVector constructors
+(::Type{Tensor{order, dim}}){order, dim, T <: Real, M}(t::SVector{M, T}) = throw(ArgumentError("error")) # Fallback
+
+(::Type{Tensor{1, 1}}){T <: Real}(t::SVector{1, T}) = Tensor{1, 1, T, 1}(t)
+(::Type{Tensor{1, 2}}){T <: Real}(t::SVector{2, T}) = Tensor{1, 2, T, 2}(t)
+(::Type{Tensor{1, 3}}){T <: Real}(t::SVector{3, T}) = Tensor{1, 3, T, 3}(t)
+
+(::Type{Tensor{2, 1}}){T <: Real}(t::SVector{1, T}) = Tensor{2, 1, T, 1}(t)
+(::Type{Tensor{2, 2}}){T <: Real}(t::SVector{4, T}) = Tensor{2, 2, T, 4}(t)
+(::Type{Tensor{2, 3}}){T <: Real}(t::SVector{9, T}) = Tensor{2, 3, T, 9}(t)
+
+(::Type{Tensor{4, 1}}){T <: Real}(t::SVector{1, T}) = Tensor{4, 1, T, 1}(t)
+(::Type{Tensor{4, 2}}){T <: Real}(t::SVector{16, T}) = Tensor{4, 2, T, 16}(t)
+(::Type{Tensor{4, 3}}){T <: Real}(t::SVector{81, T}) = Tensor{4, 3, T, 81}(t)
+
 ###############
 # Typealiases #
 ###############
@@ -159,7 +189,7 @@ end
         if length(data) != $n
             throw(ArgumentError("Wrong number of tuple elements, expected $($n), got $(length(data))"))
         end
-        Tensor{order, dim, eltype(data), $n}(to_tuple(NTuple{$n}, data))
+        Tensor{order, dim}(to_tuple(NTuple{$n}, data))
     end
 end
 
@@ -177,7 +207,7 @@ end
         if length(data) == $m
             return SymmetricTensor{order, dim, eltype(data), $m}(to_tuple(NTuple{$m}, data))
         end
-        S = Tensor{order, dim, eltype(data), $n}(to_tuple(NTuple{$n}, data))
+        S = Tensor{order, dim}(to_tuple(NTuple{$n}, data))
         return convert(SymmetricTensor{order, dim}, S)
     end
 end
@@ -209,7 +239,7 @@ end
 
 function (Tt::Union{Type{Tensor{order, dim, T}}, Type{SymmetricTensor{order, dim, T}}}){order, dim, T}(f_or_data)
     t1 = get_main_type(Tt){order, dim}(f_or_data)
-    return convert(get_main_type(Tt){order, dim, T}, t1)
+    return convert(get_main_type(Tt){order, dim}, t1)
 end
 
 
@@ -220,13 +250,13 @@ end
 # Num, tensor. *, /
 for TensorType in (SymmetricTensor, Tensor)
     @eval begin
-        @inline Base.:*{order, dim, T, N}(n::Number, t::$TensorType{order, dim, T, N}) = $TensorType{order, dim, T, N}(n * tovector(t))
-        @inline Base.:*{order, dim, T, N}(t::$TensorType{order, dim, T, N}, n::Number) = $TensorType{order, dim, T, N}(tovector(t) * n)
-        @inline Base.:/{order, dim, T, N}(t::$TensorType{order, dim, T, N}, n::Number) = $TensorType{order, dim, T, N}(tovector(t) / n)
+        @inline Base.:*{order, dim, T, N}(n::Number, t::$TensorType{order, dim, T, N}) = $TensorType{order, dim}(n * tovector(t))
+        @inline Base.:*{order, dim, T, N}(t::$TensorType{order, dim, T, N}, n::Number) = $TensorType{order, dim}(tovector(t) * n)
+        @inline Base.:/{order, dim, T, N}(t::$TensorType{order, dim, T, N}, n::Number) = $TensorType{order, dim}(tovector(t) / n)
 
         # Unary -, +
-        @inline Base.:-{order, dim, T, N}(t::$TensorType{order, dim, T, N}) = $TensorType{order, dim, T, N}(-tovector(t))
-        @inline Base.:+{order, dim, T, N}(t::$TensorType{order, dim, T, N}) = $TensorType{order, dim, T, N}(+tovector(t))
+        @inline Base.:-{order, dim, T, N}(t::$TensorType{order, dim, T, N}) = $TensorType{order, dim}(-tovector(t))
+        @inline Base.:+{order, dim, T, N}(t::$TensorType{order, dim, T, N}) = $TensorType{order, dim}(+tovector(t))
     end
 end
 
@@ -235,7 +265,7 @@ for (op) in (:-, :+, :.*, :./, :.-, :.+)
     for TensorType in (SymmetricTensor, Tensor)
         @eval begin
             @inline function Base.$op{order, dim, T1, T2, N}(t1::$TensorType{order, dim, T1, N}, t2::$TensorType{order, dim, T2, N})
-                $TensorType{order, dim, promote_type(T1, T2), N}($op(tovector(t1), tovector(t2)))
+                $TensorType{order, dim}($op(tovector(t1), tovector(t2)))
             end
         end
     end
@@ -250,7 +280,7 @@ for op in (:zero, :rand)
         @eval begin
             @inline function Base.$op{order, dim, T}(Tt::Type{$TensorType{order, dim, T}})
                 N = n_components($TensorType{order, dim})
-                return $TensorType{order, dim, T, N}($op(SVector{N, T}))
+                return $TensorType{order, dim}($op(SVector{N, T}))
             end
         end
     end
@@ -263,7 +293,7 @@ for op in (:zero, :rand, :one)
             @inline Base.$op{order, dim}(Tt::Type{$TensorType{order, dim}}) = Base.$op($TensorType{order, dim, Float64})
 
             @inline function Base.$op{order, dim, T, M}(Tt::Type{$(TensorType){order, dim, T, M}})
-                $op($(TensorType){order, dim, T})
+                $op($(TensorType){order, dim})
             end
         end
     end
@@ -299,7 +329,7 @@ for TensorType in (SymmetricTensor, Tensor)
             return quote
                 $(Expr(:meta, :inline))
                 @inbounds t = $exp
-                $($TensorType){order, dim, T, $N}(t)
+                $($TensorType){order, dim}(t)
             end
         end
 
@@ -315,7 +345,7 @@ for TensorType in (SymmetricTensor, Tensor)
             exp = tensor_create(get_type(Tt),f)
             return quote
                 $(Expr(:meta, :inline))
-                $($TensorType){order, dim, T, $N}($exp)
+                $($TensorType){order, dim}($exp)
             end
         end
 
