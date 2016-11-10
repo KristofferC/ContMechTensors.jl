@@ -296,7 +296,7 @@ julia> trace(A)
 ```
 """
 @generated function Base.trace{dim, T}(S::SecondOrderTensor{dim, T})
-    idx(i,j) = compute_index(get_lower_order_tensor(S), i, j)
+    idx(i,j) = compute_index(get_base(S), i, j)
     exp = Expr(:call)
     push!(exp.args, :+)
     for i in 1:dim
@@ -334,7 +334,7 @@ julia> det(A)
 ```
 """
 @gen_code function Base.det{dim, T}(t::SecondOrderTensor{dim, T})
-    idx(i,j) = compute_index(get_lower_order_tensor(t), i, j)
+    idx(i,j) = compute_index(get_base(t), i, j)
     @code :($(Expr(:meta, :inline)))
     @code :(v = get_data(t))
     if dim == 1
@@ -374,7 +374,7 @@ julia> inv(A)
 ```
 """
 @gen_code function Base.inv{dim, T}(t::Tensor{2, dim, T})
-    idx(i,j) = compute_index(get_lower_order_tensor(t), i, j)
+    idx(i,j) = compute_index(get_base(t), i, j)
     @code :($(Expr(:meta, :inline)))
     @code :(dinv = 1 / det(t))
     @code :(v = get_data(t))

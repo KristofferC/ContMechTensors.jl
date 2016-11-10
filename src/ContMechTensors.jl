@@ -19,7 +19,6 @@ export tdot, dotdot
 #########
 # Types #
 #########
-
 abstract AbstractTensor{order, dim, T <: Real} <: AbstractArray{T, order}
 
 immutable SymmetricTensor{order, dim, T <: Real, M} <: AbstractTensor{order, dim, T}
@@ -33,7 +32,6 @@ end
 ###############
 # Typealiases #
 ###############
-
 typealias Vec{dim, T, M} Tensor{1, dim, T, dim}
 
 typealias AllTensors{dim, T} Union{SymmetricTensor{2, dim, T}, Tensor{2, dim, T},
@@ -104,11 +102,6 @@ end
 
 @pure get_base{order, dim, T, M}(::Type{SymmetricTensor{order, dim, T, M}}) = SymmetricTensor{order, dim}
 @pure get_base{order, dim, T, M}(::Type{Tensor{order, dim, T, M}}) = Tensor{order, dim}
-
-@pure get_lower_order_tensor{dim, T, M}(S::Type{SymmetricTensor{2, dim, T, M}}) =  SymmetricTensor{2, dim}
-@pure get_lower_order_tensor{dim, T, M}(S::Type{Tensor{2, dim, T, M}}) = Tensor{2, dim}
-@pure get_lower_order_tensor{dim, T, M}(::Type{SymmetricTensor{4, dim, T, M}}) = SymmetricTensor{2, dim}
-@pure get_lower_order_tensor{dim, T, M}(::Type{Tensor{4, dim, T, M}}) = Tensor{2, dim}
 
 
 ############################

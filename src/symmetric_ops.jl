@@ -128,7 +128,7 @@ end
 # Inverse #
 ###########
 @gen_code function Base.inv{dim, T}(t::SymmetricTensor{2, dim, T})
-    idx(i,j) = compute_index(get_lower_order_tensor(t), i, j)
+    idx(i,j) = compute_index(get_base(t), i, j)
     @code :($(Expr(:meta, :inline)))
     @code :(dinv = 1 / det(t))
     @code :(v = get_data(t))
