@@ -215,13 +215,23 @@ julia> A = rand(SymmetricTensor{2,3})
  0.766797  0.460085  0.794026
  0.566237  0.794026  0.854147
 
-julia> eig(A)
-([-0.312033,0.15636,2.06075],
-[0.492843 -0.684993 -0.536554; -0.811724 -0.139855 -0.567049; 0.313385 0.715 -0.624952])
+julia> Λ, Φ = eig(A);
+
+julia> Λ
+3-element ContMechTensors.Tensor{1,3,Float64,3}:
+ -0.464142
+  0.29788
+  1.77326
+
+julia> Φ
+3×3 ContMechTensors.Tensor{2,3,Float64,9}:
+  0.827413  -0.0384357  -0.560277
+ -0.423937  -0.697072   -0.578246
+ -0.368328   0.71597    -0.59306
 ```
 """
 function Base.eig{dim, T, M}(S::SymmetricTensor{2, dim, T, M})
-    S_m = Symmetric(reshape(S[:], (dim, dim)))
+    S_m = Symmetric(Array(S))
     λ, ϕ = eig(S_m)
     Λ = Tensor{1, dim}(λ)
     Φ = Tensor{2, dim}(ϕ)

@@ -111,9 +111,9 @@ skew
 
 ## Deviator
 
-The deviatorc part of a second order tensor is defined by
+The deviatoric part of a second order tensor is defined by
 
-$\mathbf{A}^\text{dev} = \mathbf{A} - \frac{1}{3} \mathrm{tr} \mathbf{A}$
+$\mathbf{A}^\text{dev} = \mathbf{A} - \frac{1}{3} \mathrm{trace}[\mathbf{A}] \mathbf{I} \Leftrightarrow A_{ij}^\text{dev} = A_{ij} - \frac{1}{3}A_{kk}\delta_{ij}$
 
 ```@docs
 dev

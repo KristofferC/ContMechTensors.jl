@@ -50,6 +50,10 @@ end
 # Slice
 @inline Base.getindex(v::Vec, ::Colon) = v
 
+function Base.getindex(S::Union{SecondOrderTensor, FourthOrderTensor}, ::Colon)
+    throw(ArgumentError("S[:] not defined for S of order 2 or 4, use Array(S) to convert to an Array"))
+end
+
 @inline @generated function Base.getindex{dim, T}(S::SecondOrderTensor{dim, T}, ::Colon, j::Int)
     idx2(i,j) = compute_index(get_base(S), i, j)
     ex1 = Expr(:tuple, [:(get_data(S)[$(idx2(i,1))]) for i in 1:dim]...)
