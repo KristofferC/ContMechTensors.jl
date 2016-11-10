@@ -130,22 +130,24 @@ Base.fill(t::AbstractTensor, v::Number) = one(typeof(t)) * v
 #########################
 for TensorType in (SymmetricTensor, Tensor)
     @eval begin
-        (::Type{$TensorType{order, dim}}){order, dim, T <: Real, M}(t::NTuple{M, T}) = $TensorType{order, dim}(SVector{M,T}(t))
-        (::Type{$TensorType{order, dim, T1}}){order, dim, T1 <: Real, T2 <: Real, M}(t::NTuple{M, T2}) = $TensorType{order, dim}(SVector{M,T1}(t))
-        (::Type{$TensorType{order, dim, T1, M}}){order, dim, T1 <: Real, T2 <: Real, M}(t::NTuple{M, T2}) = $TensorType{order, dim}(SVector{M,T1}(t))
+        @inline (::Type{$TensorType{order, dim}}){order, dim, T <: Real, M}(t::NTuple{M, T}) = $TensorType{order, dim}(SVector{M,T}(t))
+        @inline (::Type{$TensorType{order, dim, T1}}){order, dim, T1 <: Real, T2 <: Real, M}(t::NTuple{M, T2}) = $TensorType{order, dim}(SVector{M,T1}(t))
+        @inline (::Type{$TensorType{order, dim, T1, M}}){order, dim, T1 <: Real, T2 <: Real, M}(t::NTuple{M, T2}) = $TensorType{order, dim}(SVector{M,T1}(t))
 
-        (::Type{$TensorType{order, dim}}){order, dim, T <: Real, M}(t::SVector{M, T}) = throw(ArgumentError("error"))
+        @inline (::Type{$TensorType{order, dim}}){order, dim, T <: Real, M}(t::SVector{M, T}) = throw(ArgumentError("error"))
     end
     for order in (2,4), dim in (1,2,3)
         M = n_components(TensorType{order,dim})
-        @eval (::Type{$TensorType{$order, $dim}}){T <: Real}(t::SVector{$M, T}) = $TensorType{$order, $dim, T, $M}(t)
+        @eval @inline (::Type{$TensorType{$order, $dim}}){T <: Real}(t::SVector{$M, T}) = $TensorType{$order, $dim, T, $M}(t)
+        @eval @inline (::Type{$TensorType{$order, $dim}}){T <: Real, Q}(t::SMatrix{Q, Q, T, $M}) = $TensorType{$order, $dim, T, $M}(t.data)
     end
     if TensorType == Tensor
         for dim in (1,2,3)
-            @eval (::Type{Tensor{1, $dim}}){T <: Real}(t::SVector{$dim, T}) = Tensor{1, $dim, T, $dim}(t)
+            @eval @inline (::Type{Tensor{1, $dim}}){T <: Real}(t::SVector{$dim, T}) = Tensor{1, $dim, T, $dim}(t)
         end
     end
 end
+
 
 @inline function (Tt::Union{Type{Tensor{order, dim, T, M}}, Type{SymmetricTensor{order, dim, T, M}}}){order, dim, T, M}(data)
     get_base(Tt)(data)
