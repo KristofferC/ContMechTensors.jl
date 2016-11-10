@@ -125,7 +125,7 @@ for T in (Float32, Float64)
                 data = rand(T,dim,dim,dim,dim)
                 S = Tensor{order,dim, T}(data)
                 Ssym = symmetric(S)
-                symdata = reshape(Ssym[:],(dim, dim , dim , dim))
+                symdata = Array(Ssym)
                 @test_throws ArgumentError S[:]
                 @test_throws ArgumentError Ssym[:]
                 for i in 1:dim+1, j in 1:dim+1, k in 1:dim+1, l in 1:dim+1
