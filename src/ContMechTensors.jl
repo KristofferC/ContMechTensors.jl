@@ -25,47 +25,10 @@ abstract AbstractTensor{order, dim, T <: Real} <: AbstractArray{T, order}
 immutable SymmetricTensor{order, dim, T <: Real, M} <: AbstractTensor{order, dim, T}
    data::SVector{M, T}
 end
-# Tuple constructors
-(::Type{SymmetricTensor{order, dim}}){order, dim, T <: Real, M}(t::NTuple{M, T}) = SymmetricTensor{order, dim}(SVector{M,T}(t))
-(::Type{SymmetricTensor{order, dim, T1}}){order, dim, T1 <: Real, T2 <: Real, M}(t::NTuple{M, T2}) = SymmetricTensor{order, dim}(SVector{M,T1}(t))
-(::Type{SymmetricTensor{order, dim, T1, M}}){order, dim, T1 <: Real, T2 <: Real, M}(t::NTuple{M, T2}) = SymmetricTensor{order, dim}(SVector{M,T1}(t))
-
-
-# SVector constructors
-(::Type{SymmetricTensor{order, dim}}){order, dim, T <: Real, M}(t::SVector{M, T}) = throw(ArgumentError("error")) # Fallback
-
-(::Type{SymmetricTensor{2, 1}}){T <: Real}(t::SVector{1, T}) = SymmetricTensor{2, 1, T, 1}(t)
-(::Type{SymmetricTensor{2, 2}}){T <: Real}(t::SVector{3, T}) = SymmetricTensor{2, 2, T, 3}(t)
-(::Type{SymmetricTensor{2, 3}}){T <: Real}(t::SVector{6, T}) = SymmetricTensor{2, 3, T, 6}(t)
-
-(::Type{SymmetricTensor{4, 1}}){T <: Real}(t::SVector{1, T}) = SymmetricTensor{4, 1, T, 1}(t)
-(::Type{SymmetricTensor{4, 2}}){T <: Real}(t::SVector{9, T}) = SymmetricTensor{4, 2, T, 9}(t)
-(::Type{SymmetricTensor{4, 3}}){T <: Real}(t::SVector{36, T}) = SymmetricTensor{4, 3, T, 36}(t)
 
 immutable Tensor{order, dim, T <: Real, M} <: AbstractTensor{order, dim, T}
    data::SVector{M, T}
 end
-
-# Tuple constructors
-(::Type{Tensor{order, dim}}){order, dim, T <: Real, M}(t::NTuple{M, T}) = Tensor{order, dim}(SVector{M,T}(t))
-(::Type{Tensor{order, dim, T1}}){order, dim, T1 <: Real, T2 <: Real, M}(t::NTuple{M, T2}) = Tensor{order, dim}(SVector{M,T1}(t))
-(::Type{Tensor{order, dim, T1, M}}){order, dim, T1 <: Real, T2 <: Real, M}(t::NTuple{M, T2}) = Tensor{order, dim}(SVector{M,T1}(t))
-
-
-# SVector constructors
-(::Type{Tensor{order, dim}}){order, dim, T <: Real, M}(t::SVector{M, T}) = throw(ArgumentError("error")) # Fallback
-
-(::Type{Tensor{1, 1}}){T <: Real}(t::SVector{1, T}) = Tensor{1, 1, T, 1}(t)
-(::Type{Tensor{1, 2}}){T <: Real}(t::SVector{2, T}) = Tensor{1, 2, T, 2}(t)
-(::Type{Tensor{1, 3}}){T <: Real}(t::SVector{3, T}) = Tensor{1, 3, T, 3}(t)
-
-(::Type{Tensor{2, 1}}){T <: Real}(t::SVector{1, T}) = Tensor{2, 1, T, 1}(t)
-(::Type{Tensor{2, 2}}){T <: Real}(t::SVector{4, T}) = Tensor{2, 2, T, 4}(t)
-(::Type{Tensor{2, 3}}){T <: Real}(t::SVector{9, T}) = Tensor{2, 3, T, 9}(t)
-
-(::Type{Tensor{4, 1}}){T <: Real}(t::SVector{1, T}) = Tensor{4, 1, T, 1}(t)
-(::Type{Tensor{4, 2}}){T <: Real}(t::SVector{16, T}) = Tensor{4, 2, T, 16}(t)
-(::Type{Tensor{4, 3}}){T <: Real}(t::SVector{81, T}) = Tensor{4, 3, T, 81}(t)
 
 ###############
 # Typealiases #
@@ -131,6 +94,7 @@ end
 
 @pure n_components{order, dim}(::Type{Tensor{order, dim}}) = dim^order
 
+
 @pure get_main_type{order, dim, T, M}(::Type{SymmetricTensor{order, dim, T, M}}) = SymmetricTensor
 @pure get_main_type{order, dim, T, M}(::Type{Tensor{order, dim, T, M}}) = Tensor
 @pure get_main_type{order, dim, T}(::Type{SymmetricTensor{order, dim, T}}) = SymmetricTensor
@@ -175,6 +139,24 @@ Base.fill(t::AbstractTensor, v::Number) = one(typeof(t)) * v
 #########################
 # Internal constructors #
 #########################
+for TensorType in (SymmetricTensor, Tensor)
+    @eval begin
+        (::Type{$TensorType{order, dim}}){order, dim, T <: Real, M}(t::NTuple{M, T}) = $TensorType{order, dim}(SVector{M,T}(t))
+        (::Type{$TensorType{order, dim, T1}}){order, dim, T1 <: Real, T2 <: Real, M}(t::NTuple{M, T2}) = $TensorType{order, dim}(SVector{M,T1}(t))
+        (::Type{$TensorType{order, dim, T1, M}}){order, dim, T1 <: Real, T2 <: Real, M}(t::NTuple{M, T2}) = $TensorType{order, dim}(SVector{M,T1}(t))
+
+        (::Type{$TensorType{order, dim}}){order, dim, T <: Real, M}(t::SVector{M, T}) = throw(ArgumentError("error"))
+    end
+    for order in (2,4), dim in (1,2,3)
+        M = n_components(TensorType{order,dim})
+        @eval (::Type{$TensorType{$order, $dim}}){T <: Real}(t::SVector{$M, T}) = $TensorType{$order, $dim, T, $M}(t)
+    end
+    if TensorType == Tensor
+        for dim in (1,2,3)
+            @eval (::Type{Tensor{1, $dim}}){T <: Real}(t::SVector{$dim, T}) = Tensor{1, $dim, T, $dim}(t)
+        end
+    end
+end
 
 @inline function (Tt::Union{Type{Tensor{order, dim, T, M}}, Type{SymmetricTensor{order, dim, T, M}}}){order, dim, T, M}(data)
     get_base(Tt)(data)
@@ -247,8 +229,6 @@ function (Tt::Union{Type{Tensor{order, dim, T}}, Type{SymmetricTensor{order, dim
     t1 = get_main_type(Tt){order, dim}(f_or_data)
     return convert(get_main_type(Tt){order, dim, T}, t1)
 end
-
-
 
 ###############
 # Simple Math #
