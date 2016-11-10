@@ -97,11 +97,11 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/constructing_tensors.html#From-a-function-1",
+    "location": "man/constructing_tensors.html#function_index-1",
     "page": "Constructing tensors",
     "title": "From a function",
     "category": "section",
-    "text": "A tensor can be created from a function f(indices...) -> v which maps a set of indices to a value. The number of arguments of the function should be equal to the order of the tensor.julia> SymmetricTensor{2,2}((i,j) -> i + j)\n2×2 ContMechTensors.SymmetricTensor{2,2,Int64,3}:\n 2  3\n 3  4"
+    "text": "A tensor can be created from a function f(indices...) -> v which maps a set of indices to a value. The number of arguments of the function should be equal to the order of the tensor.julia> SymmetricTensor{2,2,Float64}((i,j) -> i + j)\n2×2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:\n 2.0  3.0\n 3.0  4.0For symmetric tensors, the function is only called for the lower triangular part."
 },
 
 {
@@ -133,7 +133,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Indexing",
     "title": "Indexing",
     "category": "section",
-    "text": "Indexing into a (Symmetric)Tensor{dim, order} is performed like for an Array of dimension order.julia> A = rand(Tensor{2, 2});\n\njulia> A[1, 2]\n0.5662374165061859\n\njulia> B = rand(SymmetricTensor{4, 2});\n\njulia> B[1, 2, 1, 2]\n0.24683718661000897In order to set an index the function setindex(t, value, index...) is used. This returns a new tensor with the modified index. Explicitly setting indices is not recommended in performance critical code since it will invoke dynamic dispatch. It is provided as a means of convenience when working in for example the REPL.julia> a = rand(Vec{2});\n\njulia> setindex(a, 1.337, 2)\n2-element ContMechTensors.Tensor{1,2,Float64,2}:\n 0.590845\n 1.337"
+    "text": "Indexing into a (Symmetric)Tensor{dim, order} is performed like for an Array of dimension order.julia> A = rand(Tensor{2, 2});\n\njulia> A[1, 2]\n0.5662374165061859\n\njulia> B = rand(SymmetricTensor{4, 2});\n\njulia> B[1, 2, 1, 2]\n0.24683718661000897Slicing will produce a Tensor of lower order.julia> A = rand(Tensor{2, 2});\n\njulia> A[:, 1]\n2-element ContMechTensors.Tensor{1,2,Float64,2}:\n 0.590845\n 0.766797Since Tensors are immutable there is no setindex! function defined on them. Instead, use the functionality to create tensors from functions as described here. As an example, this sets the [1,2] index on a tensor to one and the rest to zero:julia> Tensor{2, 2}((i,j) -> i == 1 && j == 2 ? 1.0 : 0.0)\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 0.0  1.0\n 0.0  0.0For symmetric tensors, note that you should only set the lower triangular part of the tensor:julia> SymmetricTensor{2, 2}((i,j) -> i == 1 && j == 2 ? 1.0 : 0.0)\n2×2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:\n 0.0  0.0\n 0.0  0.0\n\njulia> SymmetricTensor{2, 2}((i,j) -> i == 2 && j == 1 ? 1.0 : 0.0)\n2×2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:\n 0.0  1.0\n 1.0  0.0"
 },
 
 {
@@ -373,7 +373,23 @@ var documenterSearchIndex = {"docs": [
     "page": "Other operators",
     "title": "Skew symmetric",
     "category": "section",
-    "text": "The skew symmetric part of a second order tensor is defined bymathbfA^skw = frac12(mathbfA - mathbfA^textT) Leftrightarrow A^textskw_ij = frac12(A_ij - A_ji)The skew symmetric part of a symmetric tensor is zero.skew"
+    "text": "The skew symmetric part of a second order tensor is defined bymathbfA^textskw = frac12(mathbfA - mathbfA^textT) Leftrightarrow A^textskw_ij = frac12(A_ij - A_ji)The skew symmetric part of a symmetric tensor is zero.skew"
+},
+
+{
+    "location": "man/other_operators.html#ContMechTensors.dev",
+    "page": "Other operators",
+    "title": "ContMechTensors.dev",
+    "category": "Function",
+    "text": "Computes the deviatoric part of a second order tensor.\n\ndev(::SecondOrderTensor)\n\nExample:\n\njulia> A = rand(Tensor{2,3});\n\njulia> dev(A)\n3×3 ContMechTensors.Tensor{2,3,Float64,9}:\n 0.0469421  0.460085   0.200586\n 0.766797   0.250123   0.298614\n 0.566237   0.854147  -0.297065\n\njulia> trace(dev(A))\n0.0\n\n\n\n"
+},
+
+{
+    "location": "man/other_operators.html#Deviator-1",
+    "page": "Other operators",
+    "title": "Deviator",
+    "category": "section",
+    "text": "The deviatoric part of a second order tensor is defined bymathbfA^textdev = mathbfA - frac13 mathrmtracemathbfA mathbfI Leftrightarrow A_ij^textdev = A_ij - frac13A_kkdelta_ijdev"
 },
 
 {
@@ -397,7 +413,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Other operators",
     "title": "Base.LinAlg.eig",
     "category": "Function",
-    "text": "Computes the eigenvalues and eigenvectors of a symmetric second order tensor.\n\neig(::SymmetricSecondOrderTensor)\n\nExample:\n\njulia> A = rand(SymmetricTensor{2,3})\n3×3 ContMechTensors.SymmetricTensor{2,3,Float64,6}:\n 0.590845  0.766797  0.566237\n 0.766797  0.460085  0.794026\n 0.566237  0.794026  0.854147\n\njulia> eig(A)\n([-0.312033,0.15636,2.06075],\n[0.492843 -0.684993 -0.536554; -0.811724 -0.139855 -0.567049; 0.313385 0.715 -0.624952])\n\n\n\n"
+    "text": "Computes the eigenvalues and eigenvectors of a symmetric second order tensor.\n\neig(::SymmetricSecondOrderTensor)\n\nExample:\n\njulia> A = rand(SymmetricTensor{2,3})\n3×3 ContMechTensors.SymmetricTensor{2,3,Float64,6}:\n 0.590845  0.766797  0.566237\n 0.766797  0.460085  0.794026\n 0.566237  0.794026  0.854147\n\njulia> Λ, Φ = eig(A);\n\njulia> Λ\n3-element ContMechTensors.Tensor{1,3,Float64,3}:\n -0.312033\n  0.15636 \n  2.06075\n\njulia> Φ \n3×3 ContMechTensors.Tensor{2,3,Float64,9}:\n  0.492843  -0.684993  -0.536554\n -0.811724  -0.139855  -0.567049\n  0.313385   0.715     -0.624952\n\njulia> Φ ⋅ diagm(Tensor{2,3}, Λ) ⋅ inv(Φ) # Same as A\n3×3 ContMechTensors.Tensor{2,3,Float64,9}:\n 0.590845  0.766797  0.566237\n 0.766797  0.460085  0.794026\n 0.566237  0.794026  0.854147\n\n\n\n"
 },
 
 {
