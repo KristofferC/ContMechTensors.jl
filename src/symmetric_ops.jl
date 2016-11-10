@@ -38,7 +38,6 @@ end
         end
         push!(exps.args, exps_ele)
     end
-    Tv = typeof(zero(T1) * zero(T2))
     quote
          data2 = get_data(S1)
          data4 = get_data(S2)
@@ -64,7 +63,6 @@ end
         end
         push!(exps.args, exps_ele)
     end
-    Tv = typeof(zero(T1) * zero(T2))
     quote
          data2 = get_data(S2)
          data4 = get_data(S1)
@@ -89,7 +87,6 @@ end
         end
         push!(exps.args, exps_ele)
     end
-    Tv = typeof(zero(T1) * zero(T2))
     quote
          data2 = get_data(S2)
          data1 = get_data(S1)
@@ -98,11 +95,9 @@ end
     end
 end
 
-
 #######
 # Dot #
 #######
-
 @generated function Base.dot{dim, T1, T2}(S1::SymmetricTensor{2, dim, T1}, v2::Vec{dim, T2})
     idx(i,j) = compute_index(SymmetricTensor{2, dim}, i, j)
     exps = Expr(:tuple)
@@ -114,7 +109,6 @@ end
             end
         push!(exps.args, exps_ele)
     end
-    Tv = typeof(zero(T1) * zero(T2))
     quote
          $(Expr(:meta, :inline))
          @inbounds r = $exps
@@ -122,7 +116,6 @@ end
     end
 end
 @inline Base.dot{dim, T}(v2::Vec{dim, T}, S1::SymmetricTensor{2, dim, T}) = dot(S1, v2)
-
 
 ###########
 # Inverse #
@@ -149,11 +142,9 @@ end
     end
 end
 
-
 ########
 # Norm #
 ########
-
 @gen_code function Base.norm{dim, T}(S::SymmetricTensor{4, dim, T})
     idx(i,j,k,l) = compute_index(SymmetricTensor{4, dim}, i, j, k, l)
     @code :(data = get_data(S))
@@ -171,16 +162,13 @@ end
     @code :(return sqrt(s))
 end
 
-
 #######
 # Dev #
 #######
-
 @generated function dev{dim, T, M}(S::SymmetricTensor{2, dim, T, M})
     f = (i,j) -> i == j ? :((get_data(S)[$(compute_index(SymmetricTensor{2, dim}, i, j))] - tr/3)) :
                            :(get_data(S)[$(compute_index(SymmetricTensor{2, dim}, i, j))])
     exp = tensor_create(SymmetricTensor{2, dim, T},f)
-    Tv = typeof(zero(T) /3)
     return quote
         $(Expr(:meta, :inline))
         tr = trace(S)
@@ -188,14 +176,10 @@ end
     end
 end
 
-
 ################
 # Open product #
 ################
-
 @inline function otimes{dim, T1, T2, M}(S1::SymmetricTensor{2, dim, T1, M}, S2::SymmetricTensor{2, dim, T2, M})
-    N = n_components(SymmetricTensor{4, dim})
-    Tv = typeof(zero(T1) * zero(T2))
     SymmetricTensor{4, dim}(tovector(S1) * tovector(S2)')
 end
 
@@ -254,8 +238,6 @@ dotdot(::Vec, ::SymmetricFourthOrderTensor, ::Vec)
 """
 @generated function dotdot{dim, T1, T2, T3}(v1::Vec{dim, T1}, S::SymmetricTensor{4, dim, T2}, v2::Vec{dim, T3})
     idx(i,j,k,l) = compute_index(SymmetricTensor{4, dim}, i, j, k, l)
-    N = n_components(Tensor{2, dim})
-    Tv = typeof(one(T1) * one(T2) * one(T3))
     exps = Expr(:tuple)
     for j in 1:dim, i in 1:dim
         exps_ele = Expr(:call)

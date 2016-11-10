@@ -51,11 +51,9 @@ include("tensor_ops.jl")
 include("tensor_ops_errors.jl")
 include("symmetric_ops.jl")
 
-
 ##############################
 # Utility/Accessor Functions #
 ##############################
-
 get_data(t::AbstractTensor) = t.data.data
 tovector(t::AbstractTensor) = t.data
 
@@ -74,9 +72,7 @@ end
     n = n_components(SymmetricTensor{2, dim})
     return n*n
 end
-
 @pure n_components{order, dim}(::Type{Tensor{order, dim}}) = dim^order
-
 
 @pure get_base{order, dim, T, M}(::Type{SymmetricTensor{order, dim, T, M}}) = SymmetricTensor{order, dim}
 @pure get_base{order, dim, T}(::Type{SymmetricTensor{order, dim, T}}) = SymmetricTensor{order, dim}
@@ -85,8 +81,6 @@ end
 @pure get_base{order, dim, T}(::Type{Tensor{order, dim, T}}) = Tensor{order, dim}
 @pure get_base{order, dim}(::Type{Tensor{order, dim}}) = Tensor{order, dim}
 
-
-
 ############################
 # Abstract Array interface #
 ############################
@@ -94,7 +88,6 @@ Base.linearindexing{T <: SymmetricTensor}(::Type{T}) = Base.LinearSlow()
 Base.linearindexing{T <: Tensor}(::Type{T}) = Base.LinearFast()
 
 get_type{X}(::Type{Type{X}}) = X
-
 
 ########
 # Size #
@@ -108,7 +101,6 @@ Base.similar(t::AbstractTensor) = t
 # Ambiguity fix
 Base.fill(t::AbstractTensor, v::Integer)  = one(typeof(t)) * v
 Base.fill(t::AbstractTensor, v::Number) = one(typeof(t)) * v
-
 
 #########################
 # Internal constructors #
@@ -133,7 +125,6 @@ for TensorType in (SymmetricTensor, Tensor)
     end
 end
 
-
 @inline function (Tt::Union{Type{Tensor{order, dim, T, M}}, Type{SymmetricTensor{order, dim, T, M}}}){order, dim, T, M}(data)
     get_base(Tt)(data)
 end
@@ -145,10 +136,10 @@ end
 # These are some kinda ugly stuff to create different type of constructors.
 @generated function (Tt::Type{Tensor{order, dim}}){order, dim}(data::Union{AbstractArray, Tuple})
     # Check for valid orders
-    n = n_components(Tensor{order,dim})
     if !(order in (1,2,4))
         throw(ArgumentError("Tensor only supported for order 1, 2, 4"))
     end
+    n = n_components(Tensor{order,dim})
     return quote
         if length(data) != $n
             throw(ArgumentError("Wrong number of tuple elements, expected $($n), got $(length(data))"))
@@ -181,13 +172,7 @@ end
     if !(order in (1,2,4))
         throw(ArgumentError("Only tensors of order 1, 2, 4 supported"))
     end
-
-    # Storage format is of rank 1 for vectors and order / 2 for other tensors
-    if order == 1 && Tt <: SymmetricTensor
-        throw(ArgumentError("SymmetricTensor only supported for order 2, 4"))
-    end
-
-    n = n_components(get_type(Tt))
+    order == 1 && Tt <: SymmetricTensor && throw(ArgumentError("SymmetricTensor only supported for order 2, 4"))
 
     # Validate that the input array has the correct number of elements.
     if order == 1
@@ -210,7 +195,7 @@ end
 # Simple Math #
 ###############
 
-# Num, tensor. *, /
+# op(Number, Tensor): *, /
 for TensorType in (SymmetricTensor, Tensor)
     @eval begin
         @inline Base.:*{order, dim, T, N}(n::Number, t::$TensorType{order, dim, T, N}) = $TensorType{order, dim}(n * tovector(t))
@@ -223,8 +208,8 @@ for TensorType in (SymmetricTensor, Tensor)
     end
 end
 
-# Binary, +, -, -*, ./
-for (op) in (:-, :+, :.*, :./, :.-, :.+)
+# Binary op(Tensor, Tensor): +, -, .+, .-, .*, ./
+for op in (:+, :-, :.+, :.-, :.*, :./)
     for TensorType in (SymmetricTensor, Tensor)
         @eval begin
             @inline function Base.$op{order, dim, T1, T2, N}(t1::$TensorType{order, dim, T1, N}, t2::$TensorType{order, dim, T2, N})
@@ -248,7 +233,6 @@ for op in (:zero, :rand)
         end
     end
 end
-
 
 for op in (:zero, :rand, :one)
     for TensorType in (SymmetricTensor, Tensor)
@@ -276,7 +260,6 @@ end
 ##########################
 # Zero, one, rand, diagm #
 ##########################
-
 for TensorType in (SymmetricTensor, Tensor)
     @eval begin
         @generated function Base.diagm{order, dim, T}(Tt::Type{$(TensorType){order, dim}}, v::AbstractVector{T})
