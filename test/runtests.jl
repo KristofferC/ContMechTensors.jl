@@ -39,7 +39,14 @@ for T in (Float32, Float64)
                 @test 2*t_sym == t_sym*2
                 @test (@inferred rand(t_sym) * 0.0) == zero(t_sym)
             end
+
+            @test_throws ArgumentError rand(Tensor{order, 4, T})
+            @test_throws ArgumentError rand(SymmetricTensor{order, 4, T})
         end
+
+        @test_throws ArgumentError rand(Tensor{3, dim, T})
+        @test_throws ArgumentError rand(SymmetricTensor{3, dim, T})
+   
     end
 end
 end # of testset
