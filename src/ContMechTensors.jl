@@ -3,10 +3,7 @@ __precompile__()
 module ContMechTensors
 
 import Base.@pure
-
 using StaticArrays
-
-immutable InternalError <: Exception end
 
 export AbstractTensor, SymmetricTensor, Tensor, Vec, FourthOrderTensor, SecondOrderTensor
 
@@ -70,18 +67,6 @@ end
 function tomatrix{dim}(t::Tensor{2, dim})
     N = n_components(Tensor{1,dim})
     return SMatrix{N, N}(tovector(t))
-end
-
-function n_independent_components(dim, issym)
-    dim == 1 && return 1
-    if issym
-        dim == 2 && return 3
-        dim == 3 && return 6
-    else
-        dim == 2 && return 4
-        dim == 3 && return 9
-    end
-    return -1
 end
 
 @pure n_components{dim}(::Type{SymmetricTensor{2, dim}}) = dim*dim - div((dim-1)*dim, 2)

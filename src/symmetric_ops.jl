@@ -6,13 +6,13 @@
 # Double contraction #
 ######################
 
-@gen_code function dcontract{dim, T1, T2}(S1::SymmetricTensor{2, dim, T1}, S2::SymmetricTensor{2, dim, T2})
+@gen_code function dcontract{dim, T1, T2, M}(S1::SymmetricTensor{2, dim, T1, M}, S2::SymmetricTensor{2, dim, T2, M})
     Tv = typeof(zero(T1) * zero(T2))
     @code :($(Expr(:meta, :inline)))
     @code :(s = zero($Tv);
             data1 = get_data(S1);
             data2 = get_data(S2))
-     for k in 1:n_independent_components(dim, true)
+     for k in 1:M
         if is_diagonal_index(dim, k)
             @code :(@inbounds s += data1[$k] * data2[$k])
         else
