@@ -69,7 +69,7 @@ end
     return quote
             $(Expr(:meta, :inline))
             data = get_data(t)
-            @inbounds v = $exp
+            v = $exp
             Tensor{order, dim}(v)
         end
 end
