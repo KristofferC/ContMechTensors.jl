@@ -130,61 +130,20 @@ for TensorType in (SymmetricTensor, Tensor)
         end
     end
 end
+# Special for Vec
+@inline (Tt::Type{Vec{dim}}){dim}(data) = Tensor{1, dim}(data)
 
-@inline function (Tt::Union{Type{Tensor{order, dim, T, M}}, Type{SymmetricTensor{order, dim, T, M}}}){order, dim, T, M}(data)
-    get_base(Tt)(data)
-end
-
-@inline function (Tt::Type{Vec{dim}}){dim}(data)
-    Tensor{1, dim}(data)
-end
-
-# These are some kinda ugly stuff to create different type of constructors.
-@generated function (Tt::Type{Tensor{order, dim}}){order, dim}(data::Union{AbstractArray, Tuple})
-    _constructor_check(get_base(get_type(Tt)))
-    n = n_components(Tensor{order,dim})
-    return quote
-        if length(data) != $n
-            throw(ArgumentError("Wrong number of tuple elements, expected $($n), got $(length(data))"))
-        end
-        Tensor{order, dim}(to_tuple(NTuple{$n}, data))
-    end
-end
-
-# These are some kinda ugly stuff to create different type of constructors.
-@generated function (Tt::Type{SymmetricTensor{order, dim}}){order, dim}(data::Union{AbstractArray, Tuple})
-    _constructor_check(get_base(get_type(Tt)))
-    n = n_components(Tensor{order,dim})
-    m = n_components(SymmetricTensor{order,dim})
-    return quote
-        if length(data) != $n && length(data) != $m
-            throw(ArgumentError("Wrong number of tuple elements, expected $($n) or $($m), got $(length(data))"))
-        end
-        if length(data) == $m
-            return SymmetricTensor{order, dim}(to_tuple(NTuple{$m}, data))
-        end
-        S = Tensor{order, dim}(to_tuple(NTuple{$n}, data))
-        return convert(SymmetricTensor{order, dim}, S)
-    end
-end
-
-@generated function (Tt::Union{Type{Tensor{order, dim}}, Type{SymmetricTensor{order, dim}}}){order, dim}(f::Function)
-    _constructor_check(get_base(get_type(Tt)))
-    if order == 1
-        exp = tensor_create(get_base(get_type(Tt)), (i) -> :(f($i)))
-    elseif order == 2
-        exp = tensor_create(get_base(get_type(Tt)), (i,j) -> :(f($i, $j)))
-    elseif order == 4
-        exp = tensor_create(get_base(get_type(Tt)), (i,j,k,l) -> :(f($i, $j, $k, $l)))
-    end
-
-    return :(get_base(Tt)($exp))
-end
-
-function (Tt::Union{Type{Tensor{order, dim, T}}, Type{SymmetricTensor{order, dim, T}}}){order, dim, T}(f_or_data)
-    t1 = get_base(Tt)(f_or_data)
+# General fallbacks
+@inline function (Tt::Union{Type{Tensor{order, dim, T}}, Type{SymmetricTensor{order, dim, T}}}){order, dim, T}(data)
+    t1 = get_base(Tt)(data)
     return convert(Tt, t1)
 end
+
+@inline function (Tt::Union{Type{Tensor{order, dim, T, M}}, Type{SymmetricTensor{order, dim, T, M}}}){order, dim, T, M}(data)
+    t1 = get_base(Tt)(data)
+    return convert(Tt, t1)
+end
+
 
 ###############
 # Simple Math #
@@ -278,6 +237,49 @@ for TensorType in (SymmetricTensor, Tensor)
         @inline Base.one{order, dim, T, M}(Tt::Type{$(TensorType){order, dim, T, M}}) = one($TensorType{order, dim, T})
         @inline Base.one{order, dim, T}(Tt::Type{$(TensorType){order, dim, T}}) = diagm($(TensorType){order, dim}, one(T))
         @inline Base.one(t::$TensorType) = one(typeof(t))
+    end
+end
+
+# Tensor from function
+@generated function (Tt::Union{Type{Tensor{order, dim}}, Type{SymmetricTensor{order, dim}}}){order, dim}(f::Function)
+    _constructor_check(get_base(get_type(Tt)))
+    if order == 1
+        exp = tensor_create(get_base(get_type(Tt)), (i) -> :(f($i)))
+    elseif order == 2
+        exp = tensor_create(get_base(get_type(Tt)), (i,j) -> :(f($i, $j)))
+    elseif order == 4
+        exp = tensor_create(get_base(get_type(Tt)), (i,j,k,l) -> :(f($i, $j, $k, $l)))
+    end
+
+    return :(get_base(Tt)($exp))
+end
+
+# Tensor from AbstractArray
+@generated function (Tt::Type{Tensor{order, dim}}){order, dim}(data::AbstractArray)
+    _constructor_check(get_base(get_type(Tt)))
+    n = n_components(Tensor{order,dim})
+    return quote
+        if length(data) != $n
+            throw(ArgumentError("wrong number of vector elements, expected $($n), got $(length(data))"))
+        end
+        Tensor{order, dim}(to_tuple(NTuple{$n}, data))
+    end
+end
+
+# SymmetricTensor from AbstractArray
+@generated function (Tt::Type{SymmetricTensor{order, dim}}){order, dim}(data::AbstractArray)
+    _constructor_check(get_base(get_type(Tt)))
+    n = n_components(Tensor{order,dim})
+    m = n_components(SymmetricTensor{order,dim})
+    return quote
+        if length(data) != $n && length(data) != $m
+            throw(ArgumentError("wrong number of vector elements, expected $($n) or $($m), got $(length(data))"))
+        end
+        if length(data) == $m
+            return SymmetricTensor{order, dim}(to_tuple(NTuple{$m}, data))
+        end
+        S = Tensor{order, dim}(to_tuple(NTuple{$n}, data))
+        return convert(SymmetricTensor{order, dim}, S)
     end
 end
 
