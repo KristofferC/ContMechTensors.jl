@@ -656,15 +656,18 @@ function Base.cross{T}(::Vec{1, T}, ::Vec{1, T})
 end
 
 # Symmetry checks
-function Base.issymmetric{dim}(t::Tensor{2, dim})
-    N = n_components(Tensor{2, dim})
-    rows = Int(N^(1/2))
-    @inbounds for row in 1:rows, col in row:rows
-        if t[row, col] != t[col, row]
-            return false
-        end
+@inline Base.issymmetric(t::Tensor{2, 1}) = true
+@inline function Base.issymmetric(t::Tensor{2, 2})
+    data = get_data(t)
+    @inbounds return data[2] == data[3]
+end
+@inline function Base.issymmetric(t::Tensor{2, 3})
+    data = get_data(t)
+    @inbounds begin
+        return (data[2] == data[4] &&
+                data[3] == data[7] &&
+                data[6] == data[8])
     end
-    return true
 end
 
 function isminorsymmetric{dim}(t::Tensor{4, dim})

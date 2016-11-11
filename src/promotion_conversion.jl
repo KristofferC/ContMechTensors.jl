@@ -54,16 +54,14 @@ end
 # SymmetricTensor -> Tensor
 # We unroll the creation by calling the compute_index function
 @generated function Base.convert{order, dim, T1, T2}(::Type{Tensor{order, dim, T1}}, t::SymmetricTensor{order, dim, T2})
-    N = n_components(Tensor{order, dim})
-    rows = Int(N^(1/order))
     exps = Expr[]
     # Compute (row, col) from linear index
     if order == 2
-        for j in 1:rows, i in 1:rows
+        for j in 1:dim, i in 1:dim
             push!(exps, :(T1(data[$(compute_index(SymmetricTensor{order, dim}, i, j))])))
         end
     else
-        for l in 1:rows, k in 1:rows, j in 1:rows, i in 1:rows
+        for l in 1:dim, k in 1:dim, j in 1:dim, i in 1:dim
             push!(exps, :(T1(data[$(compute_index(SymmetricTensor{order, dim}, i, j, k, l))])))
         end
     end
@@ -71,7 +69,7 @@ end
     return quote
             $(Expr(:meta, :inline))
             data = get_data(t)
-            v = $exp
+            @inbounds v = $exp
             Tensor{order, dim}(v)
         end
 end
