@@ -217,44 +217,30 @@ for op in (:+, :-, :.+, :.-, :.*, :./)
     end
 end
 
+######################
+# Basic constructors #
+######################
+
 # zero, rand
 for op in (:zero, :rand)
     for TensorType in (SymmetricTensor, Tensor)
         @eval begin
+            @inline Base.$op{order, dim}(Tt::Type{$TensorType{order, dim}}) = Base.$op($TensorType{order, dim, Float64})
+            @inline Base.$op{order, dim, T, M}(Tt::Type{$TensorType{order, dim, T, M}}) = Base.$op($TensorType{order, dim, T})
             @inline function Base.$op{order, dim, T}(Tt::Type{$TensorType{order, dim, T}})
                 N = n_components($TensorType{order, dim})
                 return $TensorType{order, dim}($op(SVector{N, T}))
             end
         end
     end
+    # Special case for Vec
+    @eval @inline Base.$op{dim}(Tt::Type{Vec{dim}}) = Base.$op(Vec{dim, Float64})
+
+    # zero or rand of a
+    @eval @inline Base.$op(t::AllTensors) = $op(typeof(t))
 end
 
-for op in (:zero, :rand, :one)
-    for TensorType in (SymmetricTensor, Tensor)
-        @eval begin
-            @inline Base.$op{order, dim}(Tt::Type{$TensorType{order, dim}}) = Base.$op($TensorType{order, dim, Float64})
-
-            @inline function Base.$op{order, dim, T, M}(Tt::Type{$(TensorType){order, dim, T, M}})
-                $op($(TensorType){order, dim})
-            end
-        end
-    end
-
-    # Special for Vecs
-    @eval begin
-        @inline function Base.$op{dim}(Tt::Type{Vec{dim}})
-            $op(Vec{dim, Float64})
-        end
-
-        @inline function Base.$op(t::AllTensors)
-            $op(typeof(t))
-        end
-    end
-end
-
-##########################
-# Zero, one, rand, diagm #
-##########################
+# diagm, one
 for TensorType in (SymmetricTensor, Tensor)
     @eval begin
         @generated function Base.diagm{order, dim, T}(Tt::Type{$(TensorType){order, dim}}, v::AbstractVector{T})
@@ -288,10 +274,10 @@ for TensorType in (SymmetricTensor, Tensor)
             end
         end
 
-        function Base.one{order, dim, T}(Tt::Type{$(TensorType){order, dim, T}})
-            Base.diagm($(TensorType){order, dim}, one(T))
-        end
-
+        @inline Base.one{order, dim}(Tt::Type{$(TensorType){order, dim}}) = one($TensorType{order, dim, Float64})
+        @inline Base.one{order, dim, T, M}(Tt::Type{$(TensorType){order, dim, T, M}}) = one($TensorType{order, dim, T})
+        @inline Base.one{order, dim, T}(Tt::Type{$(TensorType){order, dim, T}}) = diagm($(TensorType){order, dim}, one(T))
+        @inline Base.one(t::$TensorType) = one(typeof(t))
     end
 end
 
