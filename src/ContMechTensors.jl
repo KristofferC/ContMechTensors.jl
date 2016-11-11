@@ -253,6 +253,7 @@ end
 
     return :(get_base(Tt)($exp))
 end
+Base.convert{dim, T}(::Type{SVector{dim, T}}, f::Function) = SVector{dim, T}(ntuple(f, Val{dim}))
 
 # Tensor from AbstractArray
 @generated function (Tt::Type{Tensor{order, dim}}){order, dim}(data::AbstractArray)
