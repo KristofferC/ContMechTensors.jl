@@ -73,11 +73,19 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "man/constructing_tensors.html#Constant-tensors-1",
+    "page": "Constructing tensors",
+    "title": "Constant tensors",
+    "category": "section",
+    "text": "A tensor filled with ones is created using the function ones, applied to the type of tensor that should be created:julia> ones(Tensor{2,2})\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 1.0  1.0\n 1.0  1.0By default, a tensor of Float64s is created but by explicitly giving the T parameter, this can be changed:julia> ones(Vec{3,Float32})\n3-element ContMechTensors.Tensor{1,3,Float32,3}:\n 1.0\n 1.0\n 1.0"
+},
+
+{
     "location": "man/constructing_tensors.html#Random-tensors-1",
     "page": "Constructing tensors",
     "title": "Random tensors",
     "category": "section",
-    "text": "A tensor with random numbers is created using the function rand, applied to the type of tensor that should be created:julia> rand(Tensor{2, 3})\n3×3 ContMechTensors.Tensor{2,3,Float64,9}:\n 0.590845  0.460085  0.200586\n 0.766797  0.794026  0.298614\n 0.566237  0.854147  0.246837"
+    "text": "A tensor with random numbers is created using the function rand, applied to the type of tensor that should be created:julia> rand(Tensor{2, 3})\n3×3 ContMechTensors.Tensor{2,3,Float64,9}:\n 0.590845  0.460085  0.200586\n 0.766797  0.794026  0.298614\n 0.566237  0.854147  0.246837By specifying the type, T, a tensor of different type can be obtained:julia> rand(SymmetricTensor{2,3,Float32})\n3×3 ContMechTensors.SymmetricTensor{2,3,Float32,6}:\n 0.0107703  0.305865  0.2082\n 0.305865   0.405684  0.257278\n 0.2082     0.257278  0.958491"
 },
 
 {
@@ -85,7 +93,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Constructing tensors",
     "title": "Identity tensors",
     "category": "section",
-    "text": "An identity tensor is created using the function one, applied to the type of tensor that should be created:julia> one(SymmetricTensor{2, 2})\n2×2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:\n 1.0  0.0\n 0.0  1.0"
+    "text": "An identity tensor is created using the function one, applied to the type of tensor that should be created:julia> one(SymmetricTensor{2, 2})\n2×2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:\n 1.0  0.0\n 0.0  1.0The identity tensor is only defined for tensors of order 2 and 4."
 },
 
 {
