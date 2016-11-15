@@ -69,7 +69,7 @@ end
             if k == l
                 push!(exps_ele, :(data4[$(idx4(l, k, j, i))] * data2[$(idx2(l, k))]))
             else
-                push!(exps_ele, :( 2 * data4[$(idx4(l, k, j, i))] * data2[$(idx2(l, k))]))
+                push!(exps_ele, :(2 * data4[$(idx4(l, k, j, i))] * data2[$(idx2(l, k))]))
             end
         end
         push!(exps.args, reduce((ex1,ex2) -> :(+($ex1, $ex2)), exps_ele))
@@ -78,6 +78,30 @@ end
         $(Expr(:meta, :inline))
         data2 = get_data(S1)
         data4 = get_data(S2)
+        @inbounds r = $exps
+        SymmetricTensor{2, dim}(r)
+    end
+end
+
+@generated function dcontract{dim}(S1::SymmetricTensor{4, dim}, S2::SymmetricTensor{2, dim})
+    idx4(i,j,k,l) = compute_index(SymmetricTensor{4, dim}, i, j, k, l)
+    idx2(k,l) = compute_index(SymmetricTensor{2, dim}, k, l)
+    exps = Expr(:tuple)
+    for i in 1:dim, j in i:dim
+        exps_ele = Expr[]
+        for k in 1:dim, l in k:dim
+            if k == l
+                push!(exps_ele, :(data4[$(idx4(j, i, l, k))] * data2[$(idx2(l,k))]))
+            else
+                push!(exps_ele, :(2 * data4[$(idx4(j, i, l, k))] * data2[$(idx2(l,k))]))
+            end
+        end
+        push!(exps.args, reduce((ex1,ex2) -> :(+($ex1, $ex2)), exps_ele))
+    end
+    quote
+        $(Expr(:meta, :inline))
+        data2 = get_data(S2)
+        data4 = get_data(S1)
         @inbounds r = $exps
         SymmetricTensor{2, dim}(r)
     end
