@@ -5,39 +5,115 @@ using ContMechTensors
 
 using Base.Test
 
-@testset "constructors and simple math ops." begin
-for T in (Float32, Float64)
-    for dim in (1,2,3)
-        for order in (1,2,4)
-            ################
-            # Constructors #
-            ################
-            t = @inferred rand(Tensor{order, dim, T})
-            if order != 1
-                @inferred rand(Tensor{order, dim, T})
-            end
+@testset "basic constructors: rand, zero, ones" begin
+for T in (Float32, Float64), dim in (1,2,3), order in (1,2,4)
+    # rand, zero, ones
+    for TensorType in (Tensor, SymmetricTensor), op in (:rand, :zero, :ones)
+        TensorType == SymmetricTensor && order == 1 && continue
+        @eval begin
+            N = ContMechTensors.n_components($TensorType{$order, $dim})
 
-            ###############
-            # Simple math #
-            ###############
-            t = rand(Tensor{order, dim, T})
-            t_ones = ones(Tensor{order, dim, T})
+            t = @inferred $(op)($TensorType{$order, $dim})
+            @test isa(t, $TensorType{$order, $dim, Float64})
 
-            @test (@inferred t + t) == 2*t
-            @test (@inferred -t) == zero(t) - t
-            @test 2*t == t*2
-            @test 0.5 * t ≈ t / 2.0
-            @test (@inferred rand(t) * 0.0) == zero(t)
+            t = @inferred $(op)($TensorType{$order, $dim, $T})
+            @test isa(t, $TensorType{$order, $dim, $T})
 
-            if order != 1
-                t_sym =  @inferred rand(SymmetricTensor{order, dim, T})
-                @test (@inferred t_sym + t_sym) == 2*t_sym
-                @test (@inferred -t_sym) == zero(t_sym) - t_sym
-                @test (@inferred 2*t_sym) == t_sym*2
-                @test 2*t_sym == t_sym*2
-                @test (@inferred rand(t_sym) * 0.0) == zero(t_sym)
+            t = @inferred $(op)($TensorType{$order, $dim, $T, N})
+            @test isa(t, $TensorType{$order, $dim, $T})
+
+            t = @inferred $(op)(t)
+            @test isa(t, $TensorType{$order, $dim, $T})
+
+            $op == zero && @test zero($TensorType{$order, $dim, $T}) == zeros($T, size(t))
+            $op == ones && @test ones($TensorType{$order, $dim, $T}) == ones($T, size(t))
+        end
+    end
+end
+end # of testset
+
+@testset "diagm, one" begin
+for T in (Float32, Float64), dim in (1,2,3)
+    # diagm
+    v = rand(T, dim)
+    vt = ntuple(i->v[i], Val{dim})
+
+    @test diagm(Tensor{2, dim}, v) == diagm(Tensor{2, dim}, vt) == diagm(v)
+    @test isa(diagm(Tensor{2, dim}, v), Tensor{2, dim, T})
+    @test isa(diagm(Tensor{2, dim}, vt), Tensor{2, dim, T})
+
+    @test diagm(SymmetricTensor{2, dim}, v) == diagm(SymmetricTensor{2, dim}, vt) == diagm(v)
+    @test isa(diagm(SymmetricTensor{2, dim}, v), SymmetricTensor{2, dim, T})
+    @test isa(diagm(SymmetricTensor{2, dim}, vt), SymmetricTensor{2, dim, T})
+
+    v = rand(T); vv = v * ones(T, dim)
+    @test diagm(Tensor{2, dim}, v) == diagm(vv)
+    @test isa(diagm(Tensor{2, dim}, v), Tensor{2, dim, T})
+
+    @test diagm(SymmetricTensor{2, dim}, v) == diagm(vv)
+    @test isa(diagm(SymmetricTensor{2, dim}, v), SymmetricTensor{2, dim, T})
+
+    # one
+    @test one(Tensor{2, dim, T}) == diagm(Tensor{2, dim}, one(T)) == eye(T, dim, dim)
+    @test one(SymmetricTensor{2, dim, T}) == diagm(SymmetricTensor{2, dim}, one(T)) == eye(T, dim, dim)
+
+    I = one(Tensor{2, dim, T})
+    I_sym = one(SymmetricTensor{2, dim, T})
+    II = one(Tensor{4, dim, T})
+    II_sym = one(SymmetricTensor{4, dim, T})
+    for i in 1:dim, j in 1:dim
+        if i == j
+            @test I[i,j] == T(1)
+            @test I_sym[i,j] == T(1)
+        else
+            @test I[i,j] == T(0)
+            @test I_sym[i,j] == T(0)
+        end
+        for k in 1:dim, l in 1:dim
+            if i == k && j == l
+                @test II[i,j,k,l] == T(1)
+                # @test II_sym[i,j,k,l] == T(1)
+            else
+                @test II[i,j,k,l] == T(0)
+                # @test II_sym[i,j,k,l] == T(0)
             end
         end
+    end
+end
+end # of testset
+
+@testset "simple math" begin
+for T in (Float32, Float64), dim in (1,2,3), order in (1,2,4), TensorType in (Tensor, SymmetricTensor)
+    TensorType == SymmetricTensor && order == 1 && continue
+    @eval begin
+        t = rand($TensorType{$order, $dim, $T})
+
+        # Binary tensor tensor: +, -
+        @test (@inferred t + t) == 2 * t == 2 * Array(t)
+        @test isa(t + t, $TensorType{$order, $dim})
+
+        @test (@inferred t - t) == zero(t) == 0 * Array(t)
+        @test isa(t - t, $TensorType{$order, $dim})
+
+        # Binary tensor number: +, -, *, /
+        # @test 2 + t == t + 2 == 2 + Array(t)
+        # @test isa(2 + t, $TensorType{$order, $dim})
+
+        # @test t - 2 == Array(t) - 2
+        # @test isa(t - 2, $TensorType{$order, $dim})
+
+        @test 0.5 * t ≈ t / 2.0 ≈ 0.5 * Array(t)
+        @test isa(0.5 * t, $TensorType{$order, $dim})
+        @test isa(t / 2.0, $TensorType{$order, $dim})
+
+        @test (@inferred rand(t) * 0.0) == zero(t)
+
+        # Unary: +, -
+        @test (@inferred +t) == zero(t) + t
+        @test isa(+t, $TensorType{$order, $dim})
+
+        @test (@inferred -t) == zero(t) - t
+        @test isa(-t, $TensorType{$order, $dim})
     end
 end
 end # of testset
@@ -49,12 +125,19 @@ for T in (Float32, Float64)
         fij = (i,j) -> cos(i) + sin(j)
         fijkl = (i, j, k ,l) -> cos(i) + sin(j) + tan(k) + exp(l)
 
-        af = Tensor{1,dim, T}(fi)
-        Af = Tensor{2,dim, T}(fij)
-        AAf = Tensor{4,dim, T}(fijkl)
+        af = Tensor{1, dim, T}(fi)
+        Af = Tensor{2, dim, T}(fij)
+        AAf = Tensor{4, dim, T}(fijkl)
+        Af_sym = SymmetricTensor{2, dim, T}(fij)
+        AAf_sym = SymmetricTensor{4, dim, T}(fijkl)
 
-        Af_sym = SymmetricTensor{2,dim, T}(fij)
-        AAf_sym = SymmetricTensor{4,dim, T}(fijkl)
+        # Make sure we get the specified eltype
+        @test isa(af, Tensor{1, dim, T})
+        @test isa(Af, Tensor{2, dim, T})
+        @test isa(AAf, Tensor{4, dim, T})
+        @test isa(Af_sym, SymmetricTensor{2, dim, T})
+        @test isa(AAf_sym, SymmetricTensor{4, dim, T})
+
         for i in 1:dim
             @test af[i] == T(fi(i))
             for j in 1:dim
@@ -75,66 +158,59 @@ for T in (Float32, Float64)
 end
 end # of testset
 
-############
-# Indexing #
-############
 @testset "indexing" begin
-for T in (Float32, Float64)
-    for dim in (1,2,3)
-        for order in (1,2,4)
-            if order == 1
-                data = rand(T, dim)
-                vec = Tensor{order, dim, T}(data)
-                for i in 1:dim+1
-                    if i > dim
-                        @test_throws BoundsError vec[i]
-                    else
-                        @test vec[i] ≈ data[i]
-                    end
-                end
-                @test vec[:] == vec
-                @test typeof(vec[:]) <: Vec{dim, T}
-            elseif order == 2
-                data = rand(T, dim, dim)
-                symdata = data + data'
-                S = Tensor{order,dim, T}(data)
-                Ssym = SymmetricTensor{order,dim, T}(symdata)
-                @test_throws ArgumentError S[:]
-                @test_throws ArgumentError Ssym[:]
-                for i in 1:dim+1, j in 1:dim+1
-                    if i > dim || j > dim
-                        @test_throws BoundsError S[i, j]
-                        @test_throws BoundsError Ssym[i, j]
-                    else
-                        @test S[i, j] ≈ data[i, j]
-                        @test Ssym[i, j] ≈ symdata[i, j]
-                        # Slice
-                        @test S[i,:] ≈ data[i,:]
-                        @test typeof(S[i,:]) <: Tensor{1,dim, T}
-                        @test S[:,j] ≈ data[:,j]
-                        @test typeof(S[:,j]) <: Tensor{1,dim, T}
-                        @test Ssym[i,:] ≈ symdata[i,:]
-                        @test typeof(Ssym[i,:]) <: Tensor{1,dim, T}
-                        @test Ssym[:,j] ≈ symdata[:,j]
-                        @test typeof(Ssym[:,j]) <: Tensor{1,dim, T}
-                    end
-                end
-            elseif order == 4
-                data = rand(T,dim,dim,dim,dim)
-                S = Tensor{order,dim, T}(data)
-                Ssym = symmetric(S)
-                symdata = Array(Ssym)
-                @test_throws ArgumentError S[:]
-                @test_throws ArgumentError Ssym[:]
-                for i in 1:dim+1, j in 1:dim+1, k in 1:dim+1, l in 1:dim+1
-                    if i > dim || j > dim || k > dim || l > dim
-                        @test_throws BoundsError S[i, j, k, l]
-                        @test_throws BoundsError Ssym[i, j, k, l]
-                    else
-                        @test S[i, j, k, l] ≈ data[i, j, k, l]
-                        @test Ssym[i, j, k, l] ≈ symdata[i, j, k, l]
-                    end
-                end
+for T in (Float32, Float64), dim in (1,2,3), order in (1,2,4)
+    if order == 1
+        data = rand(T, dim)
+        vec = Tensor{order, dim, T}(data)
+        for i in 1:dim+1
+            if i > dim
+                @test_throws BoundsError vec[i]
+            else
+                @test vec[i] ≈ data[i]
+            end
+        end
+        @test vec[:] == vec
+        @test typeof(vec[:]) <: Vec{dim, T}
+    elseif order == 2
+        data = rand(T, dim, dim)
+        symdata = data + data'
+        S = Tensor{order,dim, T}(data)
+        Ssym = SymmetricTensor{order,dim, T}(symdata)
+        @test_throws ArgumentError S[:]
+        @test_throws ArgumentError Ssym[:]
+        for i in 1:dim+1, j in 1:dim+1
+            if i > dim || j > dim
+                @test_throws BoundsError S[i, j]
+                @test_throws BoundsError Ssym[i, j]
+            else
+                @test S[i, j] ≈ data[i, j]
+                @test Ssym[i, j] ≈ symdata[i, j]
+                # Slice
+                @test S[i,:] ≈ data[i,:]
+                @test typeof(S[i,:]) <: Tensor{1, dim, T}
+                @test S[:,j] ≈ data[:,j]
+                @test typeof(S[:,j]) <: Tensor{1, dim, T}
+                @test Ssym[i,:] ≈ symdata[i,:]
+                @test typeof(Ssym[i,:]) <: Tensor{1, dim, T}
+                @test Ssym[:,j] ≈ symdata[:,j]
+                @test typeof(Ssym[:,j]) <: Tensor{1, dim, T}
+            end
+        end
+    elseif order == 4
+        data = rand(T,dim,dim,dim,dim)
+        S = Tensor{order,dim, T}(data)
+        Ssym = symmetric(S)
+        symdata = Array(Ssym)
+        @test_throws ArgumentError S[:]
+        @test_throws ArgumentError Ssym[:]
+        for i in 1:dim+1, j in 1:dim+1, k in 1:dim+1, l in 1:dim+1
+            if i > dim || j > dim || k > dim || l > dim
+                @test_throws BoundsError S[i, j, k, l]
+                @test_throws BoundsError Ssym[i, j, k, l]
+            else
+                @test S[i, j, k, l] ≈ data[i, j, k, l]
+                @test Ssym[i, j, k, l] ≈ symdata[i, j, k, l]
             end
         end
     end
