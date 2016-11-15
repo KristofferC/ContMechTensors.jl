@@ -208,17 +208,17 @@ julia> A ⋅ B
  1.00184
 ```
 """
-@inline Base.dot{dim, T1, T2}(v1::Vec{dim, T1}, v2::Vec{dim, T2}) = tovector(v1) ⋅ tovector(v2)
+@inline Base.dot{dim}(v1::Vec{dim}, v2::Vec{dim}) = tovector(v1) ⋅ tovector(v2)
 
-@inline function Base.dot{dim, T1, T2}(S1::Tensor{2, dim, T1}, v2::Vec{dim, T2})
+@inline function Base.dot{dim}(S1::Tensor{2, dim}, v2::Vec{dim})
     return Vec{dim}(tomatrix(S1) * tovector(v2))
 end
 
-@inline function Base.dot{dim, T1, T2}(v1::Vec{dim, T1}, S2::Tensor{2, dim, T2})
+@inline function Base.dot{dim}(v1::Vec{dim}, S2::Tensor{2, dim})
     return Vec{dim}(tomatrix(S2)' * tovector(v1))
 end
 
-@inline function Base.dot{dim, T1, T2, M}(S1::Tensor{2, dim, T1, M}, S2::Tensor{2, dim, T2, M})
+@inline function Base.dot{dim}(S1::Tensor{2, dim}, S2::Tensor{2, dim})
     return Tensor{2, dim}(tomatrix(S1) * tomatrix(S2))
 end
 
@@ -228,24 +228,8 @@ end
     return Tensor{2, dim}(tomatrix(S1_t) * tomatrix(S2_t))
 end
 
-# Specialized methods for symmetric tensors
-@generated function Base.dot{dim}(S1::SymmetricTensor{2, dim}, v2::Vec{dim})
-    idx(i,j) = compute_index(SymmetricTensor{2, dim}, i, j)
-    exps = Expr(:tuple)
-    for i in 1:dim
-        exps_ele = Expr(:call)
-        push!(exps_ele.args, :+)
-            for j in 1:dim
-                push!(exps_ele.args, :(get_data(S1)[$(idx(i, j))] * get_data(v2)[$j]))
-            end
-        push!(exps.args, exps_ele)
-    end
-    quote
-         $(Expr(:meta, :inline))
-         @inbounds r = $exps
-         Vec{dim}(r)
-    end
-end
+@inline Base.dot{dim}(S1::SymmetricTensor{2, dim}, v2::Vec{dim}) = dot(convert(Tensor{2, dim}, S1), v2)
+
 @inline Base.dot{dim}(v2::Vec{dim}, S1::SymmetricTensor{2, dim}) = dot(S1, v2)
 
 # Promotion
