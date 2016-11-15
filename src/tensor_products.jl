@@ -154,11 +154,11 @@ julia> A ⊗ B
  0.654957  0.48365
 ```
 """
-@inline function otimes{dim, T1, T2, M}(S1::Tensor{2, dim, T1, M}, S2::Tensor{2, dim, T2, M})
+@inline function otimes{dim}(S1::Tensor{2, dim}, S2::Tensor{2, dim})
     Tensor{4, dim}(tovector(S1) * tovector(S2)')
 end
 
-@inline function otimes{dim, T1, T2}(v1::Vec{dim, T1}, v2::Vec{dim, T2})
+@inline function otimes{dim}(v1::Vec{dim}, v2::Vec{dim})
     Tensor{2, dim}(tovector(v1) * tovector(v2)')
 end
 
