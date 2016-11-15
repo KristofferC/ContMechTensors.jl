@@ -42,20 +42,21 @@ end
 const ⊡ = dcontract
 
 # Specialized methods for symmetric tensors
-@gen_code function dcontract{dim, T1, T2, M}(S1::SymmetricTensor{2, dim, T1, M}, S2::SymmetricTensor{2, dim, T2, M})
-    Tv = typeof(zero(T1) * zero(T2))
-    @code :($(Expr(:meta, :inline)))
-    @code :(s = zero($Tv);
-            data1 = get_data(S1);
-            data2 = get_data(S2))
-     for k in 1:M
-        if is_diagonal_index(dim, k)
-            @code :(@inbounds s += data1[$k] * data2[$k])
+@generated function dcontract{dim}(S1::SymmetricTensor{2, dim}, S2::SymmetricTensor{2, dim})
+    idx2(i,j) = compute_index(SymmetricTensor{2, dim}, i, j)
+    ex = Expr[]
+    for i in 1:dim, j in i:dim
+        if i == j
+            push!(ex, :(get_data(S1)[$(idx2(i, j))] * get_data(S2)[$(idx2(i, j))]))
         else
-            @code :(@inbounds s += 2 * data1[$k] * data2[$k])
+            push!(ex, :(2 * get_data(S1)[$(idx2(i, j))] * get_data(S2)[$(idx2(i, j))]))
         end
     end
-    @code :(return s)
+    exp = reduce((ex1,ex2) -> :(+($ex1, $ex2)), ex)
+    return quote
+        $(Expr(:meta, :inline))
+        $exp
+    end
 end
 
 @generated function dcontract{dim}(S1::SymmetricTensor{2, dim}, S2::SymmetricTensor{4, dim})
@@ -63,46 +64,22 @@ end
     idx2(k,l) = compute_index(SymmetricTensor{2, dim}, k, l)
     exps = Expr(:tuple)
     for i in 1:dim, j in i:dim
-        exps_ele = Expr(:call)
-        push!(exps_ele.args, :+)
-            for k in 1:dim, l in k:dim
+        exps_ele = Expr[]
+        for k in 1:dim, l in k:dim
             if k == l
-                push!(exps_ele.args, :(data4[$(idx4(l, k, j, i))] * data2[$(idx2(l,k))]))
+                push!(exps_ele, :(data4[$(idx4(l, k, j, i))] * data2[$(idx2(l, k))]))
             else
-                push!(exps_ele.args, :( 2 * data4[$(idx4(l, k, j, i))] * data2[$(idx2(l,k))]))
+                push!(exps_ele, :( 2 * data4[$(idx4(l, k, j, i))] * data2[$(idx2(l, k))]))
             end
         end
-        push!(exps.args, exps_ele)
+        push!(exps.args, reduce((ex1,ex2) -> :(+($ex1, $ex2)), exps_ele))
     end
     quote
-         data2 = get_data(S1)
-         data4 = get_data(S2)
-         @inbounds r = $exps
-         SymmetricTensor{2, dim}(r)
-    end
-end
-
-@generated function dcontract{dim}(S1::SymmetricTensor{4, dim}, S2::SymmetricTensor{2, dim})
-    idx4(i,j,k,l) = compute_index(SymmetricTensor{4, dim}, i, j, k, l)
-    idx2(k,l) = compute_index(SymmetricTensor{2, dim}, k, l)
-    exps = Expr(:tuple)
-    for i in 1:dim, j in i:dim
-        exps_ele = Expr(:call)
-        push!(exps_ele.args, :+)
-            for k in 1:dim, l in k:dim
-            if k == l
-                push!(exps_ele.args, :(data4[$(idx4(j, i, l, k))] * data2[$(idx2(l,k))]))
-            else
-                push!(exps_ele.args, :( 2 * data4[$(idx4(j, i, l, k))] * data2[$(idx2(l,k))]))
-            end
-        end
-        push!(exps.args, exps_ele)
-    end
-    quote
-         data2 = get_data(S2)
-         data4 = get_data(S1)
-         @inbounds r = $exps
-         SymmetricTensor{2, dim}(r)
+        $(Expr(:meta, :inline))
+        data2 = get_data(S1)
+        data4 = get_data(S2)
+        @inbounds r = $exps
+        SymmetricTensor{2, dim}(r)
     end
 end
 
@@ -111,22 +88,22 @@ end
     idx2(k,l) = compute_index(SymmetricTensor{2, dim}, k, l)
     exps = Expr(:tuple)
     for k in 1:dim, l in k:dim, i in 1:dim, j in i:dim
-        exps_ele = Expr(:call)
-        push!(exps_ele.args, :+)
+        exps_ele = Expr[]
         for m in 1:dim, n in m:dim
             if m == n
-                push!(exps_ele.args, :(data1[$(idx4(j,i,n,m))] * data2[$(idx4(m,n,l,k))]))
+                push!(exps_ele, :(data1[$(idx4(j, i, n, m))] * data2[$(idx4(m, n, l, k))]))
             else
-                 push!(exps_ele.args, :(2*data1[$(idx4(j,i,n,m))] * data2[$(idx4(m,n,l,k))]))
+                push!(exps_ele, :(2 * data1[$(idx4(j, i, n, m))] * data2[$(idx4(m, n, l, k))]))
             end
         end
-        push!(exps.args, exps_ele)
+        push!(exps.args, reduce((ex1,ex2) -> :(+($ex1, $ex2)), exps_ele))
     end
     quote
-         data2 = get_data(S2)
-         data1 = get_data(S1)
-         @inbounds r = $exps
-         SymmetricTensor{4, dim}(r)
+        $(Expr(:meta, :inline))
+        data2 = get_data(S2)
+        data1 = get_data(S1)
+        @inbounds r = $exps
+        SymmetricTensor{4, dim}(r)
     end
 end
 
