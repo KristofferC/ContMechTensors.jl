@@ -306,9 +306,23 @@ julia> tdot(A)
  0.48726  0.540229  0.190334
 ```
 """
-@inline function tdot{dim}(S1::Tensor{2, dim})
-    return SymmetricTensor{2, dim}(transpdot(get_data(S1)))
+@generated function tdot{dim}(S1::Tensor{2, dim})
+    idx(i,j) = compute_index(Tensor{2, dim}, i, j)
+    ex = Expr(:tuple)
+    for i in 1:dim, j in i:dim
+        exps_ele = Expr[]
+        for k in 1:dim
+            push!(exps_ele, :(get_data(S1)[$(idx(k,i))] * get_data(S1)[$(idx(k,j))]))
+        end
+        push!(ex.args, reduce((ex1, ex2) -> :(+($ex1, $ex2)), exps_ele))
+    end
+    return quote
+        $(Expr(:meta, :inline))
+        @inbounds r = $ex
+        SymmetricTensor{2, dim}(r)
+    end
 end
+
 @inline tdot{dim}(S1::SymmetricTensor{2,dim}) = tdot(convert(Tensor{2,dim}, S1))
 
 """
