@@ -142,7 +142,10 @@ end # of testset
 end # of testset
 
 @testset "symmetric/skew-symmetric" begin
-    if dim != 1
+    if dim == 1 # non-symmetric tensors are symmetric
+        @test issymmetric(A)
+        @test issymmetric(AA)
+    elseif dim != 1
         @test !issymmetric(A)
         @test !issymmetric(AA)
         @test !ismajorsymmetric(AA)

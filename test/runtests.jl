@@ -1,5 +1,5 @@
 # Build the real docs first.
-# include("../docs/make.jl")
+include("../docs/make.jl")
 
 using ContMechTensors
 
@@ -273,7 +273,7 @@ for T in (Float32, Float64), dim in (1,2,3), order in (1,2,4)
 end
 end # of testset
 
-@testset "norm, trace, det, inv" begin
+@testset "norm, trace, det, inv, eig" begin
 for T in (Float32, Float64), dim in (1,2,3)
     # norm
     for order in (1,2,4)
@@ -312,6 +312,14 @@ for T in (Float32, Float64), dim in (1,2,3)
     @test inv(t_sym) ≈ inv(Array(t_sym))
     @test isa(inv(t_sym), SymmetricTensor{2, dim, T})
 
+    Λ, Φ = eig(t_sym)
+    Λa, Φa = eig(Array(t_sym))
+
+    @test Λ ≈ Λa
+    for i in 1:dim
+        # scale with first element of eigenvector to account for possible directions
+        @test Φ[:, i]*Φ[1, i] ≈ Φa[:, i]*Φa[1, i]
+    end
 end
 end # of testset
 
