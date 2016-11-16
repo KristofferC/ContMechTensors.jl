@@ -141,13 +141,6 @@ end # of testset
     @test isa(tdot(A_sym), SymmetricTensor{2, dim, T})
 end # of testset
 
-@testset "determinant" begin
-    @test det(A) ≈ det(reshape(vec(A), (dim,dim)))
-    @test det(A_sym) ≈ det(reshape(vec(A_sym), (dim,dim)))
-    @test isa(det(A), T)
-    @test isa(det(A_sym), T)
-end # of testset
-
 @testset "symmetric/skew-symmetric" begin
     if dim != 1
         @test !issymmetric(A)

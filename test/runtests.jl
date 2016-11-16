@@ -7,26 +7,42 @@ using Base.Test
 
 @testset "basic constructors: rand, zero, ones" begin
 for T in (Float32, Float64), dim in (1,2,3), order in (1,2,4)
-    # rand, zero, ones
-    for TensorType in (Tensor, SymmetricTensor), op in (:rand, :zero, :ones)
-        TensorType == SymmetricTensor && order == 1 && continue
-        @eval begin
-            N = ContMechTensors.n_components($TensorType{$order, $dim})
+    for op in (:rand, :zero, :ones)
+        # Tensor, SymmetricTensor
+        for TensorType in (Tensor, SymmetricTensor)
+            TensorType == SymmetricTensor && order == 1 && continue
+            @eval begin
+                N = ContMechTensors.n_components($TensorType{$order, $dim})
 
-            t = @inferred $(op)($TensorType{$order, $dim})
-            @test isa(t, $TensorType{$order, $dim, Float64})
+                t = @inferred $(op)($TensorType{$order, $dim})
+                @test isa(t, $TensorType{$order, $dim, Float64})
 
-            t = @inferred $(op)($TensorType{$order, $dim, $T})
-            @test isa(t, $TensorType{$order, $dim, $T})
+                t = @inferred $(op)($TensorType{$order, $dim, $T})
+                @test isa(t, $TensorType{$order, $dim, $T})
 
-            t = @inferred $(op)($TensorType{$order, $dim, $T, N})
-            @test isa(t, $TensorType{$order, $dim, $T})
+                t = @inferred $(op)($TensorType{$order, $dim, $T, N})
+                @test isa(t, $TensorType{$order, $dim, $T})
 
-            t = @inferred $(op)(t)
-            @test isa(t, $TensorType{$order, $dim, $T})
+                t = @inferred $(op)(t)
+                @test isa(t, $TensorType{$order, $dim, $T})
 
-            $op == zero && @test zero($TensorType{$order, $dim, $T}) == zeros($T, size(t))
-            $op == ones && @test ones($TensorType{$order, $dim, $T}) == ones($T, size(t))
+                $op == zero && @test zero($TensorType{$order, $dim, $T}) == zeros($T, size(t))
+                $op == ones && @test ones($TensorType{$order, $dim, $T}) == ones($T, size(t))
+            end
+        end
+        # Vec
+        if order == 1
+            @eval begin
+                N = ContMechTensors.n_components(Tensor{$order, $dim})
+
+                t = @inferred $(op)(Vec{$dim})
+                @test isa(t, Tensor{$order, $dim, Float64})
+                @test isa(t, Vec{$dim, Float64})
+
+                t = @inferred $(op)(Vec{$dim, $T})
+                @test isa(t, Tensor{$order, $dim, $T})
+                @test isa(t, Vec{$dim, $T})
+            end
         end
     end
 end
@@ -41,7 +57,6 @@ for T in (Float32, Float64), dim in (1,2,3)
     @test diagm(Tensor{2, dim}, v) == diagm(Tensor{2, dim}, vt) == diagm(v)
     @test isa(diagm(Tensor{2, dim}, v), Tensor{2, dim, T})
     @test isa(diagm(Tensor{2, dim}, vt), Tensor{2, dim, T})
-
     @test diagm(SymmetricTensor{2, dim}, v) == diagm(SymmetricTensor{2, dim}, vt) == diagm(v)
     @test isa(diagm(SymmetricTensor{2, dim}, v), SymmetricTensor{2, dim, T})
     @test isa(diagm(SymmetricTensor{2, dim}, vt), SymmetricTensor{2, dim, T})
@@ -49,13 +64,20 @@ for T in (Float32, Float64), dim in (1,2,3)
     v = rand(T); vv = v * ones(T, dim)
     @test diagm(Tensor{2, dim}, v) == diagm(vv)
     @test isa(diagm(Tensor{2, dim}, v), Tensor{2, dim, T})
-
     @test diagm(SymmetricTensor{2, dim}, v) == diagm(vv)
     @test isa(diagm(SymmetricTensor{2, dim}, v), SymmetricTensor{2, dim, T})
+    @test diagm(Tensor{4, dim}, T(1)) == one(Tensor{4, dim, T})
+    @test isa(diagm(Tensor{4, dim}, T(1)), Tensor{4, dim, T})
+    @test diagm(SymmetricTensor{4, dim}, T(1)) == one(SymmetricTensor{4, dim, T})
+    @test isa(diagm(SymmetricTensor{4, dim}, T(1)), SymmetricTensor{4, dim, T})
 
     # one
     @test one(Tensor{2, dim, T}) == diagm(Tensor{2, dim}, one(T)) == eye(T, dim, dim)
     @test one(SymmetricTensor{2, dim, T}) == diagm(SymmetricTensor{2, dim}, one(T)) == eye(T, dim, dim)
+
+    M = 1 # dummy
+    @test one(Tensor{2, dim, T, M}) == one(Tensor{2, dim, T})
+    @test one(SymmetricTensor{2, dim, T, M}) == one(SymmetricTensor{2, dim, T})
 
     I = one(Tensor{2, dim, T})
     I_sym = one(SymmetricTensor{2, dim, T})
@@ -125,6 +147,7 @@ for T in (Float32, Float64)
         fij = (i,j) -> cos(i) + sin(j)
         fijkl = (i, j, k ,l) -> cos(i) + sin(j) + tan(k) + exp(l)
 
+        vf = Vec{dim, T}(fi)
         af = Tensor{1, dim, T}(fi)
         Af = Tensor{2, dim, T}(fij)
         AAf = Tensor{4, dim, T}(fijkl)
@@ -132,6 +155,7 @@ for T in (Float32, Float64)
         AAf_sym = SymmetricTensor{4, dim, T}(fijkl)
 
         # Make sure we get the specified eltype
+        @test isa(vf, Tensor{1, dim, T})
         @test isa(af, Tensor{1, dim, T})
         @test isa(Af, Tensor{2, dim, T})
         @test isa(AAf, Tensor{4, dim, T})
@@ -139,6 +163,7 @@ for T in (Float32, Float64)
         @test isa(AAf_sym, SymmetricTensor{4, dim, T})
 
         for i in 1:dim
+            @test vf[i] == T(fi(i))
             @test af[i] == T(fi(i))
             for j in 1:dim
                 @test Af[i,j] == T(fij(i, j))
@@ -154,6 +179,37 @@ for T in (Float32, Float64)
                  @test AAf_sym[i,j,k,l] == T(fijkl(i,j,k,l))
             end
         end
+    end
+end
+end # of testset
+
+@testset "create from Array" begin
+for (T1, T2) in ((Float32, Float64), (Float64, Float32)), order in (1,2,4), dim in (1,2,3)
+    At = rand(Tensor{order, dim})
+    gen_data = rand(T1, size(At))
+
+    @test Tensor{order, dim}(gen_data) ≈ gen_data
+    @test Tensor{order, dim, T2}(gen_data) ≈ gen_data
+    @test isa(Tensor{order, dim}(gen_data), Tensor{order, dim, T1})
+    @test isa(Tensor{order, dim, T2}(gen_data), Tensor{order, dim, T2})
+
+    if order != 1
+        As = rand(SymmetricTensor{order, dim})
+        gen_data = rand(T1, size(As))
+        At = Tensor{order, dim, T1}(gen_data)
+        Ats = symmetric(At)
+        gen_sym_data_full = Array(Ats)
+        gen_sym_data = T1[Ats.data[i] for i in 1:length(Ats.data)]
+
+        @test SymmetricTensor{order, dim}(gen_sym_data_full) ≈ Ats
+        @test SymmetricTensor{order, dim}(gen_sym_data) ≈ Ats
+        @test SymmetricTensor{order, dim, T2}(gen_sym_data_full) ≈ Ats
+        @test SymmetricTensor{order, dim, T2}(gen_sym_data) ≈ Ats
+
+        @test isa(SymmetricTensor{order, dim}(gen_sym_data_full), SymmetricTensor{order, dim, T1})
+        @test isa(SymmetricTensor{order, dim}(gen_sym_data), SymmetricTensor{order, dim, T1})
+        @test isa(SymmetricTensor{order, dim, T2}(gen_sym_data_full), SymmetricTensor{order, dim, T2})
+        @test isa(SymmetricTensor{order, dim, T2}(gen_sym_data), SymmetricTensor{order, dim, T2})
     end
 end
 end # of testset
@@ -217,56 +273,48 @@ for T in (Float32, Float64), dim in (1,2,3), order in (1,2,4)
 end
 end # of testset
 
-############################
-# Trace, norm, det and inv #
-############################
-@testset "trace, norm, det, inv" begin
-for T in (Float32, Float64)
-    for dim in (1,2,3)
-        for order in (2,)
-            t = rand(Tensor{order, dim, T})
-            t_sym = rand(Tensor{order, dim, T})
-
-            @test (@inferred trace(t)) == sum([t[i,i] for i in 1:dim])
-            @test (@inferred trace(t_sym)) == sum([t_sym[i,i] for i in 1:dim])
-
-            @test trace(t) ≈ vol(t) ≈ mean(t)*3.0
-            @test trace(t_sym) ≈ vol(t_sym) ≈ mean(t_sym)*3.0
-
-            #@test_approx_eq_eps (mean(dev(t)) / norm(t)) 0.0 1e-14
-            #@test_approx_eq_eps (mean(dev(t_sym)) / norm(t_sym)) 0.0 1e-14
-
-            #@inferred mean(dev(t_sym)) / norm(t_sym)
-            #@inferred mean(dev(t_sym)) / norm(t_sym)
+@testset "norm, trace, det, inv" begin
+for T in (Float32, Float64), dim in (1,2,3)
+    # norm
+    for order in (1,2,4)
+        t = rand(Tensor{order, dim, T})
+        @test norm(t) ≈ sqrt(sumabs2(Array(t)[:]))
+        @test isa(norm(t), T)
+        if order != 1
+            t_sym = rand(SymmetricTensor{order, dim, T})
+            @test norm(t_sym) ≈ sqrt(sumabs2(Array(t_sym)[:]))
+            @test isa(norm(t_sym), T)
         end
-
-        for order in (1,2,4)
-            t = rand(Tensor{order, dim, T})
-
-            @test t ≈ Array(t)
-            @test norm(t) ≈ sqrt(sumabs2(Array(t)))
-
-            if order != 1
-                t_sym = rand(SymmetricTensor{order, dim})
-                @test t_sym ≈ Array(t_sym)
-                @test norm(t_sym) ≈ sqrt(sumabs2(Array(t_sym)))
-            end
-
-            if order == 2
-                @test det(t) ≈ det(Array(t))
-                @test det(t_sym) ≈ det(Array(t_sym))
-                @test inv(t) ≈ inv(Array(t))
-                @test inv(t_sym) ≈ inv(Array(t_sym))
-            end
-
-       end
     end
+
+    # trace, dev, det, inv (only for second order tensors)
+    t = rand(Tensor{2, dim, T})
+    t_sym = rand(SymmetricTensor{2, dim, T})
+
+    @test trace(t) == sum([t[i,i] for i in 1:dim])
+    @test trace(t_sym) == sum([t_sym[i,i] for i in 1:dim])
+
+    @test trace(t) ≈ vol(t) ≈ mean(t)*3.0
+    @test trace(t_sym) ≈ vol(t_sym) ≈ mean(t_sym)*3.0
+
+    @test dev(t) ≈ Array(t) - 1/3*trace(t)*eye(dim)
+    @test isa(dev(t), Tensor{2, dim, T})
+    @test dev(t_sym) ≈ Array(t_sym) - 1/3*trace(t_sym)*eye(dim)
+    @test isa(dev(t_sym), SymmetricTensor{2, dim, T})
+
+    @test det(t) ≈ det(Array(t))
+    @test isa(det(t), T)
+    @test det(t_sym) ≈ det(Array(t_sym))
+    @test isa(det(t_sym), T)
+
+    @test inv(t) ≈ inv(Array(t))
+    @test isa(inv(t), Tensor{2, dim, T})
+    @test inv(t_sym) ≈ inv(Array(t_sym))
+    @test isa(inv(t_sym), SymmetricTensor{2, dim, T})
+
 end
 end # of testset
 
-##############
-# Identities #
-##############
 # https://en.wikiversity.org/wiki/Continuum_mechanics/Tensor_algebra_identities
 @testset "tensor identities" begin
 for T in (Float32, Float64)
@@ -329,67 +377,85 @@ for T in (Float32, Float64)
 end
 end # of testset
 
-########################
-# Promotion/Conversion #
-########################
 @testset "promotion/conversion" begin
 const T = Float32
 const WIDE_T = widen(T)
-for dim in (1,2,3)
-    for order in (1,2,4)
+for dim in (1,2,3), order in (1,2,4)
 
-        tens = Tensor{order, dim, T, dim^order}
-        tens_wide = Tensor{order, dim, WIDE_T, dim^order}
+    tens = Tensor{order, dim, T, dim^order}
+    tens_wide = Tensor{order, dim, WIDE_T, dim^order}
 
-        @test promote_type(tens, tens) == tens
-        @test promote_type(tens_wide, tens) == tens_wide
-        @test promote_type(tens, tens_wide) == tens_wide
+    @test promote_type(tens, tens) == tens
+    @test promote_type(tens_wide, tens) == tens_wide
+    @test promote_type(tens, tens_wide) == tens_wide
+    @test promote_type(tens_wide, tens_wide) == tens_wide
 
-        A = rand(Tensor{order, dim, T})
-        B = rand(Tensor{order, dim, WIDE_T})
-        @test typeof(A + B) == tens_wide
-        @test convert(Tensor{order, dim, WIDE_T},A) ≈ A
-        @test convert(typeof(B),A) ≈ A
+    At = rand(tens)
+    Bt = rand(tens_wide)
+    @test isa(At + Bt, tens_wide)
+    @test isa(convert(Tensor, At), tens)
+    @test isa(convert(Tensor{order, dim, T}, At), tens)
+    @test isa(convert(tens, At), tens)
+    @test isa(convert(Tensor{order, dim, WIDE_T}, At), tens_wide)
+    @test isa(convert(tens_wide, At), tens_wide)
 
-        Aint = rand(Tensor{order, dim, Int})
-        @test convert(typeof(A),Aint) ≈ Aint
-        @test typeof(convert(typeof(A),Aint)) == typeof(A)
+    if order != 1
+        M = ContMechTensors.n_components(SymmetricTensor{order, dim})
+        sym = SymmetricTensor{order, dim, T, M}
+        sym_wide = SymmetricTensor{order, dim, WIDE_T, M}
 
-        gen_data = rand(dim*ones(Int,order)...)
-        @test Tensor{order,dim}(gen_data) ≈ gen_data
+        @test promote_type(sym, sym) == sym
+        @test promote_type(sym_wide, sym) == sym_wide
+        @test promote_type(sym, sym_wide) == sym_wide
+        @test promote_type(sym_wide, sym_wide) == sym_wide
 
-        if order != 1
+        @test promote_type(sym, tens) == tens
+        @test promote_type(tens, sym) == tens
+        @test promote_type(sym_wide, tens) == tens_wide
+        @test promote_type(tens, sym_wide) == tens_wide
+        @test promote_type(sym, tens_wide) == tens_wide
+        @test promote_type(tens_wide, sym) == tens_wide
+        @test promote_type(sym_wide, tens_wide) == tens_wide
 
-            M = ContMechTensors.n_components(SymmetricTensor{order, dim})
-            sym = SymmetricTensor{order, dim, T, M}
-            sym_wide = SymmetricTensor{order, dim, WIDE_T, M}
+        As = rand(sym)
+        Bs = rand(sym_wide)
+        @test isa(As + Bs, sym_wide)
 
-            @test promote_type(sym, sym) == sym
-            @test promote_type(sym_wide, sym_wide) == sym_wide
-            @test promote_type(sym, sym_wide) == sym_wide
-            @test promote_type(sym_wide, sym) == sym_wide
+        @test isa(convert(SymmetricTensor, As), sym)
+        @test isa(convert(SymmetricTensor{order, dim, T}, As), sym)
+        @test isa(convert(sym, As), sym)
+        @test isa(convert(SymmetricTensor{order, dim, WIDE_T}, As), sym_wide)
+        @test isa(convert(sym_wide, As), sym_wide)
 
-            @test promote_type(sym, tens) == tens
-            @test promote_type(sym_wide, tens_wide) == tens_wide
-            @test promote_type(tens, sym_wide) == tens_wide
+        # SymmetricTensor -> Tensor
+        @test convert(Tensor, As) ≈ As ≈ Array(As)
+        @test convert(Tensor{order, dim}, As) ≈ As ≈ Array(As)
+        @test convert(Tensor{order, dim, WIDE_T}, As) ≈ As ≈ Array(As)
+        @test convert(tens_wide, As) ≈ As ≈ Array(As)
 
-            A = rand(SymmetricTensor{order, dim, T})
-            B = rand(SymmetricTensor{order, dim, WIDE_T})
-            @test typeof(A + B) == sym_wide
+        @test isa(convert(Tensor, As), tens)
+        @test isa(convert(Tensor{order, dim}, As), tens)
+        @test isa(convert(Tensor{order, dim, WIDE_T}, As), tens_wide)
+        @test isa(convert(tens_wide, As), tens_wide)
 
-            gen_data = rand(dim*ones(Int,order)...)
-            A = Tensor{order, dim}(gen_data)
-            As = symmetric(A)
-            gen_sym_data = As.data
-            Ast = convert(Tensor{order, dim}, As)
-            gen_sym_data_full = reshape([Ast.data...],(dim*ones(Int,order)...))
-            @test SymmetricTensor{order,dim}(gen_sym_data_full) ≈ gen_sym_data_full
-            @test SymmetricTensor{order,dim}(gen_sym_data) ≈ gen_sym_data_full
-
+        # Tensor -> SymmetricTensor
+        if dim != 1
+            @test_throws InexactError convert(SymmetricTensor, At)
+            @test_throws InexactError convert(SymmetricTensor{order, dim}, At)
+            @test_throws InexactError convert(SymmetricTensor{order, dim, WIDE_T}, At)
+            @test_throws InexactError convert(typeof(Bs), At)
         end
     end
 end
-
 end  # of testset
+
+@testset "exceptions" begin
+    # normal multiplication
+    A = rand(Tensor{2, 3})
+    B = rand(Tensor{2, 3})
+    @test_throws Exception A*B
+    @test_throws Exception A'*B
+    @test_throws Exception A.'*B
+end # of testset
 
 include("test_ops.jl")
