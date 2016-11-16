@@ -70,7 +70,7 @@ julia> det(A)
     if dim == 1
         return quote
             $(Expr(:meta, :inline))
-            get_data(t)[$idx(1,1)]
+            get_data(t)[$(idx(1,1))]
         end
     elseif dim == 2
         return quote
