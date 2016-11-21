@@ -109,7 +109,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Constructing tensors",
     "title": "From a function",
     "category": "section",
-    "text": "A tensor can be created from a function f(indices...) -> v which maps a set of indices to a value. The number of arguments of the function should be equal to the order of the tensor.julia> SymmetricTensor{2,2,Float64}((i,j) -> i + j)\n2×2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:\n 2.0  3.0\n 3.0  4.0For symmetric tensors, the function is only called for the lower triangular part."
+    "text": "A tensor can be created from a function f(indices...) -> v which maps a set of indices to a value. The number of arguments of the function should be equal to the order of the tensor.julia> SymmetricTensor{2,2,Float64}((i,j) -> i + j)\n2×2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:\n 2.0  3.0\n 3.0  4.0For symmetric tensors, the function is only called for the upper triangular part."
 },
 
 {
@@ -141,7 +141,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Indexing",
     "title": "Indexing",
     "category": "section",
-    "text": "Indexing into a (Symmetric)Tensor{dim, order} is performed like for an Array of dimension order.julia> A = rand(Tensor{2, 2});\n\njulia> A[1, 2]\n0.5662374165061859\n\njulia> B = rand(SymmetricTensor{4, 2});\n\njulia> B[1, 2, 1, 2]\n0.24683718661000897Slicing will produce a Tensor of lower order.julia> A = rand(Tensor{2, 2});\n\njulia> A[:, 1]\n2-element ContMechTensors.Tensor{1,2,Float64,2}:\n 0.590845\n 0.766797Since Tensors are immutable there is no setindex! function defined on them. Instead, use the functionality to create tensors from functions as described here. As an example, this sets the [1,2] index on a tensor to one and the rest to zero:julia> Tensor{2, 2}((i,j) -> i == 1 && j == 2 ? 1.0 : 0.0)\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 0.0  1.0\n 0.0  0.0For symmetric tensors, note that you should only set the lower triangular part of the tensor:julia> SymmetricTensor{2, 2}((i,j) -> i == 1 && j == 2 ? 1.0 : 0.0)\n2×2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:\n 0.0  0.0\n 0.0  0.0\n\njulia> SymmetricTensor{2, 2}((i,j) -> i == 2 && j == 1 ? 1.0 : 0.0)\n2×2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:\n 0.0  1.0\n 1.0  0.0"
+    "text": "Indexing into a (Symmetric)Tensor{dim, order} is performed like for an Array of dimension order.julia> A = rand(Tensor{2, 2});\n\njulia> A[1, 2]\n0.5662374165061859\n\njulia> B = rand(SymmetricTensor{4, 2});\n\njulia> B[1, 2, 1, 2]\n0.24683718661000897Slicing will produce a Tensor of lower order.julia> A = rand(Tensor{2, 2});\n\njulia> A[:, 1]\n2-element ContMechTensors.Tensor{1,2,Float64,2}:\n 0.590845\n 0.766797Since Tensors are immutable there is no setindex! function defined on them. Instead, use the functionality to create tensors from functions as described here. As an example, this sets the [1,2] index on a tensor to one and the rest to zero:julia> Tensor{2, 2}((i,j) -> i == 1 && j == 2 ? 1.0 : 0.0)\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 0.0  1.0\n 0.0  0.0For symmetric tensors, note that you should only set the upper triangular part of the tensor:julia> SymmetricTensor{2, 2}((i,j) -> i == 2 && j == 1 ? 1.0 : 0.0)\n2×2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:\n 0.0  0.0\n 0.0  0.0\n\njulia> SymmetricTensor{2, 2}((i,j) -> i == 1 && j == 2 ? 1.0 : 0.0)\n2×2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:\n 0.0  1.0\n 1.0  0.0"
 },
 
 {
