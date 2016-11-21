@@ -59,6 +59,46 @@ const ⊡ = dcontract
     end
 end
 
+@generated function dcontract{dim}(S1::Tensor{2, dim}, S2::SymmetricTensor{4, dim})
+    idx4(i,j,k,l) = compute_index(SymmetricTensor{4, dim}, i, j, k, l)
+    idx2(i,j) = compute_index(Tensor{2, dim}, i, j)
+    exps = Expr(:tuple)
+    for k in 1:dim, l in k:dim
+        exps_ele = Expr[]
+        for i in 1:dim, j in 1:dim
+            push!(exps_ele, :(data2[$(idx2(i, j))] * data4[$(idx4(i, j, k, l))]))
+        end
+        push!(exps.args, reduce((ex1,ex2) -> :(+($ex1, $ex2)), exps_ele))
+    end
+    quote
+        $(Expr(:meta, :inline))
+        data2 = get_data(S1)
+        data4 = get_data(S2)
+        @inbounds r = $exps
+        SymmetricTensor{2, dim}(r)
+    end
+end
+
+@generated function dcontract{dim}(S1::SymmetricTensor{4, dim}, S2::Tensor{2, dim})
+    idx4(i,j,k,l) = compute_index(SymmetricTensor{4, dim}, i, j, k, l)
+    idx2(k,l) = compute_index(Tensor{2, dim}, k, l)
+    exps = Expr(:tuple)
+    for i in 1:dim, j in i:dim
+        exps_ele = Expr[]
+        for k in 1:dim, l in 1:dim
+            push!(exps_ele, :(data4[$(idx4(i, j, k, l))] * data2[$(idx2(k, l))]))
+        end
+        push!(exps.args, reduce((ex1,ex2) -> :(+($ex1, $ex2)), exps_ele))
+    end
+    quote
+        $(Expr(:meta, :inline))
+        data2 = get_data(S2)
+        data4 = get_data(S1)
+        @inbounds r = $exps
+        SymmetricTensor{2, dim}(r)
+    end
+end
+
 @generated function dcontract{dim}(S1::SymmetricTensor{2, dim}, S2::SymmetricTensor{4, dim})
     idx4(i,j,k,l) = compute_index(SymmetricTensor{4, dim}, i, j, k, l)
     idx2(i,j) = compute_index(SymmetricTensor{2, dim}, i, j)
@@ -133,10 +173,8 @@ end
 # Promotion
 @inline dcontract{dim}(S1::Tensor{2, dim}, S2::SymmetricTensor{2, dim}) = dcontract(promote(S1, S2)...)
 @inline dcontract{dim}(S1::Tensor{4, dim}, S2::SymmetricTensor{2, dim}) = dcontract(S1, convert(Tensor, S2))
-@inline dcontract{dim}(S1::Tensor{2, dim}, S2::SymmetricTensor{4, dim}) = dcontract(S1, convert(Tensor, S2))
 
 @inline dcontract{dim}(S1::SymmetricTensor{2, dim}, S2::Tensor{2, dim}) = dcontract(promote(S1, S2)...)
-@inline dcontract{dim}(S1::SymmetricTensor{4, dim}, S2::Tensor{2, dim}) = dcontract(convert(Tensor, S1), S2)
 @inline dcontract{dim}(S1::SymmetricTensor{2, dim}, S2::Tensor{4, dim}) = dcontract(convert(Tensor, S1), S2)
 
 @inline dcontract{dim}(S1::Tensor{4, dim}, S2::SymmetricTensor{4, dim}) = dcontract(promote(S1, S2)...)
