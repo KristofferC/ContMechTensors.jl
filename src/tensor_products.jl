@@ -61,15 +61,15 @@ end
 
 @generated function dcontract{dim}(S1::SymmetricTensor{2, dim}, S2::SymmetricTensor{4, dim})
     idx4(i,j,k,l) = compute_index(SymmetricTensor{4, dim}, i, j, k, l)
-    idx2(k,l) = compute_index(SymmetricTensor{2, dim}, k, l)
+    idx2(i,j) = compute_index(SymmetricTensor{2, dim}, i, j)
     exps = Expr(:tuple)
-    for i in 1:dim, j in i:dim
+    for k in 1:dim, l in k:dim
         exps_ele = Expr[]
-        for k in 1:dim, l in k:dim
-            if k == l
-                push!(exps_ele, :(data4[$(idx4(l, k, j, i))] * data2[$(idx2(l, k))]))
+        for i in 1:dim, j in i:dim
+            if i == j
+                push!(exps_ele, :(data2[$(idx2(i, j))] * data4[$(idx4(i, j, k, l))]))
             else
-                push!(exps_ele, :(2 * data4[$(idx4(l, k, j, i))] * data2[$(idx2(l, k))]))
+                push!(exps_ele, :(2 * data2[$(idx2(i, j))] * data4[$(idx4(i, j, k, l))]))
             end
         end
         push!(exps.args, reduce((ex1,ex2) -> :(+($ex1, $ex2)), exps_ele))
@@ -91,9 +91,9 @@ end
         exps_ele = Expr[]
         for k in 1:dim, l in k:dim
             if k == l
-                push!(exps_ele, :(data4[$(idx4(j, i, l, k))] * data2[$(idx2(l,k))]))
+                push!(exps_ele, :(data4[$(idx4(i, j, k, l))] * data2[$(idx2(k, l))]))
             else
-                push!(exps_ele, :(2 * data4[$(idx4(j, i, l, k))] * data2[$(idx2(l,k))]))
+                push!(exps_ele, :(2 * data4[$(idx4(i, j, k, l))] * data2[$(idx2(k, l))]))
             end
         end
         push!(exps.args, reduce((ex1,ex2) -> :(+($ex1, $ex2)), exps_ele))
@@ -109,15 +109,14 @@ end
 
 @generated function dcontract{dim}(S1::SymmetricTensor{4, dim}, S2::SymmetricTensor{4, dim})
     idx4(i,j,k,l) = compute_index(SymmetricTensor{4, dim}, i, j, k, l)
-    idx2(k,l) = compute_index(SymmetricTensor{2, dim}, k, l)
     exps = Expr(:tuple)
     for k in 1:dim, l in k:dim, i in 1:dim, j in i:dim
         exps_ele = Expr[]
         for m in 1:dim, n in m:dim
             if m == n
-                push!(exps_ele, :(data1[$(idx4(j, i, n, m))] * data2[$(idx4(m, n, l, k))]))
+                push!(exps_ele, :(data1[$(idx4(i, j, m, n))] * data2[$(idx4(m, n, k, l))]))
             else
-                push!(exps_ele, :(2 * data1[$(idx4(j, i, n, m))] * data2[$(idx4(m, n, l, k))]))
+                push!(exps_ele, :(2 * data1[$(idx4(i, j, m, n))] * data2[$(idx4(m, n, k, l))]))
             end
         end
         push!(exps.args, reduce((ex1,ex2) -> :(+($ex1, $ex2)), exps_ele))
