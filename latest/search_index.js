@@ -93,7 +93,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Constructing tensors",
     "title": "Identity tensors",
     "category": "section",
-    "text": "An identity tensor is created using the function one, applied to the type of tensor that should be created:julia> one(SymmetricTensor{2, 2})\n2×2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:\n 1.0  0.0\n 0.0  1.0The identity tensor is only defined for tensors of order 2 and 4."
+    "text": "Identity tensors can be created for orders 2 and 4. The components of the second order identity tensor mathbfI are defined as I_ij = delta_ij, where delta_ij is the Kronecker delta. The fourth order identity tensor mathsfI is the resulting tensor from taking the derivative of a second order tensor mathbfA with itself:mathsfI = fracpartial mathbfApartial mathbfA Leftrightarrow I_ijkl = fracpartial A_ijpartial A_kl = delta_ik delta_jlThe symmetric fourth order tensor, mathsfI^textsym, is the resulting tensor from taking the derivative of a symmetric second order tensor mathbfA^textsym with itself:mathsfI^textsym = fracpartial mathbfA^textsympartial mathbfA^textsym Leftrightarrow I^textsym_ijkl = fracpartial A^textsym_ijpartial A^textsym_kl = frac12 (delta_ik delta_jl + delta_il delta_jk)Identity tensors are created using the function one, applied to the type of tensor that should be created:julia> one(SymmetricTensor{2, 2})\n2×2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:\n 1.0  0.0\n 0.0  1.0"
 },
 
 {
@@ -117,7 +117,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Constructing tensors",
     "title": "Diagonal tensors",
     "category": "section",
-    "text": "A diagonal tensor can be created by either giving a number or a vector that should appear on the diagonal:julia> diagm(Tensor{2,2}, 2.0)\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 2.0  0.0\n 0.0  2.0\n\njulia> diagm(SymmetricTensor{2,3}, [1.0, 2.0, 3.0])\n3×3 ContMechTensors.SymmetricTensor{2,3,Float64,6}:\n 1.0  0.0  0.0\n 0.0  2.0  0.0\n 0.0  0.0  3.0"
+    "text": "A diagonal second order tensor can be created by either giving a number or a vector that should appear on the diagonal:julia> diagm(Tensor{2,2}, 2.0)\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 2.0  0.0\n 0.0  2.0\n\njulia> diagm(SymmetricTensor{2,3}, [1.0, 2.0, 3.0])\n3×3 ContMechTensors.SymmetricTensor{2,3,Float64,6}:\n 1.0  0.0  0.0\n 0.0  2.0  0.0\n 0.0  0.0  3.0"
 },
 
 {
