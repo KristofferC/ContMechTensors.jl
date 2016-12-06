@@ -34,15 +34,30 @@ function gradient{F}(f::F, v::Vec)
     return _extract(res)
 end
 
-#=
+
 function _extract{D <: Dual}(v::Vec{1, D})
-    p1 = partials(v[1])
-    Tensor{2, 1}((p1[1],))
+    @inbounds begin
+        p1 = partials(v[1])
+        d = Tensor{2, 1}((p1[1],))
+    end
+    return d
 end
 
 function _extract{D <: Dual}(v::Vec{2, D})
-    p1 = partials(v[1])
-    p2 = partials(v[2])
-    return Tensor{2, 2}((p1[1], p2[1], p1[2], p2[2]))
+    @inbounds begin
+        p1 = partials(v[1])
+        p2 = partials(v[2])
+        d = Tensor{2, 2}((p1[1], p2[1], p1[2], p2[2]))
+    end
+    return d
 end
-=#
+
+function _extract{D <: Dual}(v::Vec{3, D})
+    @inbounds begin
+        p1 = partials(v[1])
+        p2 = partials(v[2])
+        p3 = partials(v[3])
+        d = Tensor{2, 3}((p1[1], p2[1], p3[1], p1[2], p2[2], p3[2], p1[3], p2[3], p3[3]))
+    end
+    return d
+end
