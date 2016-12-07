@@ -10,8 +10,12 @@ import ForwardDiff: Dual, partials
 # and put it into a tensor of higher order.
 
 # Scalar
-@inline function _extract{N, T}(v::Dual{N, T})
+@inline function _extract{N, T}(v::Dual{N, T}, ::Vec{N, T})
     Vec{N, T}(partials(v).values)
+end
+
+@inline function _extract{N, T, dim, T2}(v::Dual{N, T}, ::Type{SymmetricTensor{2, dim, T2, N}})
+    SymmetricTensor{2, dim, T}(partials(v).values)
 end
 
 # Vec
@@ -121,10 +125,14 @@ end
 
 # Second order tensors
 @inline function _load{T}(v::Tensor{2, 1, T})
-    @inbounds v_dual = Tensor{2, 1}((Dual(v.data.data[1], one(t))))
+    @inbounds v_dual = Tensor{2, 1}((Dual(v.data.data[1], one(T))))
     return v_dual
 end
 
+@inline function _load{T}(v::SymmetricTensor{2, 1, T})
+    @inbounds v_dual = SymmetricTensor{2, 1}((Dual(v.data.data[1], one(T))))
+    return v_dual
+end
 
 @inline function _load{T}(v::Tensor{2, 2, T})
     data = v.data.data
@@ -137,6 +145,16 @@ end
     return v_dual
 end
 
+@inline function _load{T}(v::SymmetricTensor{2, 2, T})
+    data = v.data.data
+    o = one(T)
+    o2 = T(1/2)
+    z = zero(T)
+    @inbounds v_dual = SymmetricTensor{2, 2}((Dual(data[1], o, z, z),
+                                              Dual(data[2], z, o2, z),
+                                              Dual(data[3], z, z, o)))
+    return v_dual
+end
 
 @inline function _load{T}(v::Tensor{2, 3, T})
     data = v.data.data
@@ -154,10 +172,23 @@ end
     return v_dual
 end
 
-function gradient{F}(f::F, v::Tensor)
+@inline function _load{T}(v::SymmetricTensor{2, 3, T})
+    data = v.data.data
+    o = one(T)
+    o2 = T(1/2)
+    z = zero(T)
+    @inbounds v_dual = SymmetricTensor{2, 3}((Dual(data[1], o, z, z, z, z, z),
+                                              Dual(data[2], z, o2, z, z, z, z),
+                                              Dual(data[3], z, z, o2, z, z, z),
+                                              Dual(data[4], z, z, z, o, z, z),
+                                              Dual(data[5], z, z, z, z, o2, z),
+                                              Dual(data[6], z, z, z, z, z, o)))
+    return v_dual
+end
+
+function gradient{F}(f::F, v::AbstractTensor)
     v_dual = _load(v)
     res = f(v_dual)
     print(res)
-    return _extract(res)
+    return _extract(res, typeof(v))
 end
-
