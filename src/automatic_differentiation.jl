@@ -64,6 +64,14 @@ end
     return d
 end
 
+@inline function _extract{D <: Dual}(v::SymmetricTensor{2, 1, D}, ::Any)
+    @inbounds begin
+        p1 = partials(v[1,1])
+        d = SymmetricTensor{4, 1}((p1[1],))
+    end
+    return d
+end
+
 @inline function _extract{D <: Dual}(v::Tensor{2, 2, D}, ::Any)
     @inbounds begin
         p1 = partials(v[1,1])
@@ -78,6 +86,17 @@ end
     return d
 end
 
+@inline function _extract{D <: Dual}(v::SymmetricTensor{2, 2, D}, ::Any)
+    @inbounds begin
+        p1 = partials(v[1,1])
+        p2 = partials(v[1,2])
+        p3 = partials(v[2,2])
+        d = SymmetricTensor{4, 2}((p1[1], p2[1], p3[1],
+                                   p1[2], p2[2], p3[2],
+                                   p1[3], p2[3], p3[3]))
+    end
+    return d
+end
 
 @inline function _extract{D <: Dual}(v::Tensor{2, 3, D}, ::Any)
     @inbounds begin
@@ -99,6 +118,25 @@ end
                           p1[7], p2[7], p3[7], p4[7], p5[7], p6[7], p7[7], p8[7], p9[7],
                           p1[8], p2[8], p3[8], p4[8], p5[8], p6[8], p7[8], p8[8], p9[8],
                           p1[9], p2[9], p3[9], p4[9], p5[9], p6[9], p7[9], p8[9], p9[9]))
+    end
+    return d
+end
+
+@inline function _extract{D <: Dual}(v::SymmetricTensor{2, 3, D}, ::Any)
+    @inbounds begin
+        p1 = partials(v[1,1])
+        p2 = partials(v[1,2])
+        p3 = partials(v[1,3])
+        p4 = partials(v[2,2])
+        p5 = partials(v[2,3])
+        p6 = partials(v[3,3])
+
+        d = SymmetricTensor{4, 3}((p1[1], p2[1], p3[1], p4[1], p5[1], p6[1],
+                                   p1[2], p2[2], p3[2], p4[2], p5[2], p6[2],
+                                   p1[3], p2[3], p3[3], p4[3], p5[3], p6[3],
+                                   p1[4], p2[4], p3[4], p4[4], p5[4], p6[4],
+                                   p1[5], p2[5], p3[5], p4[5], p5[5], p6[5],
+                                   p1[6], p2[6], p3[6], p4[6], p5[6], p6[6]))
     end
     return d
 end
@@ -198,6 +236,12 @@ end
 function gradient{F}(f::F, v::AbstractTensor)
     v_dual = _load(v)
     res = f(v_dual)
-    print(res)
     return _extract(res, v)
 end
+
+#=
+function hessian{F}(f::F, v::SecondOrderTensor)
+    gradf = y -> gradient(f, v)
+    return gradient(gradf, v)
+end
+=#
