@@ -239,9 +239,7 @@ function gradient{F}(f::F, v::AbstractTensor)
     return _extract(res, v)
 end
 
-#=
 function hessian{F}(f::F, v::SecondOrderTensor)
-    gradf = y -> gradient(f, v)
+    gradf = y -> gradient(f, y)
     return gradient(gradf, v)
 end
-=#

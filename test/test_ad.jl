@@ -1,4 +1,7 @@
- function Ψ(C, μ, Kb)
+const ∇ = ContMechTensors.gradient
+const Δ = ContMechTensors.hessian
+
+function Ψ(C, μ, Kb)
     detC = det(C)
     J = sqrt(detC)
     Ĉ = detC^(-1/3)*C
@@ -12,8 +15,9 @@ function S(C, μ, Kb)
     return μ * det(C)^(-1/3)*(I - 1/3*trace(C)*invC) + Kb*(J-1)*J*invC
 end
 
-
+@testset "AD" begin
 for dim in 1:3
+    println("Testing AD for dim = $dim")
     for T in (Float32, Float64)
         A = rand(Tensor{2, dim, T})
         B = rand(Tensor{2, dim, T})
@@ -24,37 +28,38 @@ for dim in 1:3
         II_sym = one(SymmetricTensor{4, dim, T})
 
         # Gradient of scalars
-        @test ContMechTensors.gradient(norm, v) ≈ v / norm(v)
-        @test ContMechTensors.gradient(norm, A) ≈ A / norm(A)
-        @test ContMechTensors.gradient(norm, A_sym) ≈ A_sym / norm(A_sym)
-        @test ContMechTensors.gradient(v -> 3*v, v) ≈ diagm(Tensor{2, dim}, 3.0)
+        @test ∇(norm, v) ≈ v / norm(v)
+        @test ∇(norm, A) ≈ A / norm(A)
+        @test ∇(norm, A_sym) ≈ A_sym / norm(A_sym)
+        @test ∇(v -> 3*v, v) ≈ diagm(Tensor{2, dim}, 3.0)
         # https://en.wikipedia.org/wiki/Tensor_derivative_(continuum_mechanics)#Derivatives_of_the_invariants_of_a_second-order_tensor
         I1, DI1 = A -> trace(A), A -> one(A)
         I2, DI2 = A -> 1/2 * (trace(A)^2 - trace(A⋅A)), A -> I1(A) * one(A) - A'
         I3, DI3 = A -> det(A), A -> det(A) * inv(A)'
 
-        @test ContMechTensors.gradient(I1, A) ≈ DI1(A)
-        @test ContMechTensors.gradient(I2, A) ≈ DI2(A)
-        @test ContMechTensors.gradient(I3, A) ≈ DI3(A)
-        @test ContMechTensors.gradient(I1, A_sym) ≈ DI1(A_sym)
-        @test ContMechTensors.gradient(I2, A_sym) ≈ DI2(A_sym)
-        @test ContMechTensors.gradient(I3, A_sym) ≈ DI3(A_sym)
-
+        @test ∇(I1, A) ≈ DI1(A)
+        @test ∇(I2, A) ≈ DI2(A)
+        @test ∇(I3, A) ≈ DI3(A)
+        @test ∇(I1, A_sym) ≈ DI1(A_sym)
+        @test ∇(I2, A_sym) ≈ DI2(A_sym)
+        @test ∇(I3, A_sym) ≈ DI3(A_sym)
 
         # Gradient of second order tensors
-        @test ContMechTensors.gradient(identity, A) ≈ II
-        @test ContMechTensors.gradient(identity, A_sym) ≈ II_sym
-        @test ContMechTensors.gradient(transpose, A) ⊡ B ≈ B'
-        @test ContMechTensors.gradient(transpose, A_sym) ⊡ B_sym ≈ B_sym'
-        @test ContMechTensors.gradient(inv, A) ⊡ B ≈ - inv(A) ⋅ B ⋅ inv(A)
-        @test ContMechTensors.gradient(inv, A_sym) ⊡ B_sym ≈ - inv(A_sym) ⋅ B_sym ⋅ inv(A_sym)
-    
+        @test ∇(identity, A) ≈ II
+        @test ∇(identity, A_sym) ≈ II_sym
+        @test ∇(transpose, A) ⊡ B ≈ B'
+        @test ∇(transpose, A_sym) ⊡ B_sym ≈ B_sym'
+        @test ∇(inv, A) ⊡ B ≈ - inv(A) ⋅ B ⋅ inv(A)
+        @test ∇(inv, A_sym) ⊡ B_sym ≈ - inv(A_sym) ⋅ B_sym ⋅ inv(A_sym)
+
         μ = 1e10;
         Kb = 1.66e11;
         F = one(Tensor{2,3}) + rand(Tensor{2,3});
         C = tdot(F);
-        # WHY IS THIS 2 needed??
-        @test 2 * ContMechTensors.gradient(C -> Ψ(C, μ, Kb), C) ≈ S(C, μ, Kb)
+        @test 2 * ∇(C -> Ψ(C, μ, Kb), C) ≈ S(C, μ, Kb)
+
+        # Hessians of scalars
+        @test Δ(norm, A).data ≈ vec(ForwardDiff.hessian(x -> sqrt(sumabs2(x)), A.data))
     end
 end
-
+end # testset
