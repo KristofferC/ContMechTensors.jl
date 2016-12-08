@@ -89,7 +89,7 @@ end
 @inline function _extract{D <: Dual}(v::SymmetricTensor{2, 2, D}, ::Any)
     @inbounds begin
         p1 = partials(v[1,1])
-        p2 = partials(v[1,2])
+        p2 = partials(v[2,1])
         p3 = partials(v[2,2])
         d = SymmetricTensor{4, 2}((p1[1], p2[1], p3[1],
                                    p1[2], p2[2], p3[2],
@@ -125,10 +125,10 @@ end
 @inline function _extract{D <: Dual}(v::SymmetricTensor{2, 3, D}, ::Any)
     @inbounds begin
         p1 = partials(v[1,1])
-        p2 = partials(v[1,2])
-        p3 = partials(v[1,3])
+        p2 = partials(v[2,1])
+        p3 = partials(v[3,1])
         p4 = partials(v[2,2])
-        p5 = partials(v[2,3])
+        p5 = partials(v[3,2])
         p6 = partials(v[3,3])
 
         d = SymmetricTensor{4, 3}((p1[1], p2[1], p3[1], p4[1], p5[1], p6[1],
