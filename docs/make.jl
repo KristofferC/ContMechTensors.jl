@@ -13,6 +13,7 @@ makedocs(
             "man/binary_operators.md",
             "man/other_operators.md",
             "man/storing_tensors.md",
+            "man/automatic_differentiation.md",
             ],
         "Demos" => "demos.md"
     ]
