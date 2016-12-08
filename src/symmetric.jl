@@ -138,8 +138,6 @@ end
 isminorsymmetric(::SymmetricTensor{4}) = true
 
 function ismajorsymmetric{dim}(t::FourthOrderTensor{dim})
-    N = n_components(Tensor{4, dim})
-    rows = Int(N^(1/4))
     @inbounds for l in 1:dim, k in l:dim, j in 1:dim, i in j:dim
         if t[i,j,k,l] != t[k,l,i,j]
             return false
