@@ -21,10 +21,22 @@ for dim in 1:3
 
     μ = 1e10;
     Kb = 1.66e11;
+
     F = one(Tensor{2,dim}) + rand(Tensor{2,dim});
     C = tdot(F);
-    @test 2 * ∇(C -> Ψ(C, μ, Kb), C) ≈ S(C, μ, Kb)
+    C2 = F' ⋅ F;
+    Ψ(C) = Ψ(C, μ, Kb)
+    S(C) = S(C, μ, Kb)
+    @test 2∇(Ψ, C) ≈ S(C)
+    @test 2∇(Ψ, C2) ≈ S(C2)
 
+    b = rand(SymmetricTensor{2, dim})
+    @test 2 * Δ(Ψ, C) ⊡ b ≈ ∇(S, C) ⊡ b
+    @test 2 * Δ(Ψ, C2) ⊡ b ≈ ∇(S, C2) ⊡ b
+
+    @test ∇(Ψ, C) ≈ ∇(Ψ, C2)
+    @test ∇(S, C) ⊡ b ≈ ∇(S, C2) ⊡ b
+    @test Δ(Ψ, C) ⊡ b ≈ Δ(Ψ, C2) ⊡ b
 
     for T in (Float32, Float64)
         A = rand(Tensor{2, dim, T})
