@@ -9,13 +9,13 @@ end
 
 `ContMechTensors` supports forward mode automatic differentiation (AD) of tensorial functions to compute first order derivatives (gradients) and second order derivatives (Hessians).
 It does this by exploiting the `Dual` number defined in `ForwardDiff.jl`.
-While `ForwardDiff.jl` can itself be used to differentiate tensor functions it is a bit awkward because `ForwardDiff.jl` is written to work with standard Julia `Array`s. One therefore has to send the input argument as an `Array` to `ForwardDiff.jl`, convert it to a `Tensor` and then convert the output `Array` to a `Tensor` again. This can also be inefficient since these `Array`s are allocated on the heap so one needs to preallocte which can be annoying.
+While `ForwardDiff.jl` can itself be used to differentiate tensor functions it is a bit awkward because `ForwardDiff.jl` is written to work with standard Julia `Array`s. One therefore has to send the input argument as an `Array` to `ForwardDiff.jl`, convert it to a `Tensor` and then convert the output `Array` to a `Tensor` again. This can also be inefficient since these `Array`s are allocated on the heap so one needs to preallocate which can be annoying.
 
 Instead, it is simpler to use `ContMechTensors` own AD API to do the differentiation. This does not require any conversions and everything will be stack allocated so there is no need to preallocate.
 
 The API for AD in `ContMechTensors` is `ContMechTensors.gradient(f, A)` and `ContMechTensors.hessian(f, A)` where `f` is a function and `A` is a first or second order tensor. For `gradient` the function can return a scalar, vector (in case the input is a vector) or a second order tensor. For `hessian` the function should return a scalar.
 
-We here give a few examples of different functions and compare with the analytical solution.
+We here give a few examples of differentiating various functions and compare with the analytical solution.
 
 ## Norm of a vector
 
