@@ -4,6 +4,7 @@ makedocs(
     modules = [ContMechTensors],
     format = :html,
     sitename = "ContMechTensors.jl",
+    doctest = true,
     strict = true,
     pages = Any[
         "Home" => "index.md",

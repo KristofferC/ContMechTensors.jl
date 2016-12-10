@@ -2,6 +2,7 @@ using ForwardDiff
 using ContMechTensors
 import ForwardDiff: Dual, partials
 
+
 ######################
 # Extraction methods #
 ######################
@@ -233,13 +234,13 @@ end
     return v_dual
 end
 
-function gradient{F}(f::F, v::AbstractTensor)
+function gradient{F}(f::F, v::Union{SecondOrderTensor, Vec})
     v_dual = _load(v)
     res = f(v_dual)
     return _extract(res, v)
 end
 
-function hessian{F}(f::F, v::SecondOrderTensor)
+function hessian{F}(f::F, v::Union{SecondOrderTensor, Vec})
     gradf = y -> gradient(f, y)
     return gradient(gradf, v)
 end
