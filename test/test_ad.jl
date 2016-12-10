@@ -15,18 +15,19 @@ function S(C, μ, Kb)
     return μ * det(C)^(-1/3)*(I - 1/3*trace(C)*invC) + Kb*(J-1)*J*invC
 end
 
+const μ = 1e10;
+const Kb = 1.66e11;
+Ψ(C) = Ψ(C, μ, Kb)
+S(C) = S(C, μ, Kb)
+
 @testset "AD" begin
 for dim in 1:3
     println("Testing AD for dim = $dim")
 
-    μ = 1e10;
-    Kb = 1.66e11;
-
     F = one(Tensor{2,dim}) + rand(Tensor{2,dim});
     C = tdot(F);
     C2 = F' ⋅ F;
-    Ψ(C) = Ψ(C, μ, Kb)
-    S(C) = S(C, μ, Kb)
+
     @test 2∇(Ψ, C) ≈ S(C)
     @test 2∇(Ψ, C2) ≈ S(C2)
 
