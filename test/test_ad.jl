@@ -18,6 +18,14 @@ end
 @testset "AD" begin
 for dim in 1:3
     println("Testing AD for dim = $dim")
+
+    μ = 1e10;
+    Kb = 1.66e11;
+    F = one(Tensor{2,dim}) + rand(Tensor{2,dim});
+    C = tdot(F);
+    @test 2 * ∇(C -> Ψ(C, μ, Kb), C) ≈ S(C, μ, Kb)
+
+
     for T in (Float32, Float64)
         A = rand(Tensor{2, dim, T})
         B = rand(Tensor{2, dim, T})
@@ -51,12 +59,6 @@ for dim in 1:3
         @test ∇(transpose, A_sym) ⊡ B_sym ≈ B_sym'
         @test ∇(inv, A) ⊡ B ≈ - inv(A) ⋅ B ⋅ inv(A)
         @test ∇(inv, A_sym) ⊡ B_sym ≈ - inv(A_sym) ⋅ B_sym ⋅ inv(A_sym)
-
-        μ = 1e10;
-        Kb = 1.66e11;
-        F = one(Tensor{2,3}) + rand(Tensor{2,3});
-        C = tdot(F);
-        @test 2 * ∇(C -> Ψ(C, μ, Kb), C) ≈ S(C, μ, Kb)
 
         # Hessians of scalars
         @test Δ(norm, A).data ≈ vec(ForwardDiff.hessian(x -> sqrt(sumabs2(x)), A.data))
