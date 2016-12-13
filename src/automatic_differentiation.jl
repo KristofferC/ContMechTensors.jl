@@ -1,7 +1,4 @@
-using ForwardDiff
-using ContMechTensors
 import ForwardDiff: Dual, partials, value
-
 
 ######################
 # Extraction methods #
@@ -290,17 +287,91 @@ end
     return v_dual
 end
 
-function gradient{F}(f::F, v::Union{SecondOrderTensor, Vec})
+"""
+Computes the gradient of the input function. If the (pseudo)-keyword `all`
+is given, the value of the function is also returned
+
+```julia
+gradient(f::Function, v::Union{SecondOrderTensor, Vec})
+gradient(f::Function, v::Union{SecondOrderTensor, Vec}, :all)
+```
+
+**Example:**
+
+```jldoctest
+julia> A = rand(SymmetricTensor{2, 2});
+
+julia> gradnormA = gradient(norm, A)
+2×2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:
+ 0.434906  0.56442
+ 0.56442   0.416793
+
+julia> gradnormA, normA = gradient(norm, A, :all)
+(
+[0.434906 0.56442; 0.56442 0.416793],
+
+1.3585571718808551)
+```
+"""
+function Base.gradient{F}(f::F, v::Union{SecondOrderTensor, Vec})
     v_dual = _load(v)
     res = f(v_dual)
     return _extract_gradient(res, v)
 end
-function gradient{F}(f::F, v::Union{SecondOrderTensor, Vec}, ::Symbol)
+function Base.gradient{F}(f::F, v::Union{SecondOrderTensor, Vec}, ::Symbol)
     v_dual = _load(v)
     res = f(v_dual)
     return _extract_gradient(res, v), _extract_value(res, v)
 end
 
+"""
+Computes the hessian of the input function. If the (pseudo)-keyword `all`
+is given, the lower order results (gradient and value) of the function is
+also returned.
+
+```julia
+hessian(f::Function, v::Union{SecondOrderTensor, Vec})
+hessian(f::Function, v::Union{SecondOrderTensor, Vec}, :all)
+```
+
+**Example:**
+
+```jldoctest
+julia> A = rand(SymmetricTensor{2, 2});
+
+julia> hessnormA = hessian(norm, A)
+2×2×2×2 ContMechTensors.SymmetricTensor{4,2,Float64,9}:
+[:, :, 1, 1] =
+  0.596851  -0.180684
+ -0.180684  -0.133425
+
+[:, :, 2, 1] =
+ -0.180684   0.133546
+  0.133546  -0.173159
+
+[:, :, 1, 2] =
+ -0.180684   0.133546
+  0.133546  -0.173159
+
+[:, :, 2, 2] =
+ -0.133425  -0.173159
+ -0.173159   0.608207
+
+julia> hessnormA, gradnormA, normA = hessian(norm, A, :all)
+(
+[0.596851 -0.180684; -0.180684 -0.133425]
+
+[-0.180684 0.133546; 0.133546 -0.173159]
+
+[-0.180684 0.133546; 0.133546 -0.173159]
+
+[-0.133425 -0.173159; -0.173159 0.608207],
+
+[0.434906 0.56442; 0.56442 0.416793],
+
+1.3585571718808551)
+```
+"""
 function hessian{F}(f::F, v::Union{SecondOrderTensor, Vec})
     gradf = y -> gradient(f, y)
     return gradient(gradf, v)
