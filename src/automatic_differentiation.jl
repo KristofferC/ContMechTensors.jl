@@ -289,7 +289,7 @@ end
 
 """
 Computes the gradient of the input function. If the (pseudo)-keyword `all`
-is given, the value of the function is also returned
+is given, the value of the function is also returned as a second output argument
 
 ```julia
 gradient(f::Function, v::Union{SecondOrderTensor, Vec})
@@ -301,16 +301,12 @@ gradient(f::Function, v::Union{SecondOrderTensor, Vec}, :all)
 ```jldoctest
 julia> A = rand(SymmetricTensor{2, 2});
 
-julia> gradnormA = gradient(norm, A)
+julia> ∇f = gradient(norm, A)
 2×2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:
  0.434906  0.56442
  0.56442   0.416793
 
-julia> gradnormA, normA = gradient(norm, A, :all)
-(
-[0.434906 0.56442; 0.56442 0.416793],
-
-1.3585571718808551)
+julia> ∇f, f = gradient(norm, A, :all);
 ```
 """
 function Base.gradient{F}(f::F, v::Union{SecondOrderTensor, Vec})
@@ -327,7 +323,7 @@ end
 """
 Computes the hessian of the input function. If the (pseudo)-keyword `all`
 is given, the lower order results (gradient and value) of the function is
-also returned.
+also returned as a second and third output argument.
 
 ```julia
 hessian(f::Function, v::Union{SecondOrderTensor, Vec})
@@ -339,7 +335,7 @@ hessian(f::Function, v::Union{SecondOrderTensor, Vec}, :all)
 ```jldoctest
 julia> A = rand(SymmetricTensor{2, 2});
 
-julia> hessnormA = hessian(norm, A)
+julia> ∇∇f = hessian(norm, A)
 2×2×2×2 ContMechTensors.SymmetricTensor{4,2,Float64,9}:
 [:, :, 1, 1] =
   0.596851  -0.180684
@@ -357,19 +353,7 @@ julia> hessnormA = hessian(norm, A)
  -0.133425  -0.173159
  -0.173159   0.608207
 
-julia> hessnormA, gradnormA, normA = hessian(norm, A, :all)
-(
-[0.596851 -0.180684; -0.180684 -0.133425]
-
-[-0.180684 0.133546; 0.133546 -0.173159]
-
-[-0.180684 0.133546; 0.133546 -0.173159]
-
-[-0.133425 -0.173159; -0.173159 0.608207],
-
-[0.434906 0.56442; 0.56442 0.416793],
-
-1.3585571718808551)
+julia> ∇∇f, ∇f, f = hessian(norm, A, :all);
 ```
 """
 function hessian{F}(f::F, v::Union{SecondOrderTensor, Vec})
