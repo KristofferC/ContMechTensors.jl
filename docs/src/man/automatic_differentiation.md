@@ -33,7 +33,7 @@ $f(\mathbf{x}) = |\mathbf{x}| \quad \Rightarrow \quad \partial f / \partial \mat
 ```jldoctest
 julia> x = rand(Vec{2});
 
-julia> ContMechTensors.gradient(norm, x)
+julia> gradient(norm, x)
 2-element ContMechTensors.Tensor{1,2,Float64,2}:
  0.61036
  0.792124
@@ -51,7 +51,7 @@ $f(\mathbf{A}) = \det \mathbf{A} \quad \Rightarrow \quad \partial f / \partial \
 ```jldoctest
 julia> A = rand(SymmetricTensor{2,2});
 
-julia> ContMechTensors.gradient(det, A)
+julia> gradient(det, A)
 2×2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:
   0.566237  -0.766797
  -0.766797   0.590845
@@ -73,7 +73,7 @@ julia> E = rand(Tensor{4,2});
 
 julia> ψ(ϵ) = 1/2 * ϵ ⊡ E ⊡ ϵ;
 
-julia> E_sym = ContMechTensors.hessian(ψ, rand(Tensor{2,2}));
+julia> E_sym = hessian(ψ, rand(Tensor{2,2}));
 
 julia> norm(majorsymmetric(E) - E_sym)
 0.0
