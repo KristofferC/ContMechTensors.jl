@@ -26,9 +26,11 @@ gradient
 hessian
 ```
 
+## Examples
+
 We here give a few examples of differentiating various functions and compare with the analytical solution.
 
-## Norm of a vector
+### Norm of a vector
 
 $f(\mathbf{x}) = |\mathbf{x}| \quad \Rightarrow \quad \partial f / \partial \mathbf{x} = \mathbf{x} / |\mathbf{x}|$
 
@@ -46,7 +48,7 @@ julia> x / norm(x)
  0.792124
 ```
 
-## Determinant of a second order symmetric tensor
+### Determinant of a second order symmetric tensor
 
 $f(\mathbf{A}) = \det \mathbf{A} \quad \Rightarrow \quad \partial f / \partial \mathbf{A} = \mathbf{A}^{-T} \det \mathbf{A}$
 
@@ -64,7 +66,7 @@ julia> inv(A)' * det(A)
  -0.766797   0.590845
 ```
 
-## Hessian of a quadratic potential
+### Hessian of a quadratic potential
 
 $\psi(\mathbf{e}) = 1/2 \mathbf{e} : \mathsf{E} : \mathbf{e} \quad \Rightarrow \quad \partial \psi / (\partial \mathbf{e} \otimes \partial \mathbf{e}) = \mathsf{E}^\text{sym}$
 
