@@ -473,11 +473,35 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "man/automatic_differentiation.html#Base.LinAlg.gradient",
+    "page": "Automatic Differentiation",
+    "title": "Base.LinAlg.gradient",
+    "category": "Function",
+    "text": "Computes the gradient of the input function. If the (pseudo)-keyword all is given, the value of the function is also returned as a second output argument\n\ngradient(f::Function, v::Union{SecondOrderTensor, Vec})\ngradient(f::Function, v::Union{SecondOrderTensor, Vec}, :all)\n\nExample:\n\njulia> A = rand(SymmetricTensor{2, 2});\n\njulia> ∇f = gradient(norm, A)\n2×2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:\n 0.434906  0.56442\n 0.56442   0.416793\n\njulia> ∇f, f = gradient(norm, A, :all);\n\n\n\n"
+},
+
+{
+    "location": "man/automatic_differentiation.html#ContMechTensors.hessian",
+    "page": "Automatic Differentiation",
+    "title": "ContMechTensors.hessian",
+    "category": "Function",
+    "text": "Computes the hessian of the input function. If the (pseudo)-keyword all is given, the lower order results (gradient and value) of the function is also returned as a second and third output argument.\n\nhessian(f::Function, v::Union{SecondOrderTensor, Vec})\nhessian(f::Function, v::Union{SecondOrderTensor, Vec}, :all)\n\nExample:\n\njulia> A = rand(SymmetricTensor{2, 2});\n\njulia> ∇∇f = hessian(norm, A)\n2×2×2×2 ContMechTensors.SymmetricTensor{4,2,Float64,9}:\n[:, :, 1, 1] =\n  0.596851  -0.180684\n -0.180684  -0.133425\n\n[:, :, 2, 1] =\n -0.180684   0.133546\n  0.133546  -0.173159\n\n[:, :, 1, 2] =\n -0.180684   0.133546\n  0.133546  -0.173159\n\n[:, :, 2, 2] =\n -0.133425  -0.173159\n -0.173159   0.608207\n\njulia> ∇∇f, ∇f, f = hessian(norm, A, :all);\n\n\n\n"
+},
+
+{
     "location": "man/automatic_differentiation.html#Automatic-Differentiation-1",
     "page": "Automatic Differentiation",
     "title": "Automatic Differentiation",
     "category": "section",
-    "text": "ContMechTensors supports forward mode automatic differentiation (AD) of tensorial functions to compute first order derivatives (gradients) and second order derivatives (Hessians). It does this by exploiting the Dual number defined in ForwardDiff.jl. While ForwardDiff.jl can itself be used to differentiate tensor functions it is a bit awkward because ForwardDiff.jl is written to work with standard Julia Arrays. One therefore has to send the input argument as an Array to ForwardDiff.jl, convert it to a Tensor and then convert the output Array to a Tensor again. This can also be inefficient since these Arrays are allocated on the heap so one needs to preallocate which can be annoying.Instead, it is simpler to use ContMechTensors own AD API to do the differentiation. This does not require any conversions and everything will be stack allocated so there is no need to preallocate.The API for AD in ContMechTensors is ContMechTensors.gradient(f, A) and ContMechTensors.hessian(f, A) where f is a function and A is a first or second order tensor. For gradient the function can return a scalar, vector (in case the input is a vector) or a second order tensor. For hessian the function should return a scalar.We here give a few examples of differentiating various functions and compare with the analytical solution."
+    "text": "Pages = [\"automatic_differentiation.md\"]ContMechTensors supports forward mode automatic differentiation (AD) of tensorial functions to compute first order derivatives (gradients) and second order derivatives (Hessians). It does this by exploiting the Dual number defined in ForwardDiff.jl. While ForwardDiff.jl can itself be used to differentiate tensor functions it is a bit awkward because ForwardDiff.jl is written to work with standard Julia Arrays. One therefore has to send the input argument as an Array to ForwardDiff.jl, convert it to a Tensor and then convert the output Array to a Tensor again. This can also be inefficient since these Arrays are allocated on the heap so one needs to preallocate which can be annoying.Instead, it is simpler to use ContMechTensors own AD API to do the differentiation. This does not require any conversions and everything will be stack allocated so there is no need to preallocate.The API for AD in ContMechTensors is gradient(f, A) and hessian(f, A) where f is a function and A is a first or second order tensor. For gradient the function can return a scalar, vector (in case the input is a vector) or a second order tensor. For hessian the function should return a scalar.When evaluating the function with dual numbers, the value (value and gradient in the case of hessian) is obtained automatically, along with the gradient. To obtain the lower order results gradient and hessian accepts a third arguement, a Symbol. Note that the symbol is only used to dispatch to the correct function, and thus it can be any symbol. In the examples the symbol :all is used to obtain all the lower order derivatives and values.gradient\nhessian"
+},
+
+{
+    "location": "man/automatic_differentiation.html#Examples-1",
+    "page": "Automatic Differentiation",
+    "title": "Examples",
+    "category": "section",
+    "text": "We here give a few examples of differentiating various functions and compare with the analytical solution."
 },
 
 {
@@ -485,7 +509,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Automatic Differentiation",
     "title": "Norm of a vector",
     "category": "section",
-    "text": "f(mathbfx) = mathbfx quad Rightarrow quad partial f  partial mathbfx = mathbfx  mathbfxjulia> x = rand(Vec{2});\n\njulia> ContMechTensors.gradient(norm, x)\n2-element ContMechTensors.Tensor{1,2,Float64,2}:\n 0.61036\n 0.792124\n\njulia> x / norm(x)\n2-element ContMechTensors.Tensor{1,2,Float64,2}:\n 0.61036\n 0.792124"
+    "text": "f(mathbfx) = mathbfx quad Rightarrow quad partial f  partial mathbfx = mathbfx  mathbfxjulia> x = rand(Vec{2});\n\njulia> gradient(norm, x)\n2-element ContMechTensors.Tensor{1,2,Float64,2}:\n 0.61036\n 0.792124\n\njulia> x / norm(x)\n2-element ContMechTensors.Tensor{1,2,Float64,2}:\n 0.61036\n 0.792124"
 },
 
 {
@@ -493,7 +517,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Automatic Differentiation",
     "title": "Determinant of a second order symmetric tensor",
     "category": "section",
-    "text": "f(mathbfA) = det mathbfA quad Rightarrow quad partial f  partial mathbfA = mathbfA^-T det mathbfAjulia> A = rand(SymmetricTensor{2,2});\n\njulia> ContMechTensors.gradient(det, A)\n2×2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:\n  0.566237  -0.766797\n -0.766797   0.590845\n\njulia> inv(A)' * det(A)\n2×2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:\n  0.566237  -0.766797\n -0.766797   0.590845"
+    "text": "f(mathbfA) = det mathbfA quad Rightarrow quad partial f  partial mathbfA = mathbfA^-T det mathbfAjulia> A = rand(SymmetricTensor{2,2});\n\njulia> gradient(det, A)\n2×2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:\n  0.566237  -0.766797\n -0.766797   0.590845\n\njulia> inv(A)' * det(A)\n2×2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:\n  0.566237  -0.766797\n -0.766797   0.590845"
 },
 
 {
@@ -501,7 +525,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Automatic Differentiation",
     "title": "Hessian of a quadratic potential",
     "category": "section",
-    "text": "psi(mathbfe) = 12 mathbfe  mathsfE  mathbfe quad Rightarrow quad partial psi  (partial mathbfe otimes partial mathbfe) = mathsfE^textsymwhere mathsfE^textsym is the major symmetric part of mathsfE.julia> E = rand(Tensor{4,2});\n\njulia> ψ(ϵ) = 1/2 * ϵ ⊡ E ⊡ ϵ;\n\njulia> E_sym = ContMechTensors.hessian(ψ, rand(Tensor{2,2}));\n\njulia> norm(majorsymmetric(E) - E_sym)\n0.0"
+    "text": "psi(mathbfe) = 12 mathbfe  mathsfE  mathbfe quad Rightarrow quad partial psi  (partial mathbfe otimes partial mathbfe) = mathsfE^textsymwhere mathsfE^textsym is the major symmetric part of mathsfE.julia> E = rand(Tensor{4,2});\n\njulia> ψ(ϵ) = 1/2 * ϵ ⊡ E ⊡ ϵ;\n\njulia> E_sym = hessian(ψ, rand(Tensor{2,2}));\n\njulia> norm(majorsymmetric(E) - E_sym)\n0.0"
 },
 
 {
@@ -541,7 +565,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Demos",
     "title": "Automatic differentiation",
     "category": "section",
-    "text": "For some material models it can be cumbersome to compute the analytical expression for the Second Piola Kirchoff tensor. We can then instead use Automatic Differentiation (AD). Below is an example which computes the Second Piola Kirchoff tensor using AD and compares it to the analytical answer.DocTestSetup = quote\n    srand(1234)\n    using ContMechTensors\n    E = 200e9\n    ν = 0.3\n    dim = 2\n    λ = E*ν / ((1 + ν) * (1 - 2ν))\n    μ = E / (2(1 + ν))\n    δ(i,j) = i == j ? 1.0 : 0.0\n    f = (i,j,k,l) -> λ*δ(i,j)*δ(k,l) + μ*(δ(i,k)*δ(j,l) + δ(i,l)*δ(j,k))\n\n    C = SymmetricTensor{4, dim}(f)\n\n    function Ψ(C, μ, Kb)\n        detC = det(C)\n        J = sqrt(detC)\n        Ĉ = detC^(-1/3)*C\n        return 1/2*(μ * (trace(Ĉ)- 3) + Kb*(J-1)^2)\n    end\n\n    function S(C, μ, Kb)\n        I = one(C)\n        J = sqrt(det(C))\n        invC = inv(C)\n        return μ * det(C)^(-1/3)*(I - 1/3*trace(C)*invC) + Kb*(J-1)*J*invC\n    end\nendjulia> μ = 1e10;\n\njulia> Kb = 1.66e11;\n\njulia> F = one(Tensor{2,3}) + rand(Tensor{2,3});\n\njulia> C = tdot(F);\n\njulia> S_AD = 2 * ContMechTensors.gradient(C -> Ψ(C, μ, Kb), C)\n3×3 ContMechTensors.SymmetricTensor{2,3,Float64,6}:\n  4.30534e11  -2.30282e11  -8.52861e10\n -2.30282e11   4.38793e11  -2.64481e11\n -8.52861e10  -2.64481e11   7.85515e11\n\njulia> S(C, μ, Kb)\n3×3 ContMechTensors.SymmetricTensor{2,3,Float64,6}:\n  4.30534e11  -2.30282e11  -8.52861e10\n -2.30282e11   4.38793e11  -2.64481e11\n -8.52861e10  -2.64481e11   7.85515e11"
+    "text": "For some material models it can be cumbersome to compute the analytical expression for the Second Piola Kirchoff tensor. We can then instead use Automatic Differentiation (AD). Below is an example which computes the Second Piola Kirchoff tensor using AD and compares it to the analytical answer.DocTestSetup = quote\n    srand(1234)\n    using ContMechTensors\n    E = 200e9\n    ν = 0.3\n    dim = 2\n    λ = E*ν / ((1 + ν) * (1 - 2ν))\n    μ = E / (2(1 + ν))\n    δ(i,j) = i == j ? 1.0 : 0.0\n    f = (i,j,k,l) -> λ*δ(i,j)*δ(k,l) + μ*(δ(i,k)*δ(j,l) + δ(i,l)*δ(j,k))\n\n    C = SymmetricTensor{4, dim}(f)\n\n    function Ψ(C, μ, Kb)\n        detC = det(C)\n        J = sqrt(detC)\n        Ĉ = detC^(-1/3)*C\n        return 1/2*(μ * (trace(Ĉ)- 3) + Kb*(J-1)^2)\n    end\n\n    function S(C, μ, Kb)\n        I = one(C)\n        J = sqrt(det(C))\n        invC = inv(C)\n        return μ * det(C)^(-1/3)*(I - 1/3*trace(C)*invC) + Kb*(J-1)*J*invC\n    end\nendjulia> μ = 1e10;\n\njulia> Kb = 1.66e11;\n\njulia> F = one(Tensor{2,3}) + rand(Tensor{2,3});\n\njulia> C = tdot(F);\n\njulia> S_AD = 2 * gradient(C -> Ψ(C, μ, Kb), C)\n3×3 ContMechTensors.SymmetricTensor{2,3,Float64,6}:\n  4.30534e11  -2.30282e11  -8.52861e10\n -2.30282e11   4.38793e11  -2.64481e11\n -8.52861e10  -2.64481e11   7.85515e11\n\njulia> S(C, μ, Kb)\n3×3 ContMechTensors.SymmetricTensor{2,3,Float64,6}:\n  4.30534e11  -2.30282e11  -8.52861e10\n -2.30282e11   4.38793e11  -2.64481e11\n -8.52861e10  -2.64481e11   7.85515e11"
 },
 
 ]}
