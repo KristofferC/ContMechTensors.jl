@@ -29,7 +29,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Home",
     "title": "Installation",
     "category": "section",
-    "text": "ContMechTensors is a registered package and so can be installed viaPkg.add(\"ContMechTensors\")The package has no dependencies other than Julia (0.5 and up) itself."
+    "text": "ContMechTensors is a registered package and so can be installed viaPkg.add(\"ContMechTensors\")"
 },
 
 {
