@@ -165,7 +165,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Binary Operations",
     "title": "Base.LinAlg.dot",
     "category": "Function",
-    "text": "Computes the dot product (single contraction) between two tensors. The symbol ⋅, written \\cdot, is overloaded for single contraction.\n\ndot(::Vec, ::Vec)\ndot(::Vec, ::SecondOrderTensor)\ndot(::SecondOrderTensor, ::Vec)\ndot(::SecondOrderTensor, ::SecondOrderTensor)\n\nExample:\n\njulia> A = rand(Tensor{2, 2})\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 0.590845  0.566237\n 0.766797  0.460085\n\njulia> B = rand(Tensor{1, 2})\n2-element ContMechTensors.Tensor{1,2,Float64,2}:\n 0.794026\n 0.854147\n\njulia> dot(A, B)\n2-element ContMechTensors.Tensor{1,2,Float64,2}:\n 0.952796\n 1.00184\n\njulia> A ⋅ B\n2-element ContMechTensors.Tensor{1,2,Float64,2}:\n 0.952796\n 1.00184\n\n\n\n"
+    "text": "dot(::Vec, ::Vec)\ndot(::Vec, ::SecondOrderTensor)\ndot(::SecondOrderTensor, ::Vec)\ndot(::SecondOrderTensor, ::SecondOrderTensor)\n\nComputes the dot product (single contraction) between two tensors. The symbol ⋅, written \\cdot, is overloaded for single contraction.\n\nExample:\n\njulia> A = rand(Tensor{2, 2})\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 0.590845  0.566237\n 0.766797  0.460085\n\njulia> B = rand(Tensor{1, 2})\n2-element ContMechTensors.Tensor{1,2,Float64,2}:\n 0.794026\n 0.854147\n\njulia> dot(A, B)\n2-element ContMechTensors.Tensor{1,2,Float64,2}:\n 0.952796\n 1.00184\n\njulia> A ⋅ B\n2-element ContMechTensors.Tensor{1,2,Float64,2}:\n 0.952796\n 1.00184\n\n\n\n"
 },
 
 {
@@ -181,7 +181,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Binary Operations",
     "title": "ContMechTensors.dcontract",
     "category": "Function",
-    "text": "Computes the double contraction between two tensors. The symbol ⊡, written \\boxdot, is overloaded for double contraction. The reason : is not used is because it does not have the same precedence as multiplication.\n\ndcontract(::SecondOrderTensor, ::SecondOrderTensor)\ndcontract(::SecondOrderTensor, ::FourthOrderTensor)\ndcontract(::FourthOrderTensor, ::SecondOrderTensor)\ndcontract(::FourthOrderTensor, ::FourthOrderTensor)\n\nExample:\n\njulia> A = rand(SymmetricTensor{2, 2});\n\njulia> B = rand(SymmetricTensor{2, 2});\n\njulia> dcontract(A,B)\n1.9732018397544984\n\njulia> A ⊡ B\n1.9732018397544984\n\n\n\n"
+    "text": "dcontract(::SecondOrderTensor, ::SecondOrderTensor)\ndcontract(::SecondOrderTensor, ::FourthOrderTensor)\ndcontract(::FourthOrderTensor, ::SecondOrderTensor)\ndcontract(::FourthOrderTensor, ::FourthOrderTensor)\n\nComputes the double contraction between two tensors. The symbol ⊡, written \\boxdot, is overloaded for double contraction. The reason : is not used is because it does not have the same precedence as multiplication.\n\nExample:\n\njulia> A = rand(SymmetricTensor{2, 2});\n\njulia> B = rand(SymmetricTensor{2, 2});\n\njulia> dcontract(A,B)\n1.9732018397544984\n\njulia> A ⊡ B\n1.9732018397544984\n\n\n\n"
 },
 
 {
@@ -197,7 +197,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Binary Operations",
     "title": "ContMechTensors.otimes",
     "category": "Function",
-    "text": "Computes the open product between two tensors. The symbol ⊗, written \\otimes, is overloaded for tensor products.\n\notimes(::Vec, ::Vec)\notimes(::SecondOrderTensor, ::SecondOrderTensor)\n\nExample:\n\njulia> A = rand(SymmetricTensor{2, 2});\n\njulia> B = rand(SymmetricTensor{2, 2});\n\njulia> A ⊗ B\n2×2×2×2 ContMechTensors.SymmetricTensor{4,2,Float64,9}:\n[:, :, 1, 1] =\n 0.271839  0.352792\n 0.352792  0.260518\n\n[:, :, 2, 1] =\n 0.469146  0.608857\n 0.608857  0.449607\n\n[:, :, 1, 2] =\n 0.469146  0.608857\n 0.608857  0.449607\n\n[:, :, 2, 2] =\n 0.504668  0.654957\n 0.654957  0.48365\n\n\n\n"
+    "text": "otimes(::Vec, ::Vec)\notimes(::SecondOrderTensor, ::SecondOrderTensor)\n\nComputes the open product between two tensors. The symbol ⊗, written \\otimes, is overloaded for tensor products.\n\nExample:\n\njulia> A = rand(SymmetricTensor{2, 2});\n\njulia> B = rand(SymmetricTensor{2, 2});\n\njulia> A ⊗ B\n2×2×2×2 ContMechTensors.SymmetricTensor{4,2,Float64,9}:\n[:, :, 1, 1] =\n 0.271839  0.352792\n 0.352792  0.260518\n\n[:, :, 2, 1] =\n 0.469146  0.608857\n 0.608857  0.449607\n\n[:, :, 1, 2] =\n 0.469146  0.608857\n 0.608857  0.449607\n\n[:, :, 2, 2] =\n 0.504668  0.654957\n 0.654957  0.48365\n\n\n\n"
 },
 
 {
@@ -229,7 +229,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Other operators",
     "title": "ContMechTensors.tdot",
     "category": "Function",
-    "text": "Computes the transpose-dot product (single contraction) between two tensors.\n\ntdot(::Vec, ::Vec)\ntdot(::Vec, ::SecondOrderTensor)\ntdot(::SecondOrderTensor, ::Vec)\ntdot(::SecondOrderTensor, ::SecondOrderTensor)\n\nExample:\n\njulia> A = rand(Tensor{2,2})\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 0.590845  0.566237\n 0.766797  0.460085\n\njulia> B = rand(Tensor{2,2})\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 0.794026  0.200586\n 0.854147  0.298614\n\njulia> tdot(A,B)\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 1.1241    0.347492\n 0.842587  0.250967\n\njulia> A'⋅B\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 1.1241    0.347492\n 0.842587  0.250967\n\n\n\nComputes the transpose-dot of a second order tensor with itself. Returns a SymmetricTensor\n\ntdot(::SecondOrderTensor)\n\nExample:\n\njulia> A = rand(Tensor{2,3})\n3×3 ContMechTensors.Tensor{2,3,Float64,9}:\n 0.590845  0.460085  0.200586\n 0.766797  0.794026  0.298614\n 0.566237  0.854147  0.246837\n\njulia> tdot(A)\n3×3 ContMechTensors.SymmetricTensor{2,3,Float64,6}:\n 1.2577   1.36435   0.48726\n 1.36435  1.57172   0.540229\n 0.48726  0.540229  0.190334\n\n\n\n"
+    "text": "tdot(::Vec, ::Vec)\ntdot(::Vec, ::SecondOrderTensor)\ntdot(::SecondOrderTensor, ::Vec)\ntdot(::SecondOrderTensor, ::SecondOrderTensor)\n\nComputes the transpose-dot product (single contraction) between two tensors.\n\nExample:\n\njulia> A = rand(Tensor{2,2})\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 0.590845  0.566237\n 0.766797  0.460085\n\njulia> B = rand(Tensor{2,2})\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 0.794026  0.200586\n 0.854147  0.298614\n\njulia> tdot(A,B)\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 1.1241    0.347492\n 0.842587  0.250967\n\njulia> A'⋅B\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 1.1241    0.347492\n 0.842587  0.250967\n\n\n\ntdot(::SecondOrderTensor)\n\nComputes the transpose-dot of a second order tensor with itself. Returns a SymmetricTensor.\n\nExample:\n\njulia> A = rand(Tensor{2,3})\n3×3 ContMechTensors.Tensor{2,3,Float64,9}:\n 0.590845  0.460085  0.200586\n 0.766797  0.794026  0.298614\n 0.566237  0.854147  0.246837\n\njulia> tdot(A)\n3×3 ContMechTensors.SymmetricTensor{2,3,Float64,6}:\n 1.2577   1.36435   0.48726\n 1.36435  1.57172   0.540229\n 0.48726  0.540229  0.190334\n\n\n\n"
 },
 
 {
@@ -245,7 +245,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Other operators",
     "title": "Base.LinAlg.norm",
     "category": "Function",
-    "text": "Computes the norm of a tensor\n\nnorm(::Vec)\nnorm(::SecondOrderTensor)\nnorm(::FourthOrderTensor)\n\nExample:\n\njulia> A = rand(Tensor{2,3})\n3×3 ContMechTensors.Tensor{2,3,Float64,9}:\n 0.590845  0.460085  0.200586\n 0.766797  0.794026  0.298614\n 0.566237  0.854147  0.246837\n\njulia> norm(A)\n1.7377443667834922\n\n\n\n"
+    "text": "norm(::Vec)\nnorm(::SecondOrderTensor)\nnorm(::FourthOrderTensor)\n\nComputes the norm of a tensor.\n\nExample:\n\njulia> A = rand(Tensor{2,3})\n3×3 ContMechTensors.Tensor{2,3,Float64,9}:\n 0.590845  0.460085  0.200586\n 0.766797  0.794026  0.298614\n 0.566237  0.854147  0.246837\n\njulia> norm(A)\n1.7377443667834922\n\n\n\n"
 },
 
 {
@@ -261,7 +261,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Other operators",
     "title": "Base.LinAlg.trace",
     "category": "Function",
-    "text": "Computes the trace of a second order tensor. The synonym vol can also be used.\n\ntrace(::SecondOrderTensor)\n\nExample:\n\njulia> A = rand(SymmetricTensor{2,3})\n3×3 ContMechTensors.SymmetricTensor{2,3,Float64,6}:\n 0.590845  0.766797  0.566237\n 0.766797  0.460085  0.794026\n 0.566237  0.794026  0.854147\n\njulia> trace(A)\n1.9050765715072775\n\n\n\n"
+    "text": "trace(::SecondOrderTensor)\n\nComputes the trace of a second order tensor. The synonym vol can also be used.\n\nExample:\n\njulia> A = rand(SymmetricTensor{2,3})\n3×3 ContMechTensors.SymmetricTensor{2,3,Float64,6}:\n 0.590845  0.766797  0.566237\n 0.766797  0.460085  0.794026\n 0.566237  0.794026  0.854147\n\njulia> trace(A)\n1.9050765715072775\n\n\n\n"
 },
 
 {
@@ -277,7 +277,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Other operators",
     "title": "Base.LinAlg.det",
     "category": "Function",
-    "text": "Computes the determinant of a second order tensor.\n\ndet(::SecondOrderTensor)\n\nExample:\n\njulia> A = rand(SymmetricTensor{2,3})\n3×3 ContMechTensors.SymmetricTensor{2,3,Float64,6}:\n 0.590845  0.766797  0.566237\n 0.766797  0.460085  0.794026\n 0.566237  0.794026  0.854147\n\njulia> det(A)\n-0.1005427219925894\n\n\n\n"
+    "text": "det(::SecondOrderTensor)\n\nComputes the determinant of a second order tensor.\n\nExample:\n\njulia> A = rand(SymmetricTensor{2,3})\n3×3 ContMechTensors.SymmetricTensor{2,3,Float64,6}:\n 0.590845  0.766797  0.566237\n 0.766797  0.460085  0.794026\n 0.566237  0.794026  0.854147\n\njulia> det(A)\n-0.1005427219925894\n\n\n\n"
 },
 
 {
@@ -293,7 +293,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Other operators",
     "title": "Base.inv",
     "category": "Function",
-    "text": "Computes the inverse of a second order tensor.\n\ninv(::SecondOrderTensor)\n\nExample:\n\njulia> A = rand(Tensor{2,3})\n3×3 ContMechTensors.Tensor{2,3,Float64,9}:\n 0.590845  0.460085  0.200586\n 0.766797  0.794026  0.298614\n 0.566237  0.854147  0.246837\n\njulia> inv(A)\n3×3 ContMechTensors.Tensor{2,3,Float64,9}:\n  19.7146   -19.2802    7.30384\n   6.73809  -10.7687    7.55198\n -68.541     81.4917  -38.8361\n\n\n\n"
+    "text": "inv(::SecondOrderTensor)\n\nComputes the inverse of a second order tensor.\n\nExample:\n\njulia> A = rand(Tensor{2,3})\n3×3 ContMechTensors.Tensor{2,3,Float64,9}:\n 0.590845  0.460085  0.200586\n 0.766797  0.794026  0.298614\n 0.566237  0.854147  0.246837\n\njulia> inv(A)\n3×3 ContMechTensors.Tensor{2,3,Float64,9}:\n  19.7146   -19.2802    7.30384\n   6.73809  -10.7687    7.55198\n -68.541     81.4917  -38.8361\n\n\n\n"
 },
 
 {
@@ -309,7 +309,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Other operators",
     "title": "Base.transpose",
     "category": "Function",
-    "text": "Computes the transpose of a tensor. For a fourth order tensor, the transpose is the minor transpose\n\ntranspose(::Vec)\ntranspose(::SecondOrderTensor)\ntranspose(::FourthOrderTensor)\n\nExample:\n\njulia> A = rand(Tensor{2,2})\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 0.590845  0.566237\n 0.766797  0.460085\n\njulia> A'\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 0.590845  0.766797\n 0.566237  0.460085\n\n\n\n"
+    "text": "transpose(::Vec)\ntranspose(::SecondOrderTensor)\ntranspose(::FourthOrderTensor)\n\nComputes the transpose of a tensor. For a fourth order tensor, the transpose is the minor transpose.\n\nExample:\n\njulia> A = rand(Tensor{2,2})\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 0.590845  0.566237\n 0.766797  0.460085\n\njulia> A'\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 0.590845  0.766797\n 0.566237  0.460085\n\n\n\n"
 },
 
 {
@@ -317,7 +317,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Other operators",
     "title": "ContMechTensors.minortranspose",
     "category": "Function",
-    "text": "Computes the minor transpose of a fourth order tensor.\n\nminortranspose(::FourthOrderTensor)\n\n\n\n"
+    "text": "minortranspose(::FourthOrderTensor)\n\nComputes the minor transpose of a fourth order tensor.\n\n\n\n"
 },
 
 {
@@ -325,7 +325,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Other operators",
     "title": "ContMechTensors.majortranspose",
     "category": "Function",
-    "text": "Computes the major transpose of a fourth order tensor.\n\nmajortranspose(::FourthOrderTensor)\n\n\n\n"
+    "text": "majortranspose(::FourthOrderTensor)\n\nComputes the major transpose of a fourth order tensor.\n\n\n\n"
 },
 
 {
@@ -341,7 +341,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Other operators",
     "title": "ContMechTensors.symmetric",
     "category": "Function",
-    "text": "Computes the symmetric part of a second or fourth order tensor. For a fourth order tensor, the symmetric part is the same as the minor symmetric part. Returns a SymmetricTensor.\n\nsymmetric(::SecondOrderTensor)\nsymmetric(::FourthOrderTensor)\n\nExample:\n\njulia> A = rand(Tensor{2,2})\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 0.590845  0.566237\n 0.766797  0.460085\n\njulia> symmetric(A)\n2×2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:\n 0.590845  0.666517\n 0.666517  0.460085\n\n\n\n"
+    "text": "symmetric(::SecondOrderTensor)\nsymmetric(::FourthOrderTensor)\n\nComputes the symmetric part of a second or fourth order tensor. For a fourth order tensor, the symmetric part is the same as the minor symmetric part. Returns a SymmetricTensor.\n\nExample:\n\njulia> A = rand(Tensor{2,2})\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 0.590845  0.566237\n 0.766797  0.460085\n\njulia> symmetric(A)\n2×2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:\n 0.590845  0.666517\n 0.666517  0.460085\n\n\n\n"
 },
 
 {
@@ -349,7 +349,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Other operators",
     "title": "ContMechTensors.minorsymmetric",
     "category": "Function",
-    "text": "Computes the minor symmetric part of a fourth order tensor, returns a SymmetricTensor{4}\n\nminorsymmetric(::FourthOrderTensor)\n\n\n\n"
+    "text": "minorsymmetric(::FourthOrderTensor)\n\nComputes the minor symmetric part of a fourth order tensor, returns a SymmetricTensor{4}.\n\n\n\n"
 },
 
 {
@@ -357,7 +357,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Other operators",
     "title": "ContMechTensors.majorsymmetric",
     "category": "Function",
-    "text": "Computes the major symmetric part of a fourth order tensor, returns a Tensor{4}\n\nmajorsymmetric(::FourthOrderTensor)\n\n\n\n"
+    "text": "majorsymmetric(::FourthOrderTensor)\n\nComputes the major symmetric part of a fourth order tensor, returns a Tensor{4}.\n\n\n\n"
 },
 
 {
@@ -373,7 +373,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Other operators",
     "title": "ContMechTensors.skew",
     "category": "Function",
-    "text": "Computes the skew-symmetric (anti-symmetric) part of a second order tensor, returns a Tensor{2}\n\nskew(::SecondOrderTensor)\n\n\n\n"
+    "text": "skew(::SecondOrderTensor)\n\nComputes the skew-symmetric (anti-symmetric) part of a second order tensor, returns a Tensor{2}.\n\n\n\n"
 },
 
 {
@@ -389,7 +389,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Other operators",
     "title": "ContMechTensors.dev",
     "category": "Function",
-    "text": "Computes the deviatoric part of a second order tensor.\n\ndev(::SecondOrderTensor)\n\nExample:\n\njulia> A = rand(Tensor{2,3});\n\njulia> dev(A)\n3×3 ContMechTensors.Tensor{2,3,Float64,9}:\n 0.0469421  0.460085   0.200586\n 0.766797   0.250123   0.298614\n 0.566237   0.854147  -0.297065\n\njulia> trace(dev(A))\n0.0\n\n\n\n"
+    "text": "dev(::SecondOrderTensor)\n\nComputes the deviatoric part of a second order tensor.\n\nExample:\n\njulia> A = rand(Tensor{2,3});\n\njulia> dev(A)\n3×3 ContMechTensors.Tensor{2,3,Float64,9}:\n 0.0469421  0.460085   0.200586\n 0.766797   0.250123   0.298614\n 0.566237   0.854147  -0.297065\n\njulia> trace(dev(A))\n0.0\n\n\n\n"
 },
 
 {
@@ -405,7 +405,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Other operators",
     "title": "Base.LinAlg.cross",
     "category": "Function",
-    "text": "Computes the cross product between two Vec vectors, returns a Vec{3}. For dimensions 1 and 2 the Vec's are expanded to 3D first. The infix operator × (written \\times) can also be used\n\ncross(::Vec, ::Vec)\n\nExample:\n\njulia> a = rand(Vec{3})\n3-element ContMechTensors.Tensor{1,3,Float64,3}:\n 0.590845\n 0.766797\n 0.566237\n\njulia> b = rand(Vec{3})\n3-element ContMechTensors.Tensor{1,3,Float64,3}:\n 0.460085\n 0.794026\n 0.854147\n\njulia> a × b\n3-element ContMechTensors.Tensor{1,3,Float64,3}:\n  0.20535\n -0.24415\n  0.116354\n\n\n\n"
+    "text": "cross(::Vec, ::Vec)\n\nComputes the cross product between two Vec vectors, returns a Vec{3}. For dimensions 1 and 2 the Vec's are expanded to 3D first. The infix operator × (written \\times) can also be used.\n\nExample:\n\njulia> a = rand(Vec{3})\n3-element ContMechTensors.Tensor{1,3,Float64,3}:\n 0.590845\n 0.766797\n 0.566237\n\njulia> b = rand(Vec{3})\n3-element ContMechTensors.Tensor{1,3,Float64,3}:\n 0.460085\n 0.794026\n 0.854147\n\njulia> a × b\n3-element ContMechTensors.Tensor{1,3,Float64,3}:\n  0.20535\n -0.24415\n  0.116354\n\n\n\n"
 },
 
 {
@@ -421,7 +421,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Other operators",
     "title": "Base.LinAlg.eig",
     "category": "Function",
-    "text": "Computes the eigenvalues and eigenvectors of a symmetric second order tensor.\n\neig(::SymmetricSecondOrderTensor)\n\nExample:\n\njulia> A = rand(SymmetricTensor{2,3})\n3×3 ContMechTensors.SymmetricTensor{2,3,Float64,6}:\n 0.590845  0.766797  0.566237\n 0.766797  0.460085  0.794026\n 0.566237  0.794026  0.854147\n\njulia> Λ, Φ = eig(A);\n\njulia> Λ\n3-element ContMechTensors.Tensor{1,3,Float64,3}:\n -0.312033\n  0.15636\n  2.06075\n\njulia> Φ\n3×3 ContMechTensors.Tensor{2,3,Float64,9}:\n  0.492843  -0.684993  0.536554\n -0.811724  -0.139855  0.567049\n  0.313385   0.715     0.624952\n\njulia> Φ ⋅ diagm(Tensor{2,3}, Λ) ⋅ inv(Φ) # Same as A\n3×3 ContMechTensors.Tensor{2,3,Float64,9}:\n 0.590845  0.766797  0.566237\n 0.766797  0.460085  0.794026\n 0.566237  0.794026  0.854147\n\n\n\n"
+    "text": "eig(::SymmetricSecondOrderTensor)\n\nComputes the eigenvalues and eigenvectors of a symmetric second order tensor.\n\nExample:\n\njulia> A = rand(SymmetricTensor{2,3})\n3×3 ContMechTensors.SymmetricTensor{2,3,Float64,6}:\n 0.590845  0.766797  0.566237\n 0.766797  0.460085  0.794026\n 0.566237  0.794026  0.854147\n\njulia> Λ, Φ = eig(A);\n\njulia> Λ\n3-element ContMechTensors.Tensor{1,3,Float64,3}:\n -0.312033\n  0.15636\n  2.06075\n\njulia> Φ\n3×3 ContMechTensors.Tensor{2,3,Float64,9}:\n  0.492843  -0.684993  0.536554\n -0.811724  -0.139855  0.567049\n  0.313385   0.715     0.624952\n\njulia> Φ ⋅ diagm(Tensor{2,3}, Λ) ⋅ inv(Φ) # Same as A\n3×3 ContMechTensors.Tensor{2,3,Float64,9}:\n 0.590845  0.766797  0.566237\n 0.766797  0.460085  0.794026\n 0.566237  0.794026  0.854147\n\n\n\n"
 },
 
 {
@@ -437,7 +437,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Other operators",
     "title": "ContMechTensors.dotdot",
     "category": "Function",
-    "text": "Computes a special dot product between two vectors and a symmetric fourth order tensor such that a_k C_ikjl b_l.\n\ndotdot(::Vec, ::SymmetricFourthOrderTensor, ::Vec)\n\n\n\n"
+    "text": "dotdot(::Vec, ::SymmetricFourthOrderTensor, ::Vec)\n\nComputes a special dot product between two vectors and a symmetric fourth order tensor such that a_k C_ikjl b_l.\n\n\n\n"
 },
 
 {
@@ -477,7 +477,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Automatic Differentiation",
     "title": "Base.LinAlg.gradient",
     "category": "Function",
-    "text": "Computes the gradient of the input function. If the (pseudo)-keyword all is given, the value of the function is also returned as a second output argument\n\ngradient(f::Function, v::Union{SecondOrderTensor, Vec})\ngradient(f::Function, v::Union{SecondOrderTensor, Vec}, :all)\n\nExample:\n\njulia> A = rand(SymmetricTensor{2, 2});\n\njulia> ∇f = gradient(norm, A)\n2×2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:\n 0.434906  0.56442\n 0.56442   0.416793\n\njulia> ∇f, f = gradient(norm, A, :all);\n\n\n\n"
+    "text": "gradient(f::Function, v::Union{SecondOrderTensor, Vec})\ngradient(f::Function, v::Union{SecondOrderTensor, Vec}, :all)\n\nComputes the gradient of the input function. If the (pseudo)-keyword all is given, the value of the function is also returned as a second output argument.\n\nExample:\n\njulia> A = rand(SymmetricTensor{2, 2});\n\njulia> ∇f = gradient(norm, A)\n2×2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:\n 0.434906  0.56442\n 0.56442   0.416793\n\njulia> ∇f, f = gradient(norm, A, :all);\n\n\n\n"
 },
 
 {
@@ -485,7 +485,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Automatic Differentiation",
     "title": "ContMechTensors.hessian",
     "category": "Function",
-    "text": "Computes the hessian of the input function. If the (pseudo)-keyword all is given, the lower order results (gradient and value) of the function is also returned as a second and third output argument.\n\nhessian(f::Function, v::Union{SecondOrderTensor, Vec})\nhessian(f::Function, v::Union{SecondOrderTensor, Vec}, :all)\n\nExample:\n\njulia> A = rand(SymmetricTensor{2, 2});\n\njulia> ∇∇f = hessian(norm, A)\n2×2×2×2 ContMechTensors.SymmetricTensor{4,2,Float64,9}:\n[:, :, 1, 1] =\n  0.596851  -0.180684\n -0.180684  -0.133425\n\n[:, :, 2, 1] =\n -0.180684   0.133546\n  0.133546  -0.173159\n\n[:, :, 1, 2] =\n -0.180684   0.133546\n  0.133546  -0.173159\n\n[:, :, 2, 2] =\n -0.133425  -0.173159\n -0.173159   0.608207\n\njulia> ∇∇f, ∇f, f = hessian(norm, A, :all);\n\n\n\n"
+    "text": "hessian(f::Function, v::Union{SecondOrderTensor, Vec})\nhessian(f::Function, v::Union{SecondOrderTensor, Vec}, :all)\n\nComputes the hessian of the input function. If the (pseudo)-keyword all is given, the lower order results (gradient and value) of the function is also returned as a second and third output argument.\n\nExample:\n\njulia> A = rand(SymmetricTensor{2, 2});\n\njulia> ∇∇f = hessian(norm, A)\n2×2×2×2 ContMechTensors.SymmetricTensor{4,2,Float64,9}:\n[:, :, 1, 1] =\n  0.596851  -0.180684\n -0.180684  -0.133425\n\n[:, :, 2, 1] =\n -0.180684   0.133546\n  0.133546  -0.173159\n\n[:, :, 1, 2] =\n -0.180684   0.133546\n  0.133546  -0.173159\n\n[:, :, 2, 2] =\n -0.133425  -0.173159\n -0.173159   0.608207\n\njulia> ∇∇f, ∇f, f = hessian(norm, A, :all);\n\n\n\n"
 },
 
 {
