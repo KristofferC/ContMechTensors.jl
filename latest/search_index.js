@@ -229,7 +229,15 @@ var documenterSearchIndex = {"docs": [
     "page": "Other operators",
     "title": "ContMechTensors.tdot",
     "category": "Function",
-    "text": "tdot(::Vec, ::Vec)\ntdot(::Vec, ::SecondOrderTensor)\ntdot(::SecondOrderTensor, ::Vec)\ntdot(::SecondOrderTensor, ::SecondOrderTensor)\n\nComputes the transpose-dot product (single contraction) between two tensors.\n\nExample:\n\njulia> A = rand(Tensor{2,2})\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 0.590845  0.566237\n 0.766797  0.460085\n\njulia> B = rand(Tensor{2,2})\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 0.794026  0.200586\n 0.854147  0.298614\n\njulia> tdot(A,B)\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 1.1241    0.347492\n 0.842587  0.250967\n\njulia> A'⋅B\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 1.1241    0.347492\n 0.842587  0.250967\n\n\n\ntdot(::SecondOrderTensor)\n\nComputes the transpose-dot of a second order tensor with itself. Returns a SymmetricTensor.\n\nExample:\n\njulia> A = rand(Tensor{2,3})\n3×3 ContMechTensors.Tensor{2,3,Float64,9}:\n 0.590845  0.460085  0.200586\n 0.766797  0.794026  0.298614\n 0.566237  0.854147  0.246837\n\njulia> tdot(A)\n3×3 ContMechTensors.SymmetricTensor{2,3,Float64,6}:\n 1.2577   1.36435   0.48726\n 1.36435  1.57172   0.540229\n 0.48726  0.540229  0.190334\n\n\n\n"
+    "text": "tdot(::SecondOrderTensor)\n\nComputes the transpose-dot of a second order tensor with itself. Returns a SymmetricTensor.\n\nExample:\n\njulia> A = rand(Tensor{2,3})\n3×3 ContMechTensors.Tensor{2,3,Float64,9}:\n 0.590845  0.460085  0.200586\n 0.766797  0.794026  0.298614\n 0.566237  0.854147  0.246837\n\njulia> tdot(A)\n3×3 ContMechTensors.SymmetricTensor{2,3,Float64,6}:\n 1.2577   1.36435   0.48726\n 1.36435  1.57172   0.540229\n 0.48726  0.540229  0.190334\n\n\n\n"
+},
+
+{
+    "location": "man/other_operators.html#ContMechTensors.dott",
+    "page": "Other operators",
+    "title": "ContMechTensors.dott",
+    "category": "Function",
+    "text": "dott(::SecondOrderTensor)\n\nComputes the dot-transpose of a second order tensor with itself. Returns a SymmetricTensor.\n\nExample:\n\njulia> A = rand(Tensor{2,3})\n3×3 ContMechTensors.Tensor{2,3,Float64,9}:\n 0.590845  0.460085  0.200586\n 0.766797  0.794026  0.298614\n 0.566237  0.854147  0.246837\n\njulia> dott(A)\n3×3 ContMechTensors.SymmetricTensor{2,3,Float64,6}:\n 0.601011  0.878275  0.777051\n 0.878275  1.30763   1.18611\n 0.777051  1.18611   1.11112\n\n\n\n"
 },
 
 {
@@ -237,7 +245,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Other operators",
     "title": "Transpose-dot",
     "category": "section",
-    "text": "The product between the transpose of a tensor with a second tensor.mathbfA = mathbfB^textT cdot mathbfC Leftrightarrow A_ij = B_ki^textT C_kj = B_ik C_kjtdot"
+    "text": "The dot product between the transpose of a tensor with itself. Results in a symmetric tensor.mathbfA = mathbfB^textT cdot mathbfB Leftrightarrow A_ij = B_ki^textT B_kj = B_ik B_kjmathbfA = mathbfB cdot mathbfB^textT Leftrightarrow A_ij = B_ik B_jk^textT = B_ik B_kjtdot\ndott"
 },
 
 {
