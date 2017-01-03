@@ -194,6 +194,20 @@ for op in (:zero, :rand, :ones)
     @eval @inline Base.$op(t::AllTensors) = $op(typeof(t))
 end
 
+# zeros
+for TensorType in (SymmetricTensor, Tensor)
+    @eval begin
+        @inline Base.zeros{order, dim}(Tt::Type{$TensorType{order, dim}}, dims...) = zeros($TensorType{order, dim, Float64}, dims...)
+        @inline function Base.zeros{order, dim, T}(Tt::Type{$TensorType{order, dim, T}}, dims...)
+            N = n_components($TensorType{order, dim})
+            return zeros($TensorType{order, dim, T, N}, dims...)
+        end
+        @inline Base.zeros{order, dim, T, M}(Tt::Type{$TensorType{order, dim, T, M}}, dims...) =
+            fill!(Array{$TensorType{order, dim, T, M}}(dims...), zero($TensorType{order, dim, T}))
+    end
+end
+@inline Base.zeros{dim}(::Type{Vec{dim}}, dims...) = zeros(Vec{dim, Float64}, dims...)
+
 # diagm
 for TensorType in (SymmetricTensor, Tensor)
     @eval begin
