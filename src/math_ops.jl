@@ -22,7 +22,7 @@ julia> norm(A)
 """
 @inline Base.norm(v::Vec) = sqrt(dot(v, v))
 @inline Base.norm(S::SecondOrderTensor) = sqrt(dcontract(S, S))
-@inline Base.norm{dim, T}(S::Tensor{4, dim, T}) = sqrt(sumabs2(tovector(S)))
+@inline Base.norm{dim, T}(S::Tensor{4, dim, T}) = sqrt(sum(abs2, tovector(S)))
 
 @generated function Base.norm{dim}(S::SymmetricTensor{4, dim})
     idx(i,j,k,l) = compute_index(SymmetricTensor{4, dim}, i, j, k, l)

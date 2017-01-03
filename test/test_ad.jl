@@ -90,8 +90,8 @@ for dim in 1:3
         @test ∇(inv, A_sym, :all)[2] ≈ inv(A_sym)
 
         # Hessians of scalars
-        @test Δ(norm, A).data ≈ Δ(norm, A, :all)[1].data ≈ vec(ForwardDiff.hessian(x -> sqrt(sumabs2(x)), A.data))
-        @test Δ(norm, A, :all)[2].data ≈ vec(ForwardDiff.gradient(x -> sqrt(sumabs2(x)), A.data))
+        @test Δ(norm, A).data ≈ Δ(norm, A, :all)[1].data ≈ vec(ForwardDiff.hessian(x -> sqrt(sum(abs2, x)), A.data))
+        @test Δ(norm, A, :all)[2].data ≈ vec(ForwardDiff.gradient(x -> sqrt(sum(abs2, x)), A.data))
         @test Δ(norm, A, :all)[3] ≈ norm(A)
     end
 end
