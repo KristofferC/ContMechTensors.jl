@@ -114,16 +114,7 @@ for T in (Float32, Float64), dim in (1,2,3), order in (1,2,4), TensorType in (Te
         @test (@inferred t - t) == zero(t) == 0 * Array(t)
         @test isa(t - t, $TensorType{$order, $dim})
 
-        # Binary tensor number: +, -, *, /
-        @test 2 + t == t + 2 == 2 + Array(t)
-        @test isa(2 + t, $TensorType{$order, $dim})
-        @test isa(t + 2, $TensorType{$order, $dim})
-
-        @test t - 2 == Array(t) - 2
-        @test 2 - t == 2 - Array(t)
-        @test isa(t - 2, $TensorType{$order, $dim})
-        @test isa(2 - t, $TensorType{$order, $dim})
-
+        # Binary tensor number: *, /
         @test 0.5 * t ≈ t * 0.5 ≈ t / 2.0 ≈ 0.5 * Array(t)
         @test isa(0.5 * t, $TensorType{$order, $dim})
         @test isa(t * 0.5, $TensorType{$order, $dim})
