@@ -66,7 +66,7 @@ julia> ones(Tensor{2,2})
 By default, a tensor of `Float64`s is created, but by explicitly giving the `T` parameter this can be changed, like for [zero](@ref zero_tensors).
 
 !!! note
-    The function `ones` have double meaning: it can create a tensor filled with ones
+    The function `ones` has double meaning: it can create a tensor filled with ones
     (as described above) or create a Julia `Array` with [identity tensors](@ref identity_tensors).
     Thus, to create an `Array` with tensors filled with ones, instead use array comprehension:
 
