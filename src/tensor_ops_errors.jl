@@ -21,12 +21,7 @@ function Base.:\(S1::AbstractTensor, S2::AbstractTensor)
 end
 
 # Remove + and - between number and Tensor (issue #75)
-function Base.:+(n::Number, T::AbstractTensor)
-    error("addition of numbers and tensors is not a valid operation")
-end
-Base.:+(T::AbstractTensor, n::Number) = n + T
-
-function Base.:-(n::Number, T::AbstractTensor)
-    error("subtraction of numbers and tensors is not a valid operation")
-end
-Base.:-(T::AbstractTensor, n::Number) = n - T
+Base.:+(n::Number, T::AbstractTensor) = throw(MethodError(+, (n, T)))
+Base.:+(T::AbstractTensor, n::Number) = throw(MethodError(+, (T, n)))
+Base.:-(n::Number, T::AbstractTensor) = throw(MethodError(-, (n, T)))
+Base.:-(T::AbstractTensor, n::Number) = throw(MethodError(-, (T, n)))
