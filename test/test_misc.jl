@@ -470,4 +470,10 @@ end  # of testset
     @test_throws Exception A'*B
     @test_throws Exception A.'*B
     @test_throws Exception A\B
+
+    # issue 75
+    @test_throws Exception A+1
+    @test_throws Exception 1+A
+    @test_throws Exception A-1
+    @test_throws Exception 1-A
 end # of testset
