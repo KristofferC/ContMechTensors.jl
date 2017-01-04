@@ -65,11 +65,11 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/constructing_tensors.html#Zero-tensors-1",
+    "location": "man/constructing_tensors.html#zero_tensors-1",
     "page": "Constructing tensors",
     "title": "Zero tensors",
     "category": "section",
-    "text": "A tensor with only zeros is created using the function zero, applied to the type of tensor that should be created:julia> zero(Tensor{1, 2})\n2-element ContMechTensors.Tensor{1,2,Float64,2}:\n 0.0\n 0.0By default, a tensor of Float64s is created but by explicitly giving the T parameter, this can be changed:julia> zero(SymmetricTensor{4, 2, Float32})\n2×2×2×2 ContMechTensors.SymmetricTensor{4,2,Float32,9}:\n[:, :, 1, 1] =\n 0.0  0.0\n 0.0  0.0\n\n[:, :, 2, 1] =\n 0.0  0.0\n 0.0  0.0\n\n[:, :, 1, 2] =\n 0.0  0.0\n 0.0  0.0\n\n[:, :, 2, 2] =\n 0.0  0.0\n 0.0  0.0"
+    "text": "A tensor with only zeros is created using the function zero, applied to the type of tensor that should be created:julia> zero(Tensor{1, 2})\n2-element ContMechTensors.Tensor{1,2,Float64,2}:\n 0.0\n 0.0By default, a tensor of Float64s is created, but by explicitly giving the T parameter this can be changed:julia> zero(SymmetricTensor{4, 2, Float32})\n2×2×2×2 ContMechTensors.SymmetricTensor{4,2,Float32,9}:\n[:, :, 1, 1] =\n 0.0  0.0\n 0.0  0.0\n\n[:, :, 2, 1] =\n 0.0  0.0\n 0.0  0.0\n\n[:, :, 1, 2] =\n 0.0  0.0\n 0.0  0.0\n\n[:, :, 2, 2] =\n 0.0  0.0\n 0.0  0.0A Julia Array with zeroed tensors can be created with zeroes, with the tensor type and dimensions of the array as arguments:julia> zeros(Tensor{2,2}, 2, 3)\n2×3 Array{ContMechTensors.Tensor{2,2,Float64,4},2}:\n [0.0 0.0; 0.0 0.0]  [0.0 0.0; 0.0 0.0]  [0.0 0.0; 0.0 0.0]\n [0.0 0.0; 0.0 0.0]  [0.0 0.0; 0.0 0.0]  [0.0 0.0; 0.0 0.0]"
 },
 
 {
@@ -77,7 +77,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Constructing tensors",
     "title": "Constant tensors",
     "category": "section",
-    "text": "A tensor filled with ones is created using the function ones, applied to the type of tensor that should be created:julia> ones(Tensor{2,2})\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 1.0  1.0\n 1.0  1.0By default, a tensor of Float64s is created but by explicitly giving the T parameter, this can be changed:julia> ones(Vec{3,Float32})\n3-element ContMechTensors.Tensor{1,3,Float32,3}:\n 1.0\n 1.0\n 1.0"
+    "text": "A tensor filled with ones is created using the function ones, applied to the type of tensor that should be created:julia> ones(Tensor{2,2})\n2×2 ContMechTensors.Tensor{2,2,Float64,4}:\n 1.0  1.0\n 1.0  1.0By default, a tensor of Float64s is created, but by explicitly giving the T parameter this can be changed, like for zero.note: Note\nThe function ones has double meaning: it can create a tensor filled with ones (as described above) or create a Julia Array with identity tensors. Thus, to create an Array with tensors filled with ones, instead use array comprehension:julia> [ones(Tensor{2,2}) for i in 1:2, j in 1:3]\n2×3 Array{ContMechTensors.Tensor{2,2,Float64,4},2}:\n [1.0 1.0; 1.0 1.0]  [1.0 1.0; 1.0 1.0]  [1.0 1.0; 1.0 1.0]\n [1.0 1.0; 1.0 1.0]  [1.0 1.0; 1.0 1.0]  [1.0 1.0; 1.0 1.0]"
 },
 
 {
@@ -89,11 +89,11 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/constructing_tensors.html#Identity-tensors-1",
+    "location": "man/constructing_tensors.html#identity_tensors-1",
     "page": "Constructing tensors",
     "title": "Identity tensors",
     "category": "section",
-    "text": "Identity tensors can be created for orders 2 and 4. The components of the second order identity tensor mathbfI are defined as I_ij = delta_ij, where delta_ij is the Kronecker delta. The fourth order identity tensor mathsfI is the resulting tensor from taking the derivative of a second order tensor mathbfA with itself:mathsfI = fracpartial mathbfApartial mathbfA Leftrightarrow I_ijkl = fracpartial A_ijpartial A_kl = delta_ik delta_jlThe symmetric fourth order tensor, mathsfI^textsym, is the resulting tensor from taking the derivative of a symmetric second order tensor mathbfA^textsym with itself:mathsfI^textsym = fracpartial mathbfA^textsympartial mathbfA^textsym Leftrightarrow I^textsym_ijkl = fracpartial A^textsym_ijpartial A^textsym_kl = frac12 (delta_ik delta_jl + delta_il delta_jk)Identity tensors are created using the function one, applied to the type of tensor that should be created:julia> one(SymmetricTensor{2, 2})\n2×2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:\n 1.0  0.0\n 0.0  1.0"
+    "text": "Identity tensors can be created for orders 2 and 4. The components of the second order identity tensor mathbfI are defined as I_ij = delta_ij, where delta_ij is the Kronecker delta. The fourth order identity tensor mathsfI is the resulting tensor from taking the derivative of a second order tensor mathbfA with itself:mathsfI = fracpartial mathbfApartial mathbfA Leftrightarrow I_ijkl = fracpartial A_ijpartial A_kl = delta_ik delta_jlThe symmetric fourth order tensor, mathsfI^textsym, is the resulting tensor from taking the derivative of a symmetric second order tensor mathbfA^textsym with itself:mathsfI^textsym = fracpartial mathbfA^textsympartial mathbfA^textsym Leftrightarrow I^textsym_ijkl = fracpartial A^textsym_ijpartial A^textsym_kl = frac12 (delta_ik delta_jl + delta_il delta_jk)Identity tensors are created using the function one, applied to the type of tensor that should be created:julia> one(SymmetricTensor{2, 2})\n2×2 ContMechTensors.SymmetricTensor{2,2,Float64,3}:\n 1.0  0.0\n 0.0  1.0A Julia Array with identity tensors can be created with ones, with the tensor type and dimensions of the array as arguments:julia> ones(Tensor{2,2}, 2, 2)\n2×2 Array{ContMechTensors.Tensor{2,2,Float64,4},2}:\n [1.0 0.0; 0.0 1.0]  [1.0 0.0; 0.0 1.0]\n [1.0 0.0; 0.0 1.0]  [1.0 0.0; 0.0 1.0]"
 },
 
 {
