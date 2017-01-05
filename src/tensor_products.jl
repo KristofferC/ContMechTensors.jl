@@ -54,7 +54,7 @@ const ⊡ = dcontract
     exp = reduce((ex1,ex2) -> :(+($ex1, $ex2)), ex)
     return quote
         $(Expr(:meta, :inline))
-        $exp
+        @fastmath $exp
     end
 end
 
@@ -73,7 +73,7 @@ end
         $(Expr(:meta, :inline))
         data2 = get_data(S1)
         data4 = get_data(S2)
-        @inbounds r = $exps
+        @fastmath @inbounds r = $exps
         SymmetricTensor{2, dim}(r)
     end
 end
@@ -93,7 +93,7 @@ end
         $(Expr(:meta, :inline))
         data2 = get_data(S2)
         data4 = get_data(S1)
-        @inbounds r = $exps
+        @fastmath @inbounds r = $exps
         SymmetricTensor{2, dim}(r)
     end
 end
@@ -117,7 +117,7 @@ end
         $(Expr(:meta, :inline))
         data2 = get_data(S1)
         data4 = get_data(S2)
-        @inbounds r = $exps
+        @fastmath @inbounds r = $exps
         SymmetricTensor{2, dim}(r)
     end
 end
@@ -141,7 +141,7 @@ end
         $(Expr(:meta, :inline))
         data2 = get_data(S2)
         data4 = get_data(S1)
-        @inbounds r = $exps
+        @fastmath @inbounds r = $exps
         SymmetricTensor{2, dim}(r)
     end
 end
@@ -164,7 +164,7 @@ end
         $(Expr(:meta, :inline))
         data2 = get_data(S2)
         data1 = get_data(S1)
-        @inbounds r = $exps
+        @fastmath @inbounds r = $exps
         SymmetricTensor{4, dim}(r)
     end
 end
@@ -329,7 +329,7 @@ julia> tdot(A)
     end
     return quote
         $(Expr(:meta, :inline))
-        @inbounds r = $ex
+        @fastmath @inbounds r = $ex
         SymmetricTensor{2, dim}(r)
     end
 end

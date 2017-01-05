@@ -38,7 +38,7 @@ julia> symmetric(A)
     exp = Expr(:tuple, exps...)
     return quote
         $(Expr(:meta, :inline))
-        SymmetricTensor{2, dim}($exp)
+        @fastmath SymmetricTensor{2, dim}($exp)
     end
 end
 
@@ -65,7 +65,7 @@ Computes the minor symmetric part of a fourth order tensor, returns a `Symmetric
     return quote
         $(Expr(:meta, :inline))
         data = get_data(t)
-        SymmetricTensor{4, dim}($exp)
+        @fastmath SymmetricTensor{4, dim}($exp)
     end
 end
 
@@ -94,7 +94,7 @@ Computes the major symmetric part of a fourth order tensor, returns a `Tensor{4}
     return quote
         $(Expr(:meta, :inline))
         data = get_data(t)
-        Tensor{4, dim}($exp)
+        @fastmath Tensor{4, dim}($exp)
     end
 end
 

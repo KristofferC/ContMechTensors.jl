@@ -40,7 +40,7 @@ julia> norm(A)
     return quote
       $(Expr(:meta, :inline))
       data = get_data(S)
-      sqrt($exp)
+      @fastmath sqrt($exp)
     end
 end
 
@@ -67,22 +67,28 @@ julia> det(A)
     idx(i,j) = compute_index(get_base(t), i, j)
     if dim == 1
         return quote
-            $(Expr(:meta, :inline))
-            get_data(t)[$(idx(1,1))]
+            @fastmath begin
+                $(Expr(:meta, :inline))
+                get_data(t)[$(idx(1,1))]
+            end
         end
     elseif dim == 2
         return quote
             $(Expr(:meta, :inline))
-            v = get_data(t)
-            v[$(idx(1,1))] * v[$(idx(2,2))] - v[$(idx(1,2))] * v[$(idx(2,1))]
+            @fastmath begin
+                v = get_data(t)
+                v[$(idx(1,1))] * v[$(idx(2,2))] - v[$(idx(1,2))] * v[$(idx(2,1))]
+            end
         end
     else # dim == 3
         return quote
             $(Expr(:meta, :inline))
-            v = get_data(t)
-            (v[$(idx(1,1))]*(v[$(idx(2,2))]*v[$(idx(3,3))]-v[$(idx(2,3))]*v[$(idx(3,2))]) -
-             v[$(idx(1,2))]*(v[$(idx(2,1))]*v[$(idx(3,3))]-v[$(idx(2,3))]*v[$(idx(3,1))]) +
-             v[$(idx(1,3))]*(v[$(idx(2,1))]*v[$(idx(3,2))]-v[$(idx(2,2))]*v[$(idx(3,1))]))
+            @fastmath begin
+                v = get_data(t)
+                (v[$(idx(1,1))]*(v[$(idx(2,2))]*v[$(idx(3,3))]-v[$(idx(2,3))]*v[$(idx(3,2))]) -
+                 v[$(idx(1,2))]*(v[$(idx(2,1))]*v[$(idx(3,3))]-v[$(idx(2,3))]*v[$(idx(3,1))]) +
+                 v[$(idx(1,3))]*(v[$(idx(2,1))]*v[$(idx(3,2))]-v[$(idx(2,2))]*v[$(idx(3,1))]))
+            end
         end
     end
 end
@@ -138,8 +144,10 @@ julia> inv(A)
     end
     return quote
         $(Expr(:meta, :inline))
-        dinv = 1 / det(t)
-        $ex
+        @fastmath begin
+            dinv = 1 / det(t)
+            $ex
+        end
     end
 end
 
@@ -169,8 +177,10 @@ end
     end
     return quote
         $(Expr(:meta, :inline))
-        dinv = 1 / det(t)
-        $ex
+        @fastmath begin
+            dinv = 1 / det(t)
+            $ex
+        end
     end
 end
 
@@ -241,7 +251,7 @@ julia> trace(A)
 @generated function Base.trace{dim}(S::SecondOrderTensor{dim})
     idx(i,j) = compute_index(get_base(S), i, j)
     ex = Expr[:(get_data(S)[$(idx(i,i))]) for i in 1:dim]
-    exp = reduce((ex1, ex2) -> :(+($ex1, $ex2)), ex)
+    exp = @fastmath reduce((ex1, ex2) -> :(+($ex1, $ex2)), ex)
 end
 vol(S::SecondOrderTensor) = trace(S)
 
@@ -276,7 +286,9 @@ julia> trace(dev(A))
     exp = tensor_create(Tt, f)
     return quote
         $(Expr(:meta, :inline))
-        tr = trace(S)
-        $Tt($exp)
+        @fastmath begin
+            tr = trace(S)
+            $Tt($exp)
+        end
     end
 end
