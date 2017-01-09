@@ -317,23 +317,22 @@ julia> eᵢ(Vec{2, Float64}, 2)
  1.0
 ```
 """
-@generated function basevec{dim, T}(::Type{Vec{dim, T}})
+@inline function basevec{T}(::Type{Vec{1, T}})
+    o = one(T)
+    return (Vec{1, T}((o,)), )
+end
+@inline function basevec{T}(::Type{Vec{2, T}})
     o = one(T)
     z = zero(T)
-    ex = Expr(:tuple)
-    if dim == 1
-        push!(ex.args, Vec{dim, T}((o,)))
-    elseif dim == 2
-        push!(ex.args, Vec{dim, T}((o, z)),
-                       Vec{dim, T}((z, o)))
-    elseif dim == 3
-        push!(ex.args, Vec{dim, T}((o, z, z)),
-                       Vec{dim, T}((z, o, z)),
-                       Vec{dim, T}((z, z, o)))
-    else
-        throw(ArgumentError("cannot create base vectors for dim $dim"))
-    end
-    return :($ex)
+    return (Vec{2, T}((o, z)),
+            Vec{2, T}((z, o)))
+end
+@inline function basevec{T}(::Type{Vec{3, T}})
+    o = one(T)
+    z = zero(T)
+    return (Vec{3, T}((o, z, z)),
+            Vec{3, T}((z, o, z)),
+            Vec{3, T}((z, z, o)))
 end
 
 @inline basevec{dim}(::Type{Vec{dim}}) = basevec(Vec{dim, Float64})
