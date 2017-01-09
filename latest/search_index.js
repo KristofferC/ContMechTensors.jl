@@ -97,6 +97,22 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "man/constructing_tensors.html#ContMechTensors.basevec",
+    "page": "Constructing tensors",
+    "title": "ContMechTensors.basevec",
+    "category": "Function",
+    "text": "basevec(::Type{Vec{dim, T}})\nbasevec(::Type{Vec{dim, T}}, i)\nbasevec(::Vec{dim, T})\nbasevec(::Vec{dim, T}, i)\n\nReturn a tuple with the base vectors corresponding to the dimension dim and type T. An optional integer i can be used to extract the i:th base vector. The alias eᵢ can also be used, written e\\_i<TAB>.\n\nExample:\n\njulia> eᵢ(Vec{2, Float64})\n([1.0,0.0],[0.0,1.0])\n\njulia> eᵢ(Vec{2, Float64}, 2)\n2-element ContMechTensors.Tensor{1,2,Float64,2}:\n 0.0\n 1.0\n\n\n\n"
+},
+
+{
+    "location": "man/constructing_tensors.html#Base-vectors-1",
+    "page": "Constructing tensors",
+    "title": "Base vectors",
+    "category": "section",
+    "text": "basevec"
+},
+
+{
     "location": "man/constructing_tensors.html#From-arrays-/-tuples-1",
     "page": "Constructing tensors",
     "title": "From arrays / tuples",
