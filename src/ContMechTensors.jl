@@ -303,7 +303,7 @@ basevec(::Vec{dim, T}, i)
 ```
 Return a tuple with the base vectors corresponding to the dimension `dim` and type
 `T`. An optional integer `i` can be used to extract the i:th base vector.
-The alias `eᵢ` can also be used.
+The alias `eᵢ` can also be used, written `e\\_i<TAB>`.
 
 **Example:**
 
