@@ -11,6 +11,7 @@ export otimes, ⊗, ⊡, dcontract, dev, vol, symmetric, skew, minorsymmetric, m
 export minortranspose, majortranspose, isminorsymmetric, ismajorsymmetric
 export tdot, dott, dotdot
 export hessian#, gradient
+export basevec, eᵢ
 
 @deprecate extract_components(tensor) Array(tensor)
 
@@ -292,5 +293,55 @@ end
         return convert(SymmetricTensor{order, dim}, S)
     end
 end
+
+"""
+```julia
+basevec(::Type{Vec{dim, T}})
+basevec(::Type{Vec{dim, T}}, i)
+basevec(::Vec{dim, T})
+basevec(::Vec{dim, T}, i)
+```
+Return a tuple with the base vectors corresponding to the dimension `dim` and type
+`T`. An optional integer `i` can be used to extract the i:th base vector.
+The alias `eᵢ` can also be used.
+
+**Example:**
+
+```jldoctest
+julia> eᵢ(Vec{2, Float64})
+([1.0,0.0],[0.0,1.0])
+
+julia> eᵢ(Vec{2, Float64}, 2)
+2-element ContMechTensors.Tensor{1,2,Float64,2}:
+ 0.0
+ 1.0
+```
+"""
+@generated function basevec{dim, T}(::Type{Vec{dim, T}})
+    o = one(T)
+    z = zero(T)
+    ex = Expr(:tuple)
+    if dim == 1
+        push!(ex.args, Vec{dim, T}((o,)))
+    elseif dim == 2
+        push!(ex.args, Vec{dim, T}((o, z)),
+                       Vec{dim, T}((z, o)))
+    elseif dim == 3
+        push!(ex.args, Vec{dim, T}((o, z, z)),
+                       Vec{dim, T}((z, o, z)),
+                       Vec{dim, T}((z, z, o)))
+    else
+        throw(ArgumentError("cannot create base vectors for dim $dim"))
+    end
+    return :($ex)
+end
+
+@inline basevec{dim}(::Type{Vec{dim}}) = basevec(Vec{dim, Float64})
+@inline basevec{dim, T}(::Type{Vec{dim, T}}, i::Int) = basevec(Vec{dim, T})[i]
+@inline basevec{dim}(::Type{Vec{dim}}, i::Int) = basevec(Vec{dim, Float64})[i]
+@inline basevec{dim, T}(v::Vec{dim, T}) = basevec(typeof(v))
+@inline basevec{dim, T}(v::Vec{dim, T}, i::Int) = basevec(typeof(v), i)
+
+const eᵢ = basevec
 
 end # module
