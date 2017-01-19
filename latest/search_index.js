@@ -457,6 +457,22 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "man/other_operators.html#ContMechTensors.rotate",
+    "page": "Other operators",
+    "title": "ContMechTensors.rotate",
+    "category": "Function",
+    "text": "Rotate a three dimensional vector x around another vector u a total of θ radians.\n\nrotate(x::Vec{3}, u::Vec{3}, θ::Number)\n\nExample:\n\njulia> x = Vec{3}((0.0, 0.0, 1.0))\n3-element ContMechTensors.Tensor{1,3,Float64,3}:\n 0.0\n 0.0\n 1.0\n\njulia> u = Vec{3}((0.0, 1.0, 0.0))\n3-element ContMechTensors.Tensor{1,3,Float64,3}:\n 0.0\n 1.0\n 0.0\n\njulia> rotate(x, u, π/2)\n3-element ContMechTensors.Tensor{1,3,Float64,3}:\n 1.0\n 0.0\n 6.12323e-17\n\n\n\n"
+},
+
+{
+    "location": "man/other_operators.html#Rotations-1",
+    "page": "Other operators",
+    "title": "Rotations",
+    "category": "section",
+    "text": "rotate"
+},
+
+{
     "location": "man/other_operators.html#ContMechTensors.dotdot",
     "page": "Other operators",
     "title": "ContMechTensors.dotdot",
