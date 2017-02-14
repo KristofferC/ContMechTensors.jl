@@ -2,6 +2,8 @@
 
 *Efficient computations with symmetric and non-symmetric tensors with support for automatic differentiation.*
 
+**Note** : This package is deprecated: Development continues at: https://github.com/KristofferC/Tensors.jl
+
 | **Documentation**                                                               | **Build Status**                                                                                |
 |:-------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------:|
 | [![][docs-stable-img]][docs-stable-url] [![][docs-latest-img]][docs-latest-url] | [![][travis-img]][travis-url] [![][appveyor-img]][appveyor-url] [![][codecov-img]][codecov-url] |
